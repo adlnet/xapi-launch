@@ -1,0 +1,40 @@
+{
+	"title": "registerContentRequest",
+	"type": "object",
+	"properties": {
+		"url": {
+			"type": "string",
+			"minLength": 3,
+  			"maxLength": 5000
+		},
+		"title": {
+			"type": "string",
+			"minLength": 3,
+  			"maxLength": 100
+		},
+		"description": {
+			"type": "string",
+			"minLength": 3,
+  			"maxLength": 500
+		},
+		"owner": {
+			"type": "string",
+			"format":"email"
+		},
+		"created": {
+			"type": "string",
+			"format":"date"
+		},
+		"accessed": {
+			"type": "string",
+			"format":"date"
+		},
+		"dataType": {
+			"type": "string",
+			"enum": ["contentRecord"]
+		}
+
+	},
+	"additionalProperties": false,
+	"required": ["url", "title","description"]
+}

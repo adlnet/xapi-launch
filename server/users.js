@@ -1,9 +1,14 @@
-var validate = require('jsonschema').validate;
+
 var schemas = require("./schemas.js");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
 var requirejs = require('requirejs');
 var session = require('express-session')
+
+exports.ensureLoggedIn = require("./utils.js").ensureLoggedIn;
+exports.ensureNotLoggedIn = require("./utils.js").ensureNotLoggedIn;
+exports.validateTypeWrapper = require("./utils.js").validateTypeWrapper;
+
 requirejs.config(
 {
     nodeRequire: require
@@ -28,6 +33,32 @@ function validateTypeWrapper(type, cb)
         }
     }
 }
+function ensureLoggedIn(cb)
+{
+    return function(req, res, next)
+    {
+        if(req.user)
+            cb(req, res, next)
+        else
+        {
+            res.redirect("/");
+        }
+    }
+}
+
+function ensureNotLoggedIn(cb)
+{
+    return function(req, res, next)
+    {
+        if(!req.user)
+            cb(req, res, next)
+        else
+        {
+            res.redirect("/");
+        }
+    }
+}
+
 exports.setup = function(app, DAL)
 {
     app.use(session(
@@ -93,7 +124,7 @@ exports.setup = function(app, DAL)
     });
     app.get("/users/login", function(req, res, next)
     {
-        if (req.user) req.redirect("/");
+        if (req.user) res.redirect("/");
         else
             res.render('login',
             {})
@@ -125,6 +156,11 @@ exports.setup = function(app, DAL)
         });
     }));
 
+    app.get('/users/logout',ensureLoggedIn(function(req,res,next)
+    {
+        req.logout();
+        res.redirect("/");
+    }));
     app.post('/users/login', function(req, res, next)
     {
         if (req.user)

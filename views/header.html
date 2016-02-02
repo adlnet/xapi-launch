@@ -7,7 +7,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Project name</a>
+            <a class="navbar-brand" href="#">xAPI-Launch</a>
         </div>
         <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
@@ -17,22 +17,32 @@
                     <li><a href="#">Search</a></li>
                     <li><a href="#">Browse</a></li>
                     <li><a href="#">Register Content</a></li>
+                </ul>
+            </li>
+            
+           
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            {{#user}}
+              <li class="nav navbar-nav dropdown navbar-right">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user.username}} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="users/logout">Logout</a></li>
+                    <li><a href="users/me">Account</a></li>
+                </ul>
+            </li>
+            {{/user}}
+            {{^user}}
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="users/login">Login</a></li>
                     <li><a href="users/create">Create Account</a></li>
                 </ul>
             </li>
+            {{/user}}
         </ul>
-        <!-- start login -->
-        <div id="navbar" class="navbar-collapse collapse">
-            <form class="navbar-form navbar-right" action="/users/login">
-                <div class="form-group">
-                    <input name="username" type="text" placeholder="Email" class="form-control">
-                </div>
-                <div class="form-group">
-                    <input name = "password" type="password" placeholder="Password" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-success">Sign in</button>
-            </form>
-        </div>
-        <!-- end login -->
+        
+        
     </div>
 </nav>

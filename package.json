@@ -7,5 +7,17 @@
     "test": "node app.js"
   },
   "author": "ADL",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "async": "^1.5.2",
+    "body-parser": "^1.14.2",
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "hogan-express": "^0.5.2",
+    "jsonschema": "^1.0.3",
+    "nstore": "^0.5.2",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "requirejs": "^2.1.22"
+  }
 }

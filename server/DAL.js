@@ -6,25 +6,46 @@ function DAL(DB)
 {
 	this.DB = DB;
 }
+
+function ensureOneCall(cb)
+{
+	var calls = 0;
+	return function(arg1,arg2,arg3,arg4,arg5,arg6)
+	{
+		calls ++;
+		if(calls == 1)
+			cb(arg1,arg2,arg3,arg4,arg5,arg6);
+		else
+		{
+			console.log("callback already called!");
+		}
+	}
+}
+
 DAL.prototype.getUser = function(email,gotUser)
 {
-	this.DB.find({dataType:"userAccount",email:email},function(err,results)
+	console.log("getuser" + email)
+	this.DB.find({dataType:"userAccount",email:email},ensureOneCall(function(err,results)
 	{
-
+		console.log("gotuser" + email)
+		if(!results) results = [];
 		if(Object.keys(results).length > 1)
 		{
 			gotUser("invalid number of search results!");
+			return;
 		}else if (Object.keys(results).length == 0)
 		{
 			gotUser(null,undefined);
+			return;
 		}else
 		{
 			
 			var record = results[Object.keys(results)[0]];
 			var account = new types.userAccount(record.email,record.username,record.salt,record.password);
 			gotUser(null, account);
+			return;
 		}
-	})
+	}));
 }
 DAL.prototype.createUser = function(request,userCreatedCB)
 {

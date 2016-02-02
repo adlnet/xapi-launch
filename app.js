@@ -12,10 +12,11 @@ async.series([
     	nStore = nStore.extend(require('nstore/query')());
         DB = nStore.new("./data.db", function()
         {
-        	DB = require("./server/DAL.js").setup(DB);
 
-            cb();
         })
+        DB = require("./server/DAL.js").setup(DB);
+        	console.log("ghot here")
+            cb();
     }
 ], function startServer()
 {
@@ -24,7 +25,7 @@ async.series([
 	app.use('/static', express.static('public'));
 
 	app.use(require("body-parser").json());
-	
+	app.use( require("body-parser").urlencoded({ extended: true }) );
 
 	
 	//use mustache templating

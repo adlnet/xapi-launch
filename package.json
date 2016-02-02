@@ -1,0 +1,11 @@
+{
+  "name": "xapi-launch",
+  "version": "1.0.0",
+  "description": "Launch cross-domain content while tracking performance back to the launcher",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "author": "ADL",
+  "license": "ISC"
+}

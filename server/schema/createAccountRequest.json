@@ -1,0 +1,27 @@
+{
+	"title": "createAccountRequest",
+	"type": "object",
+	"properties": {
+		"username": {
+			"type": "string",
+			"minLength": 3,
+  			"maxLength": 32
+		},
+		"password": {
+			"type": "string",
+			"minLength": 128,
+  			"maxLength": 128
+		},
+		"salt": {
+			"type": "string",
+			"minLength": 32,
+  			"maxLength": 32
+		},
+		"email": {
+			"type": "string",
+			"format": "email"
+		}
+	},
+	"additionalProperties": false,
+	"required": ["username", "password","salt","email"]
+}

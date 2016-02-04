@@ -1,63 +1,18 @@
-
 var schemas = require("./schemas.js");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
 var requirejs = require('requirejs');
 var session = require('express-session')
-
-exports.ensureLoggedIn = require("./utils.js").ensureLoggedIn;
-exports.ensureNotLoggedIn = require("./utils.js").ensureNotLoggedIn;
-exports.validateTypeWrapper = require("./utils.js").validateTypeWrapper;
+var async = require("async");
+var ensureLoggedIn = require("./utils.js").ensureLoggedIn;
+var ensureNotLoggedIn = require("./utils.js").ensureNotLoggedIn;
+var validateTypeWrapper = require("./utils.js").validateTypeWrapper;
 
 requirejs.config(
 {
     nodeRequire: require
 });
-//validate the incoming JSON object against a given schema
-function validateTypeWrapper(type, cb)
-{
-    return function(req, res, next)
-    {
-        var dataRequest = req.body;
-        var output = validate(dataRequest, type);
-        if (output.errors.length == 0)
-        {
-            cb(req, res, next)
-        }
-        else
-        {
-            var message = "";
-            for (var i = 0; i < output.errors.length; i++)
-                message += output.errors[i].stack + ", ";
-            res.status(500).send("500 - input validataion failed. " + message);
-        }
-    }
-}
-function ensureLoggedIn(cb)
-{
-    return function(req, res, next)
-    {
-        if(req.user)
-            cb(req, res, next)
-        else
-        {
-            res.redirect("/");
-        }
-    }
-}
 
-function ensureNotLoggedIn(cb)
-{
-    return function(req, res, next)
-    {
-        if(!req.user)
-            cb(req, res, next)
-        else
-        {
-            res.redirect("/");
-        }
-    }
-}
 
 exports.setup = function(app, DAL)
 {
@@ -67,7 +22,7 @@ exports.setup = function(app, DAL)
         saveUninitialized: false,
         secret: "foobar"
     }));
-    
+
     passport.use(new LocalStrategy(
         function(username, password, done)
         {
@@ -98,7 +53,7 @@ exports.setup = function(app, DAL)
     ));
     app.use(passport.initialize());
     app.use(passport.session());
-   
+
     passport.serializeUser(function(user, done)
     {
         console.log("SERIALIZING USER");
@@ -119,11 +74,13 @@ exports.setup = function(app, DAL)
 
     app.get("/users/create", function(req, res, next)
     {
+        res.locals.pageTitle = "Create Account";
         res.render('createAccount',
         {})
     });
     app.get("/users/login", function(req, res, next)
     {
+        res.locals.pageTitle = "Login";
         if (req.user) res.redirect("/");
         else
             res.render('login',
@@ -156,10 +113,83 @@ exports.setup = function(app, DAL)
         });
     }));
 
-    app.get('/users/logout',ensureLoggedIn(function(req,res,next)
+    app.get('/users/logout', ensureLoggedIn(function(req, res, next)
     {
         req.logout();
         res.redirect("/");
+    }));
+    app.get("/users/launches/:guid/delete", ensureLoggedIn(function(req, res, next)
+    {
+        DAL.getLaunchByGuid(req.params.guid, function(err, launch)
+        {
+            if (launch && launch.email == req.user.email)
+            {
+
+                launch.delete(function(err)
+                {
+                    res.redirect("/users/launches");
+                })
+            }
+            else
+            {
+                res.redirect("/users/launches");
+            }
+        })
+    }))
+    app.get('/users/launches', ensureLoggedIn(function(req, res, next)
+    {
+        DAL.getAllUsersLaunch(req.user.email, function(err, results)
+        {
+            if (err)
+                return res.status(500).send(err);
+            var rest = [];
+            for (var i in results)
+            {
+                var data = results[i].dbForm()
+                data.created = ((new Date(data.created)).toDateString());
+                rest.push(data);
+            }
+
+            async.eachSeries(rest, function(i, cb)
+            {
+                DAL.getContentByKey(i.contentKey, function(err, content)
+                {
+                    i.contentURL = content.url;
+                    i.contentTitle = content.title;
+                    cb();
+                })
+            }, function()
+            {
+                res.locals.results = rest;
+                res.render("launchHistory", res.locals);
+            })
+
+        })
+    }));
+    app.get("/users/content", ensureLoggedIn(function(req, res, next)
+    {
+        DAL.getAllContentByOwner(req.user.email, function(err, results)
+        {
+            res.locals.pageTitle = "Your Content";
+            if (err)
+            {
+                res.locals.error = err;
+
+                res.render('error', res.locals);
+            }
+            else
+            {
+                console.log(results);
+                for (var i in results)
+                {
+                    results[i].launchKey = results[i].key;
+                    results[i].owned = !!req.user && results[i].owner == req.user.email;
+
+                }
+                res.locals.results = results;
+                res.render('results', res.locals);
+            }
+        })
     }));
     app.post('/users/login', function(req, res, next)
     {

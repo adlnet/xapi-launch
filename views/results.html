@@ -11,13 +11,27 @@
             <h6 class="smaller">{{owner}}</h6>
             <p>{{description}}</p>
             <p>{{launchKey}}</p>
-            <p><a class="btn btn-default" href="/content/launch/{{launchKey}}" role="button">Launch</a>
-            {{#owned}}<a class="btn btn-default" href="/content/{{launchKey}}/delete" role="button">Remove</a></p>{{/owned}}
+            <div class="btn-group" role="group">
+            <a class="btn btn-default {{^user}}disabled{{/user}}" href="/content/{{launchKey}}/launch" role="button">Launch</a>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu{{launchKey}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <span class="sr-only">Toggle Dropdown</span>...
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{launchKey}}">
+                        <li><a href="/content/{{launchKey}}/launches" >View Launch History</a></li>
+                        <li><a href="#">View Associated Activity</a></li>
+                        <li><a href="#">View DB Record</a></li>
+                        {{#owned}}
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/content/{{launchKey}}/delete">Remove</a></li>
+                        <li><a href="/content/{{launchKey}}/edit">Edit</a></li>
+                        {{/owned}}
+                    </ul>
+                </div>
+            </div>
         </div>
         {{/results}}
     </div>
-    <hr>
-{{>footer}}    
+    <hr> {{>footer}}
 </div>
 <!-- /container -->
-

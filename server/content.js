@@ -5,10 +5,14 @@ exports.setup = function(app, DAL)
 {
 	app.get("/", function(res, req, next)
 	{
+		res.locals = {};
+		res.locals.pageTitle = "home";
 		req.render('home', res.locals)
 	});
 	app.get("/content/register", ensureLoggedIn(function(res, req, next)
 	{
+		res.locals = {};
+		res.locals.pageTitle = "Register New Content";
 		req.render('registerContent', res.locals)
 	}));
 	app.post("/content/register", ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
@@ -46,6 +50,7 @@ exports.setup = function(app, DAL)
 		DAL.getContentByKey(req.params.key, function(err, content)
 		{
 			console.log('get content by key');
+			console.log(err);
 			if (content)
 			{
 				console.log(content.owner , req.user.email);
@@ -64,8 +69,79 @@ exports.setup = function(app, DAL)
 			}
 		})
 	}));
+	app.get("/content/:key/json", function(req, res, next)
+	{
+		DAL.getContentByKey(req.params.key, function(err, content)
+		{
+			console.log('get content by key');
+			console.log(err);
+			if (content)
+			{
+				res.status(200).send(content.dbForm());
+			}
+			else
+			{
+				res.status(500).send(err);
+			}
+		})
+	});
+	app.get('/content/:key/launches',function(req,res,next)
+    {
+        DAL.getAllContentLaunch(req.params.key,function(err,results)
+        {
+            if(err)
+                return res.status(500).send(err);
+            var rest = [];
+            for (var i in results)
+                rest.push(results[i].dbForm());
+            res.status(200).send(rest);
+        })
+    });
+	app.get("/content/:key/launch", ensureLoggedIn( function(req, res, next)
+	{
+		DAL.getContentByKey(req.params.key, function(err, content)
+		{
+			if (content)
+			{
+				DAL.createLaunchRecord({email:req.user.email,contentKey:req.params.key},function(err,launch)
+				{
+					if(err)
+						res.status(500).send(err);
+					else
+						res.status(200).send(launch.dbForm());
+				})
+			}
+			else
+			{
+				res.status(500).send(err);
+			}
+		})
+	}));
+	app.get("/content/launch/:guid", ensureLoggedIn( function(req, res, next)
+	{
+		DAL.getLaunchByGuid(req.params.guid, function(err, launch)
+		{
+			if (content)
+			{
+				if(launch.state == 0)
+				{
+					//return launch data
+					launch.state = 1;
+					launch.save(function(err)
+					{
+
+					});
+				}
+			}
+			else
+			{
+				res.status(500).send(err);
+			}
+		})
+	}));
 	app.get("/content/browse", function(req, res, next)
 	{
+		res.locals.pageTitle = "Browse All Content";
 		DAL.getAllContent(function(err, results)
 		{
 			if (err)
@@ -88,6 +164,7 @@ exports.setup = function(app, DAL)
 	});
 	app.get("/content/search/", ensureLoggedIn(function(req, res, next)
 	{
+		res.locals.pageTitle = "Register New Content";
 		res.render('registerContent', res.locals)
 	}));
 }

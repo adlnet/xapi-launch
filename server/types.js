@@ -4,18 +4,20 @@ function saveableType(self)
 	
 	Object.defineProperty(self, "init",
 	{
-		value: function(key, DB)
+		value: function(key, DB,record)
 		{
 			self.DB = DB;
 			self.key = key;
 			console.log("init " + key);
+			for(var i in record)
+				this[i] = record[i];
 		}
 	})
 	Object.defineProperty(self, "dbForm",
 	{
 		value: function()
 		{
-			return JSON.parse(JSON.stringify(self, null, function(key, val)
+			return JSON.parse(JSON.stringify(self, function(key, val)
 			{
 				if (key == "key")
 					return undefined;
@@ -82,4 +84,14 @@ exports.contentRecord = function(url, title, description, created, accessed, own
 	this.created = created;
 	this.accessed = accessed;
 	this.owner = owner;
+}
+exports.launchRecord = function(email, key, uuid)
+{
+	saveableType(this);
+	this.email = email;
+	this.contentKey = key;
+	this.dataType = "launchRecord";
+	this.created = Date.now();
+	this.state = 0;
+	this.uuid = uuid;
 }

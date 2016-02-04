@@ -7,10 +7,10 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">xAPI-Launch</a>
+            <a class="navbar-brand" href="/">xAPI-Launch</a>
         </div>
         <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
+            <li class="active {{^pageTitle}}hidden{{/pageTitle}}"><a href="/">{{pageTitle}}</a></li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Content <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -29,6 +29,8 @@
                 <ul class="dropdown-menu">
                     <li><a href="/users/logout">Logout</a></li>
                     <li><a href="/users/me">Account</a></li>
+                    <li><a href="/users/launches">My Launch History</a></li>
+                    <li><a href="/users/content">My Content</a></li>
                 </ul>
             </li>
             {{/user}}

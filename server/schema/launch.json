@@ -1,0 +1,32 @@
+{
+	"title": "launchRecord",
+	"type": "object",
+	"properties": {
+		"email": {
+			"type": "string",
+			"format":"email"
+		},
+		"contentKey": {
+			"type": "string",
+			"minLength": 5,
+  			"maxLength": 10
+		},
+		"state": {
+			"type": "integer",
+			"min": 0,
+  			"max": 5
+		},
+		"dataType": {
+			"type": "string",
+			 "enum": ["launchRecord"]
+		},
+		"created": {
+			"type": "integer"
+		},
+		"uuid": {
+			"type": "string"
+		}
+	},
+	"additionalProperties": false,
+	"required": ["email", "contentKey","state","dataType","created","uuid"]
+}

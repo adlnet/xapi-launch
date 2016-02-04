@@ -19,7 +19,7 @@ function saveableType(self)
 		{
 			return JSON.parse(JSON.stringify(self, function(key, val)
 			{
-				if (key == "key")
+				if (key == "_id")
 					return undefined;
 				if (key == "DB")
 					return undefined;
@@ -54,7 +54,7 @@ function saveableType(self)
 			if (self.DB)
 			{
 				console.log('remove ', self.key);
-				self.DB.remove(self.key, cb)
+				self.DB.remove({_id:self.key}, {}, cb)
 			}
 			else
 			{

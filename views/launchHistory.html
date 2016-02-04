@@ -5,7 +5,7 @@
     <!-- Example row of columns -->
     <div class="row">
         <table class="table table-striped table-bordered">
-            <tr class="bold">
+            <tr style ="font-weight: bolder;">
                 <td>Content</td>
                 <td>URL</td>
                 <td>User</td>
@@ -30,9 +30,11 @@
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{launchKey}}">
                         <li><a href = "/content/search/{{contentKey}}">View Content Record</a></li>
                         <li><a href = "/content/search/{{contentKey}}">View Context Activity</a></li>
-                        <li><a href = "/results/{{uuid}}">View Results</a></li>
+                        {{#owned}}
                         <li role="separator" class="divider"></li>
                         <li><a href="/users/launches/{{uuid}}/delete">Remove</a></li>
+                        <li><a href = "/results/{{uuid}}">View Results</a></li>
+                        {{/owned}}
                     </ul>
                 </div>
 

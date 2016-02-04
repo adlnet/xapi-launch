@@ -1,6 +1,7 @@
 var ensureLoggedIn = require("./utils.js").ensureLoggedIn;
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper
 var schemas = require("./schemas.js");
+var async = require('async');
 exports.setup = function(app, DAL)
 {
 	app.get("/", function(res, req, next)
@@ -85,18 +86,7 @@ exports.setup = function(app, DAL)
 			}
 		})
 	});
-	app.get('/content/:key/launches',function(req,res,next)
-    {
-        DAL.getAllContentLaunch(req.params.key,function(err,results)
-        {
-            if(err)
-                return res.status(500).send(err);
-            var rest = [];
-            for (var i in results)
-                rest.push(results[i].dbForm());
-            res.status(200).send(rest);
-        })
-    });
+	
 	app.get("/content/:key/launch", ensureLoggedIn( function(req, res, next)
 	{
 		DAL.getContentByKey(req.params.key, function(err, content)
@@ -162,6 +152,38 @@ exports.setup = function(app, DAL)
 			}
 		})
 	});
+	app.get("/content/:key/launches", function(req, res, next)
+	{
+		DAL.getAllContentLaunch(req.params.key,function(err, results)
+        {
+            if (err)
+                return res.status(500).send(err);
+            var rest = [];
+            for (var i in results)
+            {
+                var data = results[i].dbForm()
+                data.created = ((new Date(data.created)).toDateString());
+                rest.push(data);
+            }
+
+            async.eachSeries(rest, function(i, cb)
+            {
+                DAL.getContentByKey(i.contentKey, function(err, content)
+                {
+                    i.contentURL = content.url;
+                    i.contentTitle = content.title;
+                    i.owned = req.user && i.email == req.user.email;
+                    cb();
+                })
+            }, function()
+            {
+                res.locals.results = rest;
+                res.render("launchHistory", res.locals);
+            })
+
+        })
+	});
+	
 	app.get("/content/search/", ensureLoggedIn(function(req, res, next)
 	{
 		res.locals.pageTitle = "Register New Content";

@@ -7,6 +7,23 @@ var ensureOneCall = require('./utils.js').ensureOneCall;
 function DAL(DB)
 {
     this.DB = DB;
+    this.DB.get = function(key,cb)
+    {
+		DB.findOne({ _id: key }, function (err, doc) {
+			cb(err,doc)
+		});
+    }
+    this.DB.save = function(key,value,cb)
+    {
+    	if(key)
+    		value._id = key;
+		DB.insert(value, function (err, doc) {
+			if(err)
+				cb(err)
+			else
+				cb(err,doc._id)
+		});
+    }
 }
 
 
@@ -17,7 +34,7 @@ function DAL(DB)
 //types.js, and the datatypename is the name for that type. Normally these are the same
 function getGenerator(keyname, schema, typeConstructor, dataTypeName)
 {
-    if (keyname == "key")
+    if (keyname == "_id")
     {
         return function(keyval, got)
         {
@@ -69,22 +86,22 @@ function getGenerator(keyname, schema, typeConstructor, dataTypeName)
             self.DB.find(
                 query, ensureOneCall(function(err, results)
                 {
-                    if (!results) results = {};
-                    if (Object.keys(results).length > 1)
+                    
+                    if (results.length > 1)
                     {
                         got("invalid number of search results!");
                         return;
                     }
-                    else if (Object.keys(results).length == 0)
+                    else if (results.length == 0)
                     {
                         got(null, undefined);
                         return;
                     }
                     else
                     {
-                        var record = results[Object.keys(results)[0]];
+                        var record = results[0];
                         var content = new types[typeConstructor]();
-                        content.init(Object.keys(results)[0], self.DB, record);
+                        content.init(record._id, self.DB, record);
                         got(null, content);
                         return;
                     }
@@ -126,7 +143,7 @@ function getAllGenerator(condition, schema, typeConstructor, dataTypeName)
                             {
                                 var record = results[i];
                                 var content = new types[typeConstructor]();
-                                content.init(i, self.DB, record);
+                                content.init(record._id, self.DB, record);
                                 allcontent.push(content);
                             }
                             gotContent(null, allcontent);
@@ -148,11 +165,11 @@ function getAllGenerator(condition, schema, typeConstructor, dataTypeName)
 
 //AWWWW SO META!
 DAL.prototype.getContent = getGenerator("url", schemas.content, "contentRecord", "contentRecord");
-DAL.prototype.getContentByKey = getGenerator("key", schemas.content, "contentRecord", "contentRecord");
+DAL.prototype.getContentByKey = getGenerator("_id", schemas.content, "contentRecord", "contentRecord");
 DAL.prototype.getAllContentByOwner = getAllGenerator("owner", schemas.content, "contentRecord", "contentRecord");
 DAL.prototype.getAllContent = getAllGenerator(null, schemas.content, "contentRecord", "contentRecord");
 DAL.prototype.getUser = getGenerator("email", schemas.account, "userAccount", "userAccount");
-DAL.prototype.getUserByKey = getGenerator("key", schemas.account, "userAccount", "userAccount");
+DAL.prototype.getUserByKey = getGenerator("_id", schemas.account, "userAccount", "userAccount");
 DAL.prototype.getAllUsers = getAllGenerator(null, schemas.account, "userAccount", "userAccount");
 DAL.prototype.getAllUsersLaunch = getAllGenerator("email", schemas.launch, "launchRecord", "launchRecord");
 DAL.prototype.getAllContentLaunch = getAllGenerator("contentKey", schemas.launch, "launchRecord", "launchRecord");

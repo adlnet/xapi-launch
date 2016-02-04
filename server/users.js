@@ -154,8 +154,16 @@ exports.setup = function(app, DAL)
             {
                 DAL.getContentByKey(i.contentKey, function(err, content)
                 {
-                    i.contentURL = content.url;
-                    i.contentTitle = content.title;
+                    if(content)
+                    {
+                        i.contentURL = content.url;
+                        i.contentTitle = content.title;
+                    }else
+                    {
+                        i.contentURL = "{{content removed}}";
+                        i.contentTitle = "{{content removed}}";
+                    }
+                    i.owned = req.user && i.email == req.user.email;
                     cb();
                 })
             }, function()

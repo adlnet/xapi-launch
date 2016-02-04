@@ -1,7 +1,7 @@
 var express = require('express');
 var async = require('async');
 var app = express();
-var nStore = require('nstore');
+var Datastore  = require('nedb');
 var DB = null;
 var hoganExpress = require('hogan-express');
 
@@ -9,11 +9,8 @@ async.series([
 
     function loadDB(cb)
     {
-    	nStore = nStore.extend(require('nstore/query')());
-        DB = nStore.new("./data.db", function()
-        {
-
-        })
+    	
+        DB = new Datastore({ filename: './data.db', autoload: true })
         DB = require("./server/DAL.js").setup(DB);
         	console.log("ghot here")
             cb();

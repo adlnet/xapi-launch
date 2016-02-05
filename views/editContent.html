@@ -1,11 +1,11 @@
-{{>header}}
 <!-- Main jumbotron for a primary marketing message or call to action -->
+{{>header}}
 <div class="container" style="margin-top:3em">
     <!-- Example row of columns -->
      <div class='row' >
         <div class="col-md-4"></div>
         <div class="col-md-4">
-            <h2 class="text-center">Register a content URL</h2>
+            <h2 class="text-center">Update a content record</h2>
         </div>
         <div class="col-md-4"></div>
     </div>
@@ -16,18 +16,18 @@
                 
                 <div class="form-group">
                     <label>Content launch URL</label>
-                    <input id="launchURL" type="text" class='form-control' placeholder="URL"></input>
+                    <input id="launchURL" type="text" class='form-control' placeholder="URL" value="{{content.url}}"></input>
                 </div>
                 <div class="form-group">
                     <label>Title</label>
-                    <input id="title" type="text" class='form-control' placeholder="title"></input>
+                    <input id="title" type="text" class='form-control' placeholder="title" value="{{content.title}}"></input>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea id="description" type="textarea" class='form-control' placeholder="Description"></textarea>
+                    <textarea id="description" type="textarea" class='form-control' placeholder="Description">{{content.description}}</textarea>
                 </div>
             </form>
-            <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Register Content</button>
+            <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Update Content</button>
             <div id="feedback" class="hidden alert alert-danger" role="alert">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 <span class="sr-only">Error:</span> <span role="message"></span>
@@ -46,8 +46,7 @@
 
 <!-- /container -->
 <script type="text/javaScript">
-    require(['/static/scripts/pbkdf2.js'], function(CryptoJS)
-    {
+    
         $('button').click(function()
         {
 
@@ -65,14 +64,13 @@
                 description: $('#description').val(),
                 title: $('#title').val()
             }
-            $.ajax("/content/register",
+            $.ajax("/content/{{content._id}}/edit",
             {
                 data: JSON.stringify(createRequest),
                 type: "POST",
                 success: function(res)
                 {
-                   
-                    window.location.pathname = "/";
+                    window.location.pathname = "/content/search/{{content._id}}";
                 },
                 contentType: 'application/json'
             }).fail(function(xhr)
@@ -81,5 +79,5 @@
                 $('#feedback span[role=message]').text(xhr.responseText);
             })
         })
-    })
+    
 </script>

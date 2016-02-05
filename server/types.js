@@ -37,7 +37,7 @@ function saveableType(self)
 		{
 			if (self.DB)
 			{
-				self.DB.save(self.key, self.dbForm(), cb)
+				self.DB.update({_id:self.key}, self.dbForm(), cb)
 			}
 			else
 			{

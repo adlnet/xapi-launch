@@ -107,6 +107,52 @@ exports.setup = function(app, DAL)
 			}
 		})
 	}));
+	app.get("/content/:key/edit", ensureLoggedIn( function(req, res, next)
+	{
+		DAL.getContentByKey(req.params.key, function(err, content)
+		{
+			if (content)
+			{
+				if(content.owner == req.user.email)
+				{
+					if(!res.locals)
+						res.locals = {};
+					res.locals.content = content
+					res.render("editContent",res.locals); 
+				}
+			}
+			else
+			{
+				res.status(500).send(err);
+			}
+		})
+	}));
+	app.post("/content/:key/edit", ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
+	{
+		DAL.getContentByKey(req.params.key, function(err, content)
+		{
+			if (content)
+			{
+				if(content.owner == req.user.email)
+				{
+					content.url = req.body.url;
+					content.title = req.body.title;
+					content.description = req.body.description;
+					content.save(function(err)
+					{
+						if(err)
+							res.status(500).send(err);
+						else
+							res.status(200).send("OK");
+					})
+				}
+			}
+			else
+			{
+				res.status(500).send(err);
+			}
+		})
+	})));
 	app.get("/content/launch/:guid", ensureLoggedIn( function(req, res, next)
 	{
 		DAL.getLaunchByGuid(req.params.guid, function(err, launch)
@@ -183,10 +229,33 @@ exports.setup = function(app, DAL)
 
         })
 	});
-	
-	app.get("/content/search/", ensureLoggedIn(function(req, res, next)
+	app.get("/content/search", function(req, res, next){
+		res.locals.pageTitle = "Search All Content";
+        res.render("search", res.locals);
+	})
+	app.get("/content/search/:search", function(req, res, next)
 	{
-		res.locals.pageTitle = "Register New Content";
-		res.render('registerContent', res.locals)
-	}));
+		res.locals.pageTitle = "Search All Content";
+		var search = decodeURIComponent(req.params.search);
+		var reg = new RegExp(search);
+		DAL.DB.find({$and:[{dataType:"contentRecord"},{$or:[{_id:search},{title:reg},{description:reg},{url:reg},{owner:reg}]}]} ,function(err, results)
+		{
+			if (err)
+			{
+				res.locals.error = err;
+				res.render('error', res.locals);
+			}
+			else
+			{
+				for (var i in results)
+				{
+					results[i].launchKey = results[i]._id;
+					results[i].owned = !!req.user && results[i].owner == req.user.email;
+					
+				}
+				res.locals.results = results;
+				res.render('results', res.locals);
+			}
+		})
+	});
 }

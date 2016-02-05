@@ -169,6 +169,7 @@ exports.setup = function(app, DAL)
             }, function()
             {
                 res.locals.results = rest;
+                res.locals.pageTitle = "My Launch History";
                 res.render("launchHistory", res.locals);
             })
 

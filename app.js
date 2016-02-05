@@ -23,6 +23,7 @@ async.series([
 
 	app.use(require("body-parser").json());
 	app.use( require("body-parser").urlencoded({ extended: true }) );
+	app.use(require("cookie-parser")());
 
 	
 	//use mustache templating
@@ -37,7 +38,12 @@ async.series([
 	require('./server/xapi.js').setup(app,DB);
 	require('./server/admin.js').setup(app,DB);
 	require('./server/content.js').setup(app,DB);
+	require('./server/launch.js').setup(app,DB);
     
+    app.all("*",function(req,res,next)
+    {
+    	res.redirect("/");
+    });
     app.listen(3000, function() {
 
     })

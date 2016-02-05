@@ -7,7 +7,7 @@ exports.setup = function(app, DAL)
 	app.get("/", function(res, req, next)
 	{
 		res.locals = {};
-		res.locals.pageTitle = "home";
+		res.locals.pageTitle = "Home";
 		req.render('home', res.locals)
 	});
 	app.get("/content/register", ensureLoggedIn(function(res, req, next)
@@ -87,26 +87,7 @@ exports.setup = function(app, DAL)
 		})
 	});
 	
-	app.get("/content/:key/launch", ensureLoggedIn( function(req, res, next)
-	{
-		DAL.getContentByKey(req.params.key, function(err, content)
-		{
-			if (content)
-			{
-				DAL.createLaunchRecord({email:req.user.email,contentKey:req.params.key},function(err,launch)
-				{
-					if(err)
-						res.status(500).send(err);
-					else
-						res.status(200).send(launch.dbForm());
-				})
-			}
-			else
-			{
-				res.status(500).send(err);
-			}
-		})
-	}));
+	
 	app.get("/content/:key/edit", ensureLoggedIn( function(req, res, next)
 	{
 		DAL.getContentByKey(req.params.key, function(err, content)
@@ -117,7 +98,8 @@ exports.setup = function(app, DAL)
 				{
 					if(!res.locals)
 						res.locals = {};
-					res.locals.content = content
+					res.locals.content = content;
+					res.locals.pageTitle = "Edit Content";
 					res.render("editContent",res.locals); 
 				}
 			}
@@ -153,28 +135,6 @@ exports.setup = function(app, DAL)
 			}
 		})
 	})));
-	app.get("/content/launch/:guid", ensureLoggedIn( function(req, res, next)
-	{
-		DAL.getLaunchByGuid(req.params.guid, function(err, launch)
-		{
-			if (content)
-			{
-				if(launch.state == 0)
-				{
-					//return launch data
-					launch.state = 1;
-					launch.save(function(err)
-					{
-
-					});
-				}
-			}
-			else
-			{
-				res.status(500).send(err);
-			}
-		})
-	}));
 	app.get("/content/browse", function(req, res, next)
 	{
 		res.locals.pageTitle = "Browse All Content";
@@ -219,11 +179,16 @@ exports.setup = function(app, DAL)
                     i.contentURL = content.url;
                     i.contentTitle = content.title;
                     i.owned = req.user && i.email == req.user.email;
+                    if(!i.owned)
+                    {
+                    	i.uuid = "{{hidden}}";
+                    }
                     cb();
                 })
             }, function()
             {
                 res.locals.results = rest;
+                res.locals.pageTitle = "Content Launch History";
                 res.render("launchHistory", res.locals);
             })
 

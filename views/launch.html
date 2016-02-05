@@ -1,0 +1,41 @@
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="container" style="margin-top:3em">
+    <!-- Example row of columns -->
+    <div class='row' >
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <h2 class="text-center">Launching  {{contentTitle}}</h2>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class='row' >
+        <div class="col-md-4"></div>
+        <div class="col-md-4" style="border:1px solid #ddd;border-radius:3px;margin:2em 0em;padding:2em 2em">
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class='row'>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            {{>footer}}
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+</div>
+
+<!-- /container -->
+<script type="text/javaScript">
+
+var launch = JSON.parse('{{{launch}}}');
+var content = JSON.parse('{{{content}}}');
+$(document).ready(function(){
+    
+    var url = new URL(content.url);
+    params  = "xAPILaunchKey="+launch.uuid + "&xAPILaunchService=" + encodeURIComponent("http://localhost:3000");
+    if(url.search)
+        url.search += "&";
+    url.search += params;
+    window.open(url.toString(),"_blank");
+    window.location.pathname = "/users/launches";
+})
+</script>

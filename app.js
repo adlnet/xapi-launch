@@ -40,10 +40,10 @@ async.series([
 	require('./server/content.js').setup(app,DB);
 	require('./server/launch.js').setup(app,DB);
     
-    app.all("*",function(req,res,next)
+    /*app.all("*",function(req,res,next)
     {
     	res.redirect("/");
-    });
+    });*/
     app.listen(3000, function() {
 
     })

@@ -28,14 +28,21 @@
 
 var launch = JSON.parse('{{{launch}}}');
 var content = JSON.parse('{{{content}}}');
+var endpoint = '{{{endpoint}}}';
 $(document).ready(function(){
     
     var url = new URL(content.url);
-    params  = "xAPILaunchKey="+launch.uuid + "&xAPILaunchService=" + encodeURIComponent("http://localhost:3000");
+    params  = "xAPILaunchKey="+launch.uuid + "&xAPILaunchService=" + encodeURIComponent(endpoint);
+
+    if(content.publicKey == true)
+    {
+        params += "&"+"encryption=true"; 
+    }
     if(url.search)
         url.search += "&";
     url.search += params;
     window.open(url.toString(),"_blank");
-    window.location.pathname = "/users/launches";
+  
+    window.location = "/users/launches";
 })
 </script>

@@ -18,8 +18,9 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{launchKey}}">
                         <li><a href="/content/{{launchKey}}/launches" >View Launch History</a></li>
-                        <li><a href="#">View Associated Activity</a></li>
-                        <li><a href="#">View DB Record</a></li>
+                        <li><a href="/content/{{launchKey}}/xapi">View Associated Activity</a></li>
+                        <li><a href="/content/{{launchKey}}">View DB Record</a></li>
+                        {{#resultLink}}<li><a href="{{resultLink}}">View Results</a></li>{{/resultLink}}
                         {{#owned}}
                         <li role="separator" class="divider"></li>
                         <li><a href="/content/{{launchKey}}/delete">Remove</a></li>

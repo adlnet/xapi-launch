@@ -7,7 +7,7 @@ var async = require("async");
 var ensureLoggedIn = require("./utils.js").ensureLoggedIn;
 var ensureNotLoggedIn = require("./utils.js").ensureNotLoggedIn;
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper;
-
+var config = require("./config.js").config;
 requirejs.config(
 {
     nodeRequire: require
@@ -146,14 +146,23 @@ exports.setup = function(app, DAL)
             for (var i in results)
             {
                 var data = results[i].dbForm()
-                data.created = ((new Date(data.created)).toDateString());
+                data.createdTime = ((new Date(data.created)).toDateString());
+                data.resultLink = config.LRS_Url + "/statements?format=exact&activity=" + encodeURIComponent(results[i].xapiForm().id) + "&related_activities=true";
                 rest.push(data);
             }
+
+            rest = rest.sort(function(a,b)
+            {
+                return (new Date(b.created)) - (new Date(a.created));
+            })
 
             async.eachSeries(rest, function(i, cb)
             {
                 DAL.getContentByKey(i.contentKey, function(err, content)
                 {
+
+
+
                     if(content)
                     {
                         i.contentURL = content.url;
@@ -170,6 +179,9 @@ exports.setup = function(app, DAL)
             {
                 res.locals.results = rest;
                 res.locals.pageTitle = "My Launch History";
+
+
+
                 res.render("launchHistory", res.locals);
             })
 

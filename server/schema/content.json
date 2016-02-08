@@ -32,9 +32,22 @@
 		"dataType": {
 			"type": "string",
 			"enum": ["contentRecord"]
-		}
-
+		},
+		"publicKey":
+        {
+            "anyOf": [
+            {
+                "type": "string",
+                "minLength": 492,
+                "maxLength": 492
+            },
+            {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 0
+            }]
+        }
 	},
 	"additionalProperties": false,
-	"required": ["url", "title","description"]
+	"required": ["url", "title","description","owner","created","dataType"]
 }

@@ -28,8 +28,8 @@ exports.setup = function(app, DAL)
                 var localServer = "http://localhost:3000/"; //this should come from a config file
                 launchData.endpoint = localServer + "launch/" + launch.uuid + "/xAPI/";
                 launchData.contextActivities = {};
-                launchData.contextActivities.parent = content.dbForm();
-                launchData.contextActivities.grouping = launch.dbForm();
+                launchData.contextActivities.parent = content.xapiForm();
+                launchData.contextActivities.grouping = launch.xapiForm();
 
                 if (content.publicKey)
                 {
@@ -202,7 +202,7 @@ exports.setup = function(app, DAL)
                 //The client posting to the xAPI for this launch must be the client that
                 //activated the launch. Note that this is the students session on the launch server 
                 //in the case that the content is a dumb html file, but could be some thrid party 
-                //who is serveing the content to the student. 
+                //who is serving the content to the student. 
                 if (launch.client !== req.cookies["connect.sid"])
                 {
                     console.log(launch.client, req.cookies["connect.sid"])
@@ -386,7 +386,7 @@ exports.setup = function(app, DAL)
             }
         });
     });
-      app.get("/launches/:key/xapi", function(req, res, next)
+    app.get("/launches/:key/xapi", function(req, res, next)
     {
         DAL.getLaunchByGuid(req.params.key, function(err, launch)
         {

@@ -13,7 +13,7 @@ function getQueryVariable(variable)
     console.log('Query variable %s not found', variable);
 }
 
-function xAPILaunch(cb,terminate_on_unload)
+function xAPILaunch(cb, terminate_on_unload)
 {
 
     $(document.body).append("<script src='/static/staticContentDemo/xapiwrapper.min.js'></script>");
@@ -54,9 +54,9 @@ function xAPILaunch(cb,terminate_on_unload)
 
         window.onunload = function()
         {
-        	if(!terminate_on_unload)
-        		return;
-        	
+            if (!terminate_on_unload)
+                return;
+
             var launch = new URL(launchEndpoint);
             launch.pathname += "launch/" + launchToken + "/terminate";
             if (navigator.sendBeacon)
@@ -71,9 +71,10 @@ function xAPILaunch(cb,terminate_on_unload)
                     {}
 
                 })
-            ADL.XAPIWrapper.changeConfig(conf);
-            cb(null, body, ADL.XAPIWrapper);
+
         }
+        ADL.XAPIWrapper.changeConfig(conf);
+        cb(null, body, ADL.XAPIWrapper);
     }).error(function() {
 
     });

@@ -1,0 +1,58 @@
+# xAPI-Launch
+
+##### The xAPI-Launch server is a demonstration of the XAPI Launch algorithm. 
+XAPI-Launch allows a user to initiate an interaction with some xAPI enabled learning experience. The content, be it an online module, a static HTML file, or an immersive simulation, need not know ahead of time the identity of the learner, the LRS to which the learning data should be submitted, nor the "session" into which the events should be grouped. Content need only implement a minimal HTTP request to become "xAPI-Launch" enabled. 
+
+#### We support the following user cases
+* Launch content that is a **static HTML resource**
+* Launch content that is dynamic **HTML content rendered by a server**
+* Launch a **desktop application** through a URL Protocol Handler
+* Launch a **mobile applicaiton** through a URL Protocol Handler
+* Launch an **disconnected experience** by allowing the student to manually enter a code
+
+#### The xAPI-Launch algorithm
+The launch algoritm is designed to allow the maximum flexibility while still maintaining privacy for the learner, a guarentee that the statements are submitted by the proper content, and that all statements can be grouped by the LMS according to the Launch Attempt
+
+1. The student requests a launch of a given piece of content
+2. The launch server generates a unique ID for this launch attempt. The unique ID is called the Launch Token
+3. The token is saved along with the associated content and associated learner identity
+4. **Optional:** The launch token is encrypted with the contents registered public key
+4. The student delivers the (possilby encrypted) token and the Launch service address to the content (often as query string parameters in an HTTP Get request)
+5. **Optional:** The content decrypts the Launch Token
+5. The content issues an HTTP Post request to the Launch service address containing the Launch Token
+6. The Launch Server verifies that the submitted Launch Token
+   * Is a valid token
+   * Is in the uninitialized state
+   * Has not timed out
+1. The Launch Server marks the launch as *initialized*, and returns to the content as the response to the Post request
+   * The xAPI Actor that should be the subject of the each statement
+   * The address of a temporary xAPI endpoint to which the content should submit statements
+   * The **Context Activities** that provide the context for the launch event. These activities will include the Launch Token and the Content URL
+1.  The Launch Server will set a session cookie as part of the response to the POST request. All incomming XAPI statements must include this cookie.
+2.  The Launch Server will enforce that each incomming statement associated with the given launch contains at minimum the Context Activities for the Launch and the Content URL.
+
+#### Static HTML course content
+In the case of a static HTML file, the content should use JavaScript to read the query string and post to the xAPI-Launch endpoint. The cookie will be set automatically, and handled nativly by the browser. The content may choose to decrypt the launch token, but note that this is seldom secure enough to leave to the client. Most often the information should pass as plain text. Content should be delivered via TLS or SSL.
+
+#### Dynamic HTML rendered by a server
+The client will deliver to the content server the Launch Token and the Launch Server address via the resource request query string. This server should establish session for the user, and initiate the xAPI Launch on their behalf. The method that the content server uses to gather performance information from the client's browser is out of scope for the Launch service, but could use xAPI as well. The server should initiate the launch on the user's behalf, and keep the session cookie returned in step **10** above hidden from the learner. The server may choose to persist this information or forward it to other parties. If possible, the a public key should be provide to the Launch Server. If this information is available, then the Launch Token will be deliverd to the learner encrypted. The content server should decrypt this information before initializing the launch. In this way, the Launch Server can be confident that the incoming xAPI data did in fact originate with the content server. 
+
+The content server may optionally terminate the launch attempt immediately. Any business logic is valid for the server to make this decision. We intend that the content server may check a given number of registrations, check the provided actor against a list of authorized users, or initiate some sort of payment process with the learner. The content should use the Launch Service endpoint to identify the Launch Server. 
+
+#### Offline systems
+The learner may optionally move the launch token to the content manually. We imagine that sit-down simulatiors or desktop applilcations might prompt the user to enter their xAPI Launch key. Other than the method used to gather this information from the user, this sort of non-HTML content should  behave as the content server described above. An offline system could optionally store the launch key and the interactions to be posted later.
+
+
+## Running the server
+1. Clone the repo (https://github.com/adlnet/xapi-launch.git)
+2. npm install
+3. node app.js
+4. enter LRS credentials
+
+## Running the demo content
+1. Create a user account
+2. Find "Register New Content"
+3. Use "/static/staticContentDemo/demo.html" as the URL
+4. Do no enter a private key.
+5. Browse all content
+6. Click "Launch"

@@ -88,3 +88,11 @@ The learner may optionally move the launch token to the content manually. We ima
     * Errors
       * All the same errors as the XAPI endpoint as well as 
       * "key is locked to prevent double launch" - you already have a request to close this session in progress
+1. URL Query String form for Static Content and Dynamic HTML. Data is URL encoded
+  * `xAPILaunchKey` - the Launch Token to use in the above API
+  * `xAPILaunchService` - the fully qualified URL of the above API root
+  * Example:
+    
+    ```
+    http://www.myCourseWare.com/course1?xAPILaunchService=http%3A%2F%2Flaunch.adlnet.gov%2F&xAPILaunchKey=892cdfbe-1549-4554-b321-96a0562f4eb5
+    ```

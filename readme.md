@@ -56,3 +56,35 @@ The learner may optionally move the launch token to the content manually. We ima
 4. Do no enter a private key.
 5. Browse all content
 6. Click "Launch"
+
+## API
+
+1. `POST /launch/:key`
+    * Post to this endpoint to trade a key for Actor information, and initialize the Launch Session. Key is the Launch Token
+    * Returns:
+      
+      ```
+      status:200,
+      body:{
+        actor:...
+        endpoint...
+        contextActivities...
+      }
+      ```
+    * Errors
+      * "invalid launch key" - the provided key is unknown to the launch server
+      * "The launch token has already been used" - this launch token has already been consumed, and you are not the registered consumer
+      * "launch initialization timeout" - it has taken too long for the launch token to be used. The launch terminates without ever being initialized
+1. `POST /launch/:key/xAPI/statements`
+    * Post an XAPI statement to be associated with the Launch. You must first initialize the Launch Session before you can POST. This       endpoint obeys the XAPI interface.
+    * In addition to the xAPI error codes, you may get additional errors with a `Status:500`
+      * "This launch was closed automatically..." - the launch session has timed out 
+      * "invalid launch key" - the key you provided is not known to the server
+      * "Launch is not in the open state" - the launch session is not in a state where it can accept statements. It could be closed or uninitialized
+      * "You are not the registered consumer for this launch" - The submission did not include the established launch consumer session cookie
+      * "The content associated with this launch has been removed" - The content associated with this launch has been removed from the Launcher database
+1. `POST /launch/:key/terminate`
+    * Terminate the session. The Launch Session token will be invalidated and can no longer be used.
+    * Errors
+      * All the same errors as the XAPI endpoint as well as 
+      * "key is locked to prevent double launch" - you already have a request to close this session in progress

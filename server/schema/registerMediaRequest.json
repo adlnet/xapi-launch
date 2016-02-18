@@ -1,0 +1,24 @@
+{
+    "type": "object",
+    "name": "registerMediaRequest",
+    "properties":
+    {
+        "url":
+        {
+            "type": "uri"
+        },
+        "title":
+        {
+            "type": "string"
+        },
+        "description":
+        {
+            "type": "string"
+        },
+        "mediaTypeKey":
+        {
+            "type": "string"
+        }
+    },
+    "required": ["url", "description", "title", "mediaTypeKey"]
+}

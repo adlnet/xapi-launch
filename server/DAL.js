@@ -7,22 +7,27 @@ var ensureOneCall = require('./utils.js').ensureOneCall;
 function DAL(DB)
 {
     this.DB = DB;
-    this.DB.get = function(key,cb)
+    this.DB.get = function(key, cb)
     {
-		DB.findOne({ _id: key }, function (err, doc) {
-			cb(err,doc)
-		});
+        DB.findOne(
+        {
+            _id: key
+        }, function(err, doc)
+        {
+            cb(err, doc)
+        });
     }
-    this.DB.save = function(key,value,cb)
+    this.DB.save = function(key, value, cb)
     {
-    	if(key)
-    		value._id = key;
-		DB.insert(value, function (err, doc) {
-			if(err)
-				cb(err)
-			else
-				cb(err,doc._id)
-		});
+        if (key)
+            value._id = key;
+        DB.insert(value, function(err, doc)
+        {
+            if (err)
+                cb(err)
+            else
+                cb(err, doc._id)
+        });
     }
 }
 
@@ -59,10 +64,14 @@ function getGenerator(keyname, schema, typeConstructor, dataTypeName)
 
                     if (v.errors.length == 0)
                     {
+                    	if(record.dataType == dataTypeName)
+                        {
+	                        var content = new types[typeConstructor]();
+	                        content.init(keyval, self.DB, record);
+	                        return got(null, content);
+	                    }else
+	                    	return  got("wrong data type");
 
-                        var content = new types[typeConstructor]();
-                        content.init(keyval, self.DB, record);
-                        got(null, content);
                     }
                     else
                     {
@@ -86,7 +95,7 @@ function getGenerator(keyname, schema, typeConstructor, dataTypeName)
             self.DB.find(
                 query, ensureOneCall(function(err, results)
                 {
-                    
+
                     if (results.length > 1)
                     {
                         got("invalid number of search results!");
@@ -100,9 +109,13 @@ function getGenerator(keyname, schema, typeConstructor, dataTypeName)
                     else
                     {
                         var record = results[0];
-                        var content = new types[typeConstructor]();
-                        content.init(record._id, self.DB, record);
-                        got(null, content);
+                        if(record.dataType == dataTypeName)
+                        {
+                        	var content = new types[typeConstructor]();
+                        	content.init(record._id, self.DB, record);
+                        	return got(null, content);
+                        }else
+                        return got("wrong data type");
                         return;
                     }
                 }));
@@ -128,7 +141,7 @@ function getAllGenerator(condition, schema, typeConstructor, dataTypeName)
             {
                 query[condition] = cond;
             }
-            console.log(query)
+            
             this.DB.find(
                 query, ensureOneCall(function(err, results)
                 {
@@ -142,9 +155,12 @@ function getAllGenerator(condition, schema, typeConstructor, dataTypeName)
                             for (var i in results)
                             {
                                 var record = results[i];
-                                var content = new types[typeConstructor]();
-                                content.init(record._id, self.DB, record);
-                                allcontent.push(content);
+                                if (record.dataType == dataTypeName)
+                                {
+                                    var content = new types[typeConstructor]();
+                                    content.init(record._id, self.DB, record);
+                                    allcontent.push(content);
+                                }
                             }
                             gotContent(null, allcontent);
                         }
@@ -174,6 +190,53 @@ DAL.prototype.getAllUsers = getAllGenerator(null, schemas.account, "userAccount"
 DAL.prototype.getAllUsersLaunch = getAllGenerator("email", schemas.launch, "launchRecord", "launchRecord");
 DAL.prototype.getAllContentLaunch = getAllGenerator("contentKey", schemas.launch, "launchRecord", "launchRecord");
 DAL.prototype.getLaunchByGuid = getGenerator("uuid", schemas.launch, "launchRecord", "launchRecord");
+
+DAL.prototype.getAllMediaLaunch = getAllGenerator("mediaKey", schemas.launch, "launchRecord", "launchRecord");
+DAL.prototype.getAllMedia = getAllGenerator(null, schemas.media, "media", "media");
+
+//hard coded test for now
+DAL.prototype.getAllMediaTypes = function(cb)
+{
+    var video = new types.mediaType();
+    video.uuid = "VIDEO-TEST-UUID";
+    video.name = "video";
+    video.owner = "asdf@asdf.com";
+
+    var html = new types.mediaType();
+    html.uuid = "HTML-TEST-UUID";
+    html.name = "HTML";
+    html.owner = "asdf@asdf.com";
+
+    cb(null, [video, html]);
+} //getAllGenerator(null,schemas.mediaType,"mediaType","mediaType");
+
+DAL.prototype.getMedia = getGenerator("_id", schemas.media, "media", "media");
+
+//hard coded test
+DAL.prototype.getMediaType = function(type, cb)
+{
+
+    if (type == "VIDEO-TEST-UUID")
+    {
+        var video = new types.mediaType();
+        video.uuid = "VIDEO-TEST-UUID";
+        video.name = "video";
+        video.owner = "asdf@asdf.com";
+        return cb(null, video);
+    }
+
+    if (type == "HTML-TEST-UUID")
+    {
+        var html = new types.mediaType();
+        html.uuid = "HTML-TEST-UUID";
+        html.name = "HTML";
+        html.owner = "asdf@asdf.com";
+        return cb(null, html);
+    }
+
+
+} //getGenerator("uuid",schemas.mediaType,"mediaType","mediaType");
+
 
 DAL.prototype.registerContent = function(request, contentRegistered)
 {
@@ -206,7 +269,7 @@ DAL.prototype.registerContent = function(request, contentRegistered)
         }
         else
         {
-            var record = new types.contentRecord(request.url, request.title, request.description, Date.now(), Date.now(), request.owner,request.publicKey)
+            var record = new types.contentRecord(request.url, request.title, request.description, Date.now(), Date.now(), request.owner, request.publicKey)
             record.timeToConsume = request.timeToConsume;
             record.sessionLength = request.sessionLength;
             self.DB.save(null, record.dbForm(), function(err, key)
@@ -267,6 +330,53 @@ DAL.prototype.createLaunchRecord = function(request, requestCreated)
         {
             launch.init(key, self.DB);
             requestCreated(err, launch);
+        })
+    }
+    catch (e)
+    {
+        console.log(e)
+    }
+}
+
+DAL.prototype.createMediaType = function(name, description, mediaCreated)
+{
+    var self = this;
+    try
+    {
+        var mediaType = new types.mediaType();
+        mediaType.name = name;
+        mediaType.description = description;
+        mediaType.uuid = require("guid").raw();
+
+        self.DB.save(null, mediaType.dbForm(), function(err, key)
+        {
+            mediaType.init(key, self.DB);
+            mediaCreated(err, mediaType);
+        })
+    }
+    catch (e)
+    {
+        console.log(e)
+    }
+}
+
+
+DAL.prototype.createMediaRecord = function(url, type, title, description, owner, mediaCreated)
+{
+    var self = this;
+    try
+    {
+        var media = new types.media();
+        media.url = url;
+        media.type = type;
+        media.title = title;
+        media.description = description;
+        media.owner = owner;
+
+        self.DB.save(null, media.dbForm(), function(err, key)
+        {
+            media.init(key, self.DB);
+            mediaCreated(err, media);
         })
     }
     catch (e)

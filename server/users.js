@@ -191,7 +191,7 @@ exports.setup = function(app, DAL)
     {
         DAL.getAllContentByOwner(req.user.email, function(err, results)
         {
-            res.locals.pageTitle = "Your Content";
+            res.locals.pageTitle = "Your Apps";
             if (err)
             {
                 res.locals.error = err;
@@ -208,7 +208,7 @@ exports.setup = function(app, DAL)
 
                 }
                 res.locals.results = results;
-                res.render('results', res.locals);
+                res.render('contentResults', res.locals);
             }
         })
     }));

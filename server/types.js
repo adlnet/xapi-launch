@@ -140,3 +140,21 @@ exports.launchRecord = function(email, key, uuid)
         return def;
     }
 }
+
+exports.mediaType = function()
+{
+	saveableType(this);
+	this.dataType = "mediaType";
+	this.uuid = "";
+	this.title = "";
+	this.name = "";
+}
+
+exports.media= function()
+{
+	saveableType(this);
+	this.dataType = "media";
+	this.uuid = "";
+	this.title = "";
+	this.name = "";
+}

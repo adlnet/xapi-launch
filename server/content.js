@@ -14,7 +14,7 @@ exports.setup = function(app, DAL)
     app.get("/content/register", ensureLoggedIn(function(res, req, next)
     {
         res.locals = {};
-        res.locals.pageTitle = "Register New Content";
+        res.locals.pageTitle = "Register New App";
         req.render('registerContent', res.locals)
     }));
     app.post("/content/register", ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
@@ -97,7 +97,7 @@ exports.setup = function(app, DAL)
                     if (!res.locals)
                         res.locals = {};
                     res.locals.content = content;
-                    res.locals.pageTitle = "Edit Content";
+                    res.locals.pageTitle = "Edit App";
                     res.render("editContent", res.locals);
                 }
             }
@@ -151,7 +151,7 @@ exports.setup = function(app, DAL)
     })));
     app.get("/content/browse", function(req, res, next)
     {
-        res.locals.pageTitle = "Browse All Content";
+        res.locals.pageTitle = "Browse All Apps";
         DAL.getAllContent(function(err, results)
         {
             if (err)
@@ -168,7 +168,7 @@ exports.setup = function(app, DAL)
                     results[i].resultLink = "/results/" + results[i].launchKey;
                 }
                 res.locals.results = results;
-                res.render('results', res.locals);
+                res.render('contentResults', res.locals);
             }
         })
     });
@@ -210,6 +210,10 @@ exports.setup = function(app, DAL)
             {
                 DAL.getContentByKey(i.contentKey, function(err, content)
                 {
+                    if(!content)
+                    {
+                        return res.status(500).send("bad content key");
+                    }
                     i.contentURL = content.url;
                     i.contentTitle = content.title;
                     i.owned = req.user && i.email == req.user.email;
@@ -223,7 +227,7 @@ exports.setup = function(app, DAL)
             }, function()
             {
                 res.locals.results = rest;
-                res.locals.pageTitle = "Content Launch History";
+                res.locals.pageTitle = "App Launch History";
                 res.render("launchHistory", res.locals);
             })
 
@@ -231,12 +235,12 @@ exports.setup = function(app, DAL)
     });
     app.get("/content/search", function(req, res, next)
     {
-        res.locals.pageTitle = "Search All Content";
+        res.locals.pageTitle = "Search All Apps";
         res.render("search", res.locals);
     })
     app.get("/content/search/:search", function(req, res, next)
     {
-        res.locals.pageTitle = "Search All Content";
+        res.locals.pageTitle = "Search All Apps";
         var search = decodeURIComponent(req.params.search);
         var reg = new RegExp(search);
         DAL.DB.find(
@@ -279,7 +283,7 @@ exports.setup = function(app, DAL)
                     results[i].resultLink = "/results/" + results[i].launchKey;
                 }
                 res.locals.results = results;
-                res.render('results', res.locals);
+                res.render('contentResults', res.locals);
             }
         })
     });

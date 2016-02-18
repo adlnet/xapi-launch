@@ -28,7 +28,7 @@ The launch algorithm is designed to allow the maximum flexibility while still ma
    * The xAPI Actor that should be the subject of the each statement
    * The address of a temporary xAPI endpoint to which the content should submit statements
    * The **Context Activities** that provide the context for the launch event. These activities will include the Launch Token and the Content URL
-1.  The Launch Server will set a session cookie as part of the response to the POST request. All incomming XAPI statements must include this cookie.
+1.  The Launch Server will set a session cookie as part of the response to the POST request. All incoming XAPI statements must include this cookie.
 2.  The Launch Server will enforce that each incoming statement associated with the given launch contains at minimum the Context Activities for the Launch and the Content URL.
 
 #### Static HTML course content

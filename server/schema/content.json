@@ -29,6 +29,14 @@
 			"type": "string",
 			"format":"date"
 		},
+		"timeToConsume": {
+			"type": "integer",
+			"min":"0"
+		},
+		"sessionLength": {
+			"type": "integer",
+			"min":"0"
+		},
 		"dataType": {
 			"type": "string",
 			"enum": ["contentRecord"]
@@ -49,5 +57,5 @@
         }
 	},
 	"additionalProperties": false,
-	"required": ["url", "title","description","owner","created","dataType"]
+	"required": ["url", "title","description","owner","created","dataType","timeToConsume","sessionLength"]
 }

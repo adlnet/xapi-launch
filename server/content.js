@@ -131,6 +131,9 @@ exports.setup = function(app, DAL)
                     content.title = req.body.title;
                     content.description = req.body.description;
                     content.publicKey = req.body.publicKey;
+
+                    content.timeToConsume = req.body.timeToConsume;
+                    content.sessionLength = req.body.sessionLength;
                     content.save(function(err)
                     {
                         if (err)

@@ -16,6 +16,18 @@
 			"min": 0,
   			"max": 5
 		},
+		"termination": {
+			"type": "object",
+			"properties":{
+				"code":{
+					"type":"integer"
+				},
+				"description":{
+					"type":"string"
+				}
+			},
+			"required":["code","description"]
+		},
 		"dataType": {
 			"type": "string",
 			 "enum": ["launchRecord"]

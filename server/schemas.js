@@ -5,6 +5,7 @@ exports.registerContentRequest = JSON.parse(fs.readFileSync("./server/schema/reg
 exports.content = JSON.parse(fs.readFileSync("./server/schema/content.json"));
 exports.account = JSON.parse(fs.readFileSync("./server/schema/account.json"));
 exports.launch = JSON.parse(fs.readFileSync("./server/schema/launch.json"));
+exports.termination = JSON.parse(fs.readFileSync("./server/schema/termination.json"));
 }catch(e)
 {
 	console.log(e);

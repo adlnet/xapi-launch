@@ -17,6 +17,7 @@ function validateTypeWrapper(type, cb)
             for (var i = 0; i < output.errors.length; i++)
                 message += output.errors[i].stack + ", ";
             res.status(500).send("500 - input validataion failed. " + message);
+            console.log("500 - input validataion failed. " + message);
         }
     }
 }

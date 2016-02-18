@@ -30,7 +30,7 @@ exports.setup = function(app, DAL)
                 launchData.contextActivities = {};
                 launchData.contextActivities.parent = content.xapiForm();
                 launchData.contextActivities.grouping = launch.xapiForm();
-
+                launchData.sessionLength = content.sessionLength;
                 if (content.publicKey)
                 {
                     var key = require("node-rsa").key(content.publicKey);
@@ -123,58 +123,63 @@ exports.setup = function(app, DAL)
             }
             else
             {
-                //the launch can only be initiated once. Once this token is traded for the actor and endpoint
-                //information, session is started for the client that traded the token. 
-                //requests for XAPI data must come from the client who has the session that traded in the launch
-                //token.
-                if (launch.state !== 0)
+                DAL.getContentByKey(launch.contentKey, function(err, content)
                 {
-                    delete lockedKeys[req.params.key];
-                    //while we won't re-initialize the launch, the registered client for the launch can send the token again
-                    //this handles the case where the user refreshes the page. This is not a new launch, but client side content
-                    //will need to re-fetch the actor data. Note that only the client that initially started the launch
-                    //can re-fetch actor data from this endpoint. 
-                    if (launch.client == req.cookies["connect.sid"])
+                    //the launch can only be initiated once. Once this token is traded for the actor and endpoint
+                    //information, session is started for the client that traded the token. 
+                    //requests for XAPI data must come from the client who has the session that traded in the launch
+                    //token.
+                    if (launch.state !== 0)
                     {
-                        sendLaunchData(launch, req, res);
-                        return;
+                        delete lockedKeys[req.params.key];
+                        //while we won't re-initialize the launch, the registered client for the launch can send the token again
+                        //this handles the case where the user refreshes the page. This is not a new launch, but client side content
+                        //will need to re-fetch the actor data. Note that only the client that initially started the launch
+                        //can re-fetch actor data from this endpoint. 
+                        if (launch.client == req.cookies["connect.sid"])
+                        {
+                            sendLaunchData(launch, req, res);
+                            return;
+                        }
+                        else
+                        {
+                            res.status(500).send("The launch token has already been used.");
+                            return
+                        }
+                    }
+                    //if the content does not initiate the launch in 60 seconds,
+                    //it will time out and switch to the closed state
+                    //enforce this only if the time recorded for this content is a positive number
+                    if (content.timeToConsume > 0 && Date.now() - (new Date(launch.created)) < 1000 * content.timeToConsume)
+                    {
+                        //here, we need to verify that the incoming request came from the same domain
+                        //that we sent the student to. It's possible that server redirect rules might
+                        //make this check too restrictive. We could perhaps allow the content record
+                        //to specify an alternitive list of domains that may initiate the launch
+                        launch.state = 1;
+                        launch.client = req.cookies["connect.sid"];
+                        launch.save(function(err)
+                        {
+                            //the launch is saved in the DB in the 1 state. The launch is active and 
+                            //accepting statements from the client recorded in launch.client
+                            delete lockedKeys[req.params.key];
+                            sendLaunchData(launch, req, res);
+                        })
                     }
                     else
                     {
-                        res.status(500).send("The launch token has already been used.");
-                        return
+                        //we are closing this launch activity. The content did not trade in the launch token
+                        //in a reasonable amount of time.
+                        launch.state = 2;
+                        launch.termination = {code:1,description:"Content not launched in valid timespan"};
+                        launch.save(function(err)
+                        {
+                            //the launch is saved in the DB in the 2 state
+                            delete lockedKeys[req.params.key];
+                            res.status(500).send("launch initialization timeout");
+                        })
                     }
-                }
-                //if the content does not initiate the launch in 60 seconds,
-                //it will time out and switch to the closed state
-                if (Date.now() - (new Date(launch.created)) < 1000 * 60)
-                {
-                    //here, we need to verify that the incoming request came from the same domain
-                    //that we sent the student to. It's possible that server redirect rules might
-                    //make this check too restrictive. We could perhaps allow the content record
-                    //to specify an alternitive list of domains that may initiate the launch
-                    launch.state = 1;
-                    launch.client = req.cookies["connect.sid"];
-                    launch.save(function(err)
-                    {
-                        //the launch is saved in the DB in the 1 state. The launch is active and 
-                        //accepting statements from the client recorded in launch.client
-                        delete lockedKeys[req.params.key];
-                        sendLaunchData(launch, req, res);
-                    })
-                }
-                else
-                {
-                    //we are closing this launch activity. The content did not trade in the launch token
-                    //in a reasonable amount of time.
-                    launch.state = 2;
-                    launch.save(function(err)
-                    {
-                        //the launch is saved in the DB in the 2 state
-                        delete lockedKeys[req.params.key];
-                        res.status(500).send("launch initialization timeout");
-                    })
-                }
+                })
             }
         });
     });
@@ -183,7 +188,7 @@ exports.setup = function(app, DAL)
     {
         //validate that the incoming request is scoped to the given session cookie
         //the the launch exists and is in the open state
-        //and that the launch started less than 3 hours ago.
+        //and that the launch started less than the timeToConsume seconds ago.
         //if all those things are true then this is valid 
         return function(req, res, next)
         {
@@ -209,29 +214,37 @@ exports.setup = function(app, DAL)
                     res.status(500).send("You are not the registered consumer for this launch.");
                     return;
                 }
-                //it might also be better to use the cookie timeout to scope this... but I think that 
-                //the client could hold onto the cookie longer than the specified timeout if 
-                //the client is a server and implementing its own HTTP
-                //you can also imagine that a given client might have more than one active launch on this server
-                //and so the same client session token is shared between several launches
-                if (Date.now() - (new Date(launch.created)) > 1000 * 60 * 180)
-                {
-                    launch.state = 2;
-                    launch.save(function()
-                    {
-                        res.status(500).send("This launch was closed automatically after 3 hours");
-                    });
-                    return;
-                }
+
                 req.launch = launch;
                 DAL.getContentByKey(launch.contentKey, function(err, content)
                 {
-                    if (err)
+
+
+                    if (err || !content)
                     {
                         res.status(500).send("The content associated with this launch has been removed");
                         return
                     }
                     req.content = content;
+
+
+                    //it might also be better to use the cookie timeout to scope this... but I think that 
+                    //the client could hold onto the cookie longer than the specified timeout if 
+                    //the client is a server and implementing its own HTTP
+                    //you can also imagine that a given client might have more than one active launch on this server
+                    //and so the same client session token is shared between several launches
+                    //enforce this only if the time recorded for this content is a positive number
+                    if (content.sessionLength > 0 && Date.now() - (new Date(launch.created)) > 1000 * content.sessionLength)
+                    {
+                        launch.state = 2;
+                        launch.termination = {code:2,description:"This launch was closed automatically after the launch grace period expired"};
+                        launch.save(function()
+                        {
+                            res.status(500).send("This launch was closed automatically after 3 hours");
+                        });
+                        return;
+                    }
+
                     cb(req, res, next);
                 })
 
@@ -402,7 +415,7 @@ exports.setup = function(app, DAL)
     });
 
 
-    app.post("/launch/:key/terminate", validateLaunchSession(function(req, res, next)
+    app.post("/launch/:key/terminate", validateLaunchSession(validateTypeWrapper(schemas.termination, function(req, res, next)
     {
         //the content explicitly terminates the launch session
         if (lockedKeys[req.params.key])
@@ -412,10 +425,11 @@ exports.setup = function(app, DAL)
         }
         lockedKeys[req.params.key] = true;
         req.launch.state = 2;
+        req.launch.termination = req.body; // this must be a valid termination object at this point
         req.launch.save(function(err)
         {
             delete lockedKeys[req.params.key];
             res.status(200).send("launch successfully closed")
         })
-    }));
+    })));
 }

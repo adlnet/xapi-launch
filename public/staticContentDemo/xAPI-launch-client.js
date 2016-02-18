@@ -54,21 +54,26 @@ function xAPILaunch(cb, terminate_on_unload)
 
         window.onunload = function()
         {
+
             if (!terminate_on_unload)
                 return;
 
             var launch = new URL(launchEndpoint);
             launch.pathname += "launch/" + launchToken + "/terminate";
-            if (navigator.sendBeacon)
+        /*    if (navigator.sendBeacon)
                 navigator.sendBeacon(launch.toString(),
-                {});
-            else
-                $.post(
+                {
+                    code: "0",
+                    description: "User closed content"
+                });
+            else*/
+                $.ajax(
                 {
                     url: launch.toString(),
                     async: false,
-                    data:
-                    {}
+                    method:"POST",
+                    contentType:"application/json",
+                    data: '{"code":0,"description":"User closed content"}'
 
                 })
 

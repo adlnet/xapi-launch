@@ -16,7 +16,7 @@ The launch algorithm is designed to allow the maximum flexibility while still ma
 1. The student requests a launch of a given piece of content
 2. The launch server generates a unique ID for this launch attempt. The unique ID is called the Launch Token
 3. The token is saved along with the associated content and associated learner identity
-4. **Optional:** The launch token is encrypted with the contents registered public key
+4. **Optional:** The launch token is encrypted with the content's registered public key
 4. The student delivers the (possilby encrypted) token and the Launch service address to the content (often as query string parameters in an HTTP Get request)
 5. **Optional:** The content decrypts the Launch Token
 5. The content issues an HTTP Post request to the Launch service address containing the Launch Token

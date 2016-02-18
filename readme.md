@@ -29,7 +29,7 @@ The launch algorithm is designed to allow the maximum flexibility while still ma
    * The address of a temporary xAPI endpoint to which the content should submit statements
    * The **Context Activities** that provide the context for the launch event. These activities will include the Launch Token and the Content URL
 1.  The Launch Server will set a session cookie as part of the response to the POST request. All incomming XAPI statements must include this cookie.
-2.  The Launch Server will enforce that each incomming statement associated with the given launch contains at minimum the Context Activities for the Launch and the Content URL.
+2.  The Launch Server will enforce that each incoming statement associated with the given launch contains at minimum the Context Activities for the Launch and the Content URL.
 
 #### Static HTML course content
 In the case of a static HTML file, the content should use JavaScript to read the query string and post to the xAPI-Launch endpoint. The cookie will be set automatically, and handled natively by the browser. The content may choose to decrypt the launch token, but note that this is seldom secure enough to leave to the client. Most often the information should pass as plain text. Content should be delivered via TLS or SSL.

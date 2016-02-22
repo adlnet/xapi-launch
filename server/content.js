@@ -13,9 +13,15 @@ exports.setup = function(app, DAL)
     });
     app.get("/content/register", ensureLoggedIn(function(res, req, next)
     {
-        res.locals = {};
-        res.locals.pageTitle = "Register New App";
-        req.render('registerContent', res.locals)
+
+        DAL.getAllMediaTypes(function(err, types)
+        {
+            res.locals = {};
+            res.locals.pageTitle = "Register New App";
+            res.locals.types = types;
+            req.render('registerContent', res.locals)
+        });
+
     }));
     app.post("/content/register", ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
     {
@@ -94,11 +100,23 @@ exports.setup = function(app, DAL)
             {
                 if (content.owner == req.user.email)
                 {
-                    if (!res.locals)
-                        res.locals = {};
-                    res.locals.content = content;
-                    res.locals.pageTitle = "Edit App";
-                    res.render("editContent", res.locals);
+                    DAL.getAllMediaTypes(function(err, types)
+                    {
+                        if (!res.locals)
+                            res.locals = {};
+                        res.locals.content = content;
+                        res.locals.pageTitle = "Edit App";
+                        res.locals.types = types;
+                        for(var i in types)
+                        {
+                            if(content.mediaTypeKey == types[i].uuid)
+                            {
+                                types[i].selected = true;;
+                            }
+                        }
+
+                        res.render("editContent", res.locals);
+                    });
                 }
             }
             else
@@ -172,7 +190,7 @@ exports.setup = function(app, DAL)
             }
         })
     });
-    
+
     app.get("/content/:key/xapi", function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
@@ -210,7 +228,7 @@ exports.setup = function(app, DAL)
             {
                 DAL.getContentByKey(i.contentKey, function(err, content)
                 {
-                    if(!content)
+                    if (!content)
                     {
                         return res.status(500).send("bad content key");
                     }
@@ -287,7 +305,7 @@ exports.setup = function(app, DAL)
             }
         })
     });
-	app.get("/content/:key", function(req, res, next)
+    app.get("/content/:key", function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {

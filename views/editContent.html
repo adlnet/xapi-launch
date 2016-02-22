@@ -38,6 +38,14 @@
                     <label>Launch Timeout (s)</label>
                     <input id="timeToConsume" type="number" class='form-control' placeholder="0,Grace period for the content to launch" value="{{content.timeToConsume}}"></input>
                 </div>
+                <div class="form-group">
+                    <label>Media Type</label>
+                    <select id="mediaTypeKey" type="textarea" class='form-control' placeholder="MediaType">
+                        {{#types}}
+                        <option {{#selected}} selected="selected" {{/selected }} name="{{name}}" value="{{uuid}}">{{name}}</option>
+                        {{/types}}
+                    </select>
+                </div>
             </form>
             <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Update App</button>
             <div id="feedback" class="hidden alert alert-danger" role="alert">
@@ -77,7 +85,8 @@
                 title: $('#title').val(),
                 publicKey: $.trim($('#publicKey').val()),
                 timeToConsume: parseFloat($('#timeToConsume').val()) ,
-                sessionLength: parseFloat($('#sessionLength').val()) 
+                sessionLength: parseFloat($('#sessionLength').val()) ,
+                mediaTypeKey: $('#mediaTypeKey').val()
             }
             $.ajax("/content/{{content._id}}/edit",
             {

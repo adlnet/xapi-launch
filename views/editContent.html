@@ -62,14 +62,6 @@
         $('button').click(function()
         {
 
-            var urlex = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
-
-            if(!$('#launchURL').val().match(urlex))
-            {
-                $('#feedback').removeClass('hidden');
-                $('#feedback span[role=message]').text("Please enter a fully qualified URL.");
-                return;
-            }
             $('#feedback').addClass('hidden');
             var createRequest = {
                 url: $('#launchURL').val(),

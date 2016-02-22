@@ -18,26 +18,32 @@ exports.setup = function(app, DAL)
         {
             DAL.getContentByKey(launch.contentKey, function(err, content)
             {
-                var launchData = {};
-                launchData.actor = {
-                    objectType: "Agent",
-                    name: user.username,
-                    mbox: "mailto:" + user.email
-                };
-
-                var localServer = "http://localhost:3000/"; //this should come from a config file
-                launchData.endpoint = localServer + "launch/" + launch.uuid + "/xAPI/";
-                launchData.contextActivities = {};
-                launchData.contextActivities.parent = content.xapiForm();
-                launchData.contextActivities.grouping = launch.xapiForm();
-                launchData.sessionLength = content.sessionLength;
-                if (content.publicKey)
+                DAL.getMedia(launch.mediaKey, function(err, media)
                 {
-                    var key = require("node-rsa").key(content.publicKey);
-                    launchData = key.encrypt(key, 'hex', 'utf8');
-                }
 
-                res.status(200).send(launchData);
+                    var launchData = {};
+                    launchData.actor = {
+                        objectType: "Agent",
+                        name: user.username,
+                        mbox: "mailto:" + user.email
+                    };
+
+                    var localServer = "http://localhost:3000/"; //this should come from a config file
+                    launchData.endpoint = localServer + "launch/" + launch.uuid + "/xAPI/";
+                    launchData.contextActivities = {};
+                    launchData.contextActivities.parent = content.xapiForm();
+                    launchData.contextActivities.grouping = launch.xapiForm();
+                    launchData.sessionLength = content.sessionLength;
+                    launchData.media = media;
+                    if (content.publicKey)
+                    {
+                        var key = require("node-rsa").key(content.publicKey);
+                        launchData = key.encrypt(key, 'hex', 'utf8');
+                    }
+
+                    res.status(200).send(launchData);
+                })
+
             })
         })
     }
@@ -94,6 +100,74 @@ exports.setup = function(app, DAL)
             }
         })
     }));
+
+
+    //Get a new launch token for a given piece of content. This must be requested by the student logged into
+    //the launchpad. If there is valid content, we create a new launch token and save it to the DB.
+    //Some client will trade this token for credentials and an endpoint for xAPI statements.
+    //this is the proper place for the launch server to enforce access limits on the content. 
+    //The launch server could have all sorts of business logic around if a new launch for given content is allowed.
+    //This is out of scope of the launch spec.
+    app.get("/launch/media/:key", ensureLoggedIn(function(req, res, next)
+    {
+        DAL.getMedia(req.params.key, function(err, media)
+        {
+            DAL.getAllContentByMediaType(media.mediaTypeKey, function(err, allPlayers)
+            {
+                if (err)
+                    return res.status(401).send(err);
+                if (!allPlayers || allPlayers.length == 0)
+                    return res.status(401).send("No apps can play this content");
+
+                //might want to let the use choose which player
+                var content = allPlayers[0];
+                if (content)
+                {
+                    DAL.createLaunchRecord(
+                    {
+                        email: req.user.email,
+                        contentKey: content.key,
+                        mediaKey: req.params.key
+                    }, function(err, launch)
+                    {
+                        if (err)
+                            res.status(500).send(err);
+                        else
+                        {
+
+                            var clientlaunch = launch.dbForm();
+                            var clientContent = content.dbForm();
+
+                            clientContent.publicKey = !!clientContent.publicKey; //be sure not to send the actual public key to the client
+
+                            res.locals.endpoint = "http://localhost:3000/"; //this should come from the config file
+
+                            //the the content has a public key, use it to encrypt the data. Note that the student has access to
+                            //the launch uuid in plaintext... is this ok?
+                            if (content.publicKey)
+                            {
+                                var key = new require('node-rsa')(content.publicKey);
+                                clientlaunch.uuid = key.encrypt(clientlaunch.uuid, 'hex', 'utf8');
+                                res.locals.endpoint = key.encrypt(res.locals.endpoint, 'hex', 'utf8');
+                            }
+
+                            res.locals.launch = JSON.stringify(clientlaunch);
+                            res.locals.content = JSON.stringify(clientContent);
+
+
+                            res.render("launch.html", res.locals);
+                        }
+                    })
+                }
+                else
+                {
+                    res.status(500).send(err);
+                }
+
+            })
+        })
+    }));
+
     //Some client is trading the launch key for endpoints and actor info. This can only happen
     //once. After the token is exchanged, the client session identifier is used to access the database
     //and xAPI operations. We do this becaus the client will forward the launch token to some other server
@@ -171,7 +245,10 @@ exports.setup = function(app, DAL)
                         //we are closing this launch activity. The content did not trade in the launch token
                         //in a reasonable amount of time.
                         launch.state = 2;
-                        launch.termination = {code:1,description:"Content not launched in valid timespan"};
+                        launch.termination = {
+                            code: 1,
+                            description: "Content not launched in valid timespan"
+                        };
                         launch.save(function(err)
                         {
                             //the launch is saved in the DB in the 2 state
@@ -237,15 +314,22 @@ exports.setup = function(app, DAL)
                     if (content.sessionLength > 0 && Date.now() - (new Date(launch.created)) > 1000 * content.sessionLength)
                     {
                         launch.state = 2;
-                        launch.termination = {code:2,description:"This launch was closed automatically after the launch grace period expired"};
+                        launch.termination = {
+                            code: 2,
+                            description: "This launch was closed automatically after the launch grace period expired"
+                        };
                         launch.save(function()
                         {
                             res.status(500).send("This launch was closed automatically after 3 hours");
                         });
                         return;
                     }
+                    DAL.getMedia(launch.mediaKey, function(err, media)
+                    {
+                        req.media = media;
+                        cb(req, res, next);
+                    })
 
-                    cb(req, res, next);
                 })
 
             });
@@ -325,15 +409,38 @@ exports.setup = function(app, DAL)
                         {
                             contextActivities.grouping.push(req.content.xapiForm());
                         }
+                        if(req.media)
+                        {
+                            var included = false;
+                            for (var i in contextActivities.grouping)
+                            {
+                                if (contextActivities.grouping[i].url = req.media.url)
+                                {
+                                    included = true;
+                                    break;
+                                }
+                            }
+                            if (!included)
+                            {
+                                contextActivities.grouping.push(req.media.xapiForm());
+                            }
+                        }
                     }
                     else
                     {
                         contextActivities.grouping = [contextActivities.grouping, req.content.xapiForm()];
+                        if(request.media)
+                        {
+                        	contextActivities.grouping.push(req.media.xapiForm());
+                        }
                     }
                 }
                 else
                 {
-                    contextActivities.grouping = req.content.xapiForm();
+                	if(!req.media)
+                    	contextActivities.grouping = req.content.xapiForm();
+                    else
+                    	contextActivities.grouping = [req.content.xapiForm(),req.media.xapiForm()];
                 }
             }
         }

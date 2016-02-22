@@ -64,13 +64,14 @@ function getGenerator(keyname, schema, typeConstructor, dataTypeName)
 
                     if (v.errors.length == 0)
                     {
-                    	if(record.dataType == dataTypeName)
+                        if (record.dataType == dataTypeName)
                         {
-	                        var content = new types[typeConstructor]();
-	                        content.init(keyval, self.DB, record);
-	                        return got(null, content);
-	                    }else
-	                    	return  got("wrong data type");
+                            var content = new types[typeConstructor]();
+                            content.init(keyval, self.DB, record);
+                            return got(null, content);
+                        }
+                        else
+                            return got("wrong data type");
 
                     }
                     else
@@ -109,13 +110,14 @@ function getGenerator(keyname, schema, typeConstructor, dataTypeName)
                     else
                     {
                         var record = results[0];
-                        if(record.dataType == dataTypeName)
+                        if (record.dataType == dataTypeName)
                         {
-                        	var content = new types[typeConstructor]();
-                        	content.init(record._id, self.DB, record);
-                        	return got(null, content);
-                        }else
-                        return got("wrong data type");
+                            var content = new types[typeConstructor]();
+                            content.init(record._id, self.DB, record);
+                            return got(null, content);
+                        }
+                        else
+                            return got("wrong data type");
                         return;
                     }
                 }));
@@ -141,7 +143,7 @@ function getAllGenerator(condition, schema, typeConstructor, dataTypeName)
             {
                 query[condition] = cond;
             }
-            
+
             this.DB.find(
                 query, ensureOneCall(function(err, results)
                 {
@@ -183,6 +185,7 @@ function getAllGenerator(condition, schema, typeConstructor, dataTypeName)
 DAL.prototype.getContent = getGenerator("url", schemas.content, "contentRecord", "contentRecord");
 DAL.prototype.getContentByKey = getGenerator("_id", schemas.content, "contentRecord", "contentRecord");
 DAL.prototype.getAllContentByOwner = getAllGenerator("owner", schemas.content, "contentRecord", "contentRecord");
+DAL.prototype.getAllMediaByOwner = getAllGenerator("owner", schemas.media, "media", "media");
 DAL.prototype.getAllContent = getAllGenerator(null, schemas.content, "contentRecord", "contentRecord");
 DAL.prototype.getUser = getGenerator("email", schemas.account, "userAccount", "userAccount");
 DAL.prototype.getUserByKey = getGenerator("_id", schemas.account, "userAccount", "userAccount");
@@ -193,26 +196,49 @@ DAL.prototype.getLaunchByGuid = getGenerator("uuid", schemas.launch, "launchReco
 
 DAL.prototype.getAllMediaLaunch = getAllGenerator("mediaKey", schemas.launch, "launchRecord", "launchRecord");
 DAL.prototype.getAllMedia = getAllGenerator(null, schemas.media, "media", "media");
+DAL.prototype.getAllMediaByType = getAllGenerator("mediaTypeKey", schemas.media, "media", "media");
 
+DAL.prototype.getAllContentByMediaType = getAllGenerator("mediaTypeKey", schemas.content, "contentRecord", "contentRecord");
+
+
+DAL.prototype._getAllMediaTypes = getAllGenerator(null, schemas.mediaType, "mediaType", "mediaType");
 //hard coded test for now
 DAL.prototype.getAllMediaTypes = function(cb)
 {
-    var video = new types.mediaType();
-    video.uuid = "VIDEO-TEST-UUID";
-    video.name = "video";
-    video.owner = "asdf@asdf.com";
+    this._getAllMediaTypes(function(err, results)
+    {
+    	if(err)
+    		return cb(err);
 
-    var html = new types.mediaType();
-    html.uuid = "HTML-TEST-UUID";
-    html.name = "HTML";
-    html.owner = "asdf@asdf.com";
+        var video = new types.mediaType();
+        video.uuid = "VIDEO-TEST-UUID";
+        video.name = "video";
+        video.owner = "System";
+        video.iconURL = "http://www.iconarchive.com/download/i89801/alecive/flatwoken/Apps-Player-Video.ico"
 
-    cb(null, [video, html]);
-} //getAllGenerator(null,schemas.mediaType,"mediaType","mediaType");
+        var html = new types.mediaType();
+        html.uuid = "HTML-TEST-UUID";
+        html.name = "HTML";
+        html.owner = "System";
+        html.iconURL = "http://extensions.siberiancms.com/wp-content/uploads/edd/2014/04/html-icon.png";
+
+        var none = new types.mediaType();
+        none.uuid = "";
+        none.name = "Supports No Media";
+        none.owner = "System";
+
+
+        cb(null, [video, html, none].concat(results));
+
+    })
+
+}
 
 DAL.prototype.getMedia = getGenerator("_id", schemas.media, "media", "media");
 
 //hard coded test
+
+DAL.prototype._getMediaType  = getGenerator("uuid",schemas.mediaType,"mediaType","mediaType");
 DAL.prototype.getMediaType = function(type, cb)
 {
 
@@ -221,7 +247,8 @@ DAL.prototype.getMediaType = function(type, cb)
         var video = new types.mediaType();
         video.uuid = "VIDEO-TEST-UUID";
         video.name = "video";
-        video.owner = "asdf@asdf.com";
+        video.owner = "System";
+        video.iconURL = "http://www.iconarchive.com/download/i89801/alecive/flatwoken/Apps-Player-Video.ico"
         return cb(null, video);
     }
 
@@ -230,12 +257,21 @@ DAL.prototype.getMediaType = function(type, cb)
         var html = new types.mediaType();
         html.uuid = "HTML-TEST-UUID";
         html.name = "HTML";
-        html.owner = "asdf@asdf.com";
+        html.owner = "System";
+        html.iconURL = "http://extensions.siberiancms.com/wp-content/uploads/edd/2014/04/html-icon.png";
         return cb(null, html);
     }
+    if (type == "")
+    {
+        var none = new types.mediaType();
 
-
-} //getGenerator("uuid",schemas.mediaType,"mediaType","mediaType");
+        none.uuid = "";
+        none.name = "Supports No Media";
+        none.owner = "System";
+        return cb(null, none);
+    }
+    this._getMediaType(type,cb);
+} //
 
 
 DAL.prototype.registerContent = function(request, contentRegistered)
@@ -327,6 +363,7 @@ DAL.prototype.createLaunchRecord = function(request, requestCreated)
     try
     {
         var launch = new types.launchRecord(request.email, request.contentKey, require("guid").raw());
+        launch.mediaKey = request.mediaKey;
         self.DB.save(null, launch.dbForm(), function(err, key)
         {
             launch.init(key, self.DB);
@@ -339,7 +376,7 @@ DAL.prototype.createLaunchRecord = function(request, requestCreated)
     }
 }
 
-DAL.prototype.createMediaType = function(name, description, mediaCreated)
+DAL.prototype.createMediaType = function(name, description, iconURL, owner, mediaCreated)
 {
     var self = this;
     try
@@ -347,6 +384,8 @@ DAL.prototype.createMediaType = function(name, description, mediaCreated)
         var mediaType = new types.mediaType();
         mediaType.name = name;
         mediaType.description = description;
+        mediaType.iconURL = iconURL;
+        mediaType.owner = owner;
         mediaType.uuid = require("guid").raw();
 
         self.DB.save(null, mediaType.dbForm(), function(err, key)
@@ -362,14 +401,14 @@ DAL.prototype.createMediaType = function(name, description, mediaCreated)
 }
 
 
-DAL.prototype.createMediaRecord = function(url, type, title, description, owner, mediaCreated)
+DAL.prototype.createMediaRecord = function(url, mediaTypeKey, title, description, owner, mediaCreated)
 {
     var self = this;
     try
     {
         var media = new types.media();
         media.url = url;
-        media.type = type;
+        media.mediaTypeKey = mediaTypeKey;
         media.title = title;
         media.description = description;
         media.owner = owner;

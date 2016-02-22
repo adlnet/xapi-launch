@@ -173,7 +173,13 @@ exports.setup = function(app, DAL)
                         i.contentTitle = "{{content removed}}";
                     }
                     i.owned = req.user && i.email == req.user.email;
-                    cb();
+
+                    DAL.getMedia(i.mediaKey,function(err,media)
+                    {
+                        i.media = media;
+                        cb();
+                    })
+                    
                 })
             }, function()
             {
@@ -212,6 +218,44 @@ exports.setup = function(app, DAL)
             }
         })
     }));
+
+
+    app.get("/users/media", ensureLoggedIn(function(req, res, next)
+    {
+    
+
+        res.locals.pageTitle = "Your Media";
+        DAL.getAllMediaTypes(function(err, types)
+        {
+            DAL.getAllMediaByOwner(req.user.email, function(err, results)
+            {
+                if (err)
+                {
+                    res.locals.error = err;
+                    res.render('error', res.locals);
+                }
+                else
+                {
+                    for (var i in results)
+                    {
+                        results[i].launchKey = results[i].key;
+                        results[i].owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].resultLink = "/results/" + results[i].launchKey;
+                        for (var j in types)
+                        {
+                            if (results[i].mediaTypeKey == types[j].uuid)
+                                results[i].mediaType = types[j];
+                        }
+                    }
+                    res.locals.results = results;
+                    res.render('mediaResults', res.locals);
+                }
+            })
+        });
+    }));
+
+
+
     app.post('/users/login', function(req, res, next)
     {
         if (req.user)

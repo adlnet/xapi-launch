@@ -123,6 +123,7 @@ exports.launchRecord = function(email, key, uuid)
     this.uuid = uuid;
     this.client = "uninitialized";
     this.publicKey = null;
+    this.mediaKey = null;
     this.xapiForm = function()
     {
         var def = {};
@@ -157,4 +158,19 @@ exports.media= function()
 	this.uuid = "";
 	this.title = "";
 	this.name = "";
+
+	this.xapiForm = function()
+    {
+        var def = {};
+        def.id = "http://localhost:3000/media/"+this.key;
+        def.definition = {};
+        def.definition.name = {
+            "en-US": this.title
+        };
+        def.definition.description = {
+            "en-US": this.description
+        };
+        def.definition.type= "http://localhost:3000/media/";
+        return def;
+    }
 }

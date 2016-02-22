@@ -12,7 +12,9 @@
                 <td>uuid</td>
                 <td>Status</td>
                 <td>Date</td>
+                 <td>Media</td>
                 <td>Termination</td>
+               
                 <td>Actions</td>
             </tr>
             {{#results}}
@@ -23,7 +25,8 @@
                 <td>{{uuid}}</td>
                 <td>{{state}}</td>
                 <td>{{createdTime}}</td>
-                <td>{{termination.description}}</td>
+                <td><a href="/media/search/{{mediaKey}}">{{media.title}}</a></td>
+                <td>{{termination.description}}{{^termination.description}}No Termination Code{{/termination.description}}</td>
                 <td>
                     <div class="btn-group" role="group">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu{{launchKey}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">

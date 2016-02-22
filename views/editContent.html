@@ -5,7 +5,7 @@
      <div class='row' >
         <div class="col-md-4"></div>
         <div class="col-md-4">
-            <h2 class="text-center">Update an App record</h2>
+            <h2 class="text-center">Update an App</h2>
         </div>
         <div class="col-md-4"></div>
     </div>
@@ -15,7 +15,7 @@
             <form class="form-signin">
                 
                 <div class="form-group">
-                    <label>App launch URL</label>
+                    <label>Content launch URL</label>
                     <input id="launchURL" type="text" class='form-control' placeholder="URL" value="{{content.url}}"></input>
                 </div>
                 <div class="form-group">
@@ -38,8 +38,8 @@
                     <label>Launch Timeout (s)</label>
                     <input id="timeToConsume" type="number" class='form-control' placeholder="0,Grace period for the content to launch" value="{{content.timeToConsume}}"></input>
                 </div>
-                <div class="form-group">
-                    <label>Media Type</label>
+                 <div class="form-group">
+                    <label>Handles Media Type</label>
                     <select id="mediaTypeKey" type="textarea" class='form-control' placeholder="MediaType">
                         {{#types}}
                         <option {{#selected}} selected="selected" {{/selected }} name="{{name}}" value="{{uuid}}">{{name}}</option>

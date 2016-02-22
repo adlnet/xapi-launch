@@ -152,6 +152,7 @@ exports.setup = function(app, DAL)
 
                     content.timeToConsume = req.body.timeToConsume;
                     content.sessionLength = req.body.sessionLength;
+                    content.mediaTypeKey = req.body.mediaTypeKey;
                     content.save(function(err)
                     {
                         if (err)
@@ -240,7 +241,13 @@ exports.setup = function(app, DAL)
                     {
                         i.uuid = "{{hidden}}";
                     }
-                    cb();
+
+                    DAL.getMedia(i.mediaKey,function(err,media)
+                    {
+                        i.media = media;
+                        cb();
+                    })
+                   
                 })
             }, function()
             {

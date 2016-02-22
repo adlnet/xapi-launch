@@ -9,38 +9,48 @@ exports.setup = function(app, DAL)
     app.get("/media/browse", function(req, res, next)
     {
         res.locals.pageTitle = "Browse All Media";
-        DAL.getAllMedia(function(err, results)
+        DAL.getAllMediaTypes(function(err, types)
         {
-            if (err)
+            DAL.getAllMedia(function(err, results)
             {
-                res.locals.error = err;
-                res.render('error', res.locals);
-            }
-            else
-            {
-                for (var i in results)
+                if (err)
                 {
-                    results[i].launchKey = results[i].key;
-                    results[i].owned = !!req.user && results[i].owner == req.user.email;
-                    results[i].resultLink = "/results/" + results[i].launchKey;
+                    res.locals.error = err;
+                    res.render('error', res.locals);
                 }
-                res.locals.results = results;
-                res.render('mediaResults', res.locals);
-            }
-        })
+                else
+                {
+                    for (var i in results)
+                    {
+                        results[i].launchKey = results[i].key;
+                        results[i].owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].resultLink = "/results/" + results[i].launchKey;
+                        for (var j in types)
+                        {
+                            if (results[i].mediaTypeKey == types[j].uuid)
+                                results[i].mediaType = types[j];
+                        }
+                    }
+                    res.locals.results = results;
+                    res.render('mediaResults', res.locals);
+                }
+            })
+        });
     });
+
+   
 
     app.get("/media/register", ensureLoggedIn(function(req, res, next)
     {
-    	DAL.getAllMediaTypes(function(err,types)
-    	{
-    		res.locals = {};
-        	res.locals.pageTitle = "Register New Media";
-        	res.locals.types = types;
-        	console.log(types);
-        	res.render('registerMedia', res.locals);
-    	})
-        
+        DAL.getAllMediaTypes(function(err, types)
+        {
+            
+            res.locals.pageTitle = "Register New Media";
+            res.locals.types = types;
+            console.log(types);
+            res.render('registerMedia', res.locals);
+        })
+
     }));
     app.post("/media/register", ensureLoggedIn(validateTypeWrapper(schemas.registerMediaRequest, function(req, res, next)
     {
@@ -80,19 +90,231 @@ exports.setup = function(app, DAL)
     })));
     app.get("/media/:key/delete", ensureLoggedIn(function(req, res, next)
     {
-    	DAL.getMedia(req.params.key,function(err,media)
-    	{
-    		if(!media)
-    			return res.status(500).send("invalid media key");
-    		if(media.owner !== req.user.email)
-    		{
-    			return res.status(500).send("you are not the owner of this media");
-    		}
-    		media.delete(function(err)
-    		{
-    			res.redirect("/media/browse");
-    		})
-    	})
-        
+        DAL.getMedia(req.params.key, function(err, media)
+        {
+            if (!media)
+                return res.status(500).send("invalid media key");
+            if (media.owner !== req.user.email)
+            {
+                return res.status(500).send("you are not the owner of this media");
+            }
+            media.delete(function(err)
+            {
+                res.redirect("/media/browse");
+            })
+        })
+
     }));
+    app.get("/media/:key/edit", ensureLoggedIn(function(req, res, next)
+    {
+        DAL.getMedia(req.params.key, function(err, media)
+        {
+            if (!media)
+                return res.status(500).send("invalid media key");
+            if (media.owner !== req.user.email)
+            {
+                return res.status(500).send("you are not the owner of this media");
+            }
+            DAL.getAllMediaTypes(function(err, types)
+            {
+                for (var i in types)
+                {
+                    if (media.mediaTypeKey == types[i].uuid)
+                    {
+                        types[i].selected = true;
+                    }
+                }
+
+              
+                res.locals.media = media;
+                res.locals.types = types;
+                res.render("editMedia", res.locals);
+            });
+        })
+
+    }));
+    app.post("/media/:key/edit", validateTypeWrapper(schemas.registerMediaRequest, ensureLoggedIn(function(req, res, next)
+    {
+        DAL.getMedia(req.params.key, function(err, media)
+        {
+
+            if (!media)
+                return res.status(500).send("invalid media key");
+            if (media.owner !== req.user.email)
+            {
+                return res.status(500).send("you are not the owner of this media");
+            }
+            DAL.getAllMediaTypes(function(err, types)
+            {
+                var found = false;
+                for (var i in types)
+                {
+                    if (req.body.mediaTypeKey == types[i].uuid)
+                    {
+                        found = true;
+                    }
+                }
+                if (!found)
+                {
+                    return res.status(401).send("invalid mediaType")
+                }
+                media.url = req.body.url;
+                media.title = req.body.title;
+                media.description = req.body.description;
+                media.mediaTypeKey = req.body.mediaTypeKey;
+                media.save(function(err)
+                {
+                    if (err)
+                        return res.status(500).send(err);
+                    else
+                        return res.status(200).send("200 - OK");
+                })
+            });
+        })
+
+    })));
+    app.get("/media/:key/launches", function(req, res, next)
+    {
+        DAL.getAllMediaLaunch(req.params.key, function(err, results)
+        {
+            if (err)
+                return res.status(500).send(err);
+            var rest = [];
+            for (var i in results)
+            {
+                var data = results[i].dbForm()
+                data.created = ((new Date(data.created)).toDateString());
+                data.resultLink = config.LRS_Url + "/statements?format=exact&activity=" + encodeURIComponent(results[i].xapiForm().id) + "&related_activities=true";
+                rest.push(data);
+            }
+
+            async.eachSeries(rest, function(i, cb)
+            {
+                DAL.getContentByKey(i.contentKey, function(err, content)
+                {
+                    if (!content)
+                    {
+                        return res.status(500).send("bad content key");
+                    }
+                    i.contentURL = content.url;
+                    i.contentTitle = content.title;
+                    i.owned = req.user && i.email == req.user.email;
+
+                    if (!i.owned)
+                    {
+                        i.uuid = "{{hidden}}";
+                    }
+
+                    DAL.getMedia(i.mediaKey, function(err, media)
+                    {
+                        i.media = media;
+                        cb();
+                    })
+
+                })
+            }, function()
+            {
+                res.locals.results = rest;
+                res.locals.pageTitle = "App Launch History";
+                res.render("launchHistory", res.locals);
+            })
+
+        })
+    });
+    app.get("/media/search", function(req, res, next)
+    {
+        res.locals.pageTitle = "Search All Media";
+        res.render("searchMedia", res.locals);
+    })
+    app.get("/media/search/:search", function(req, res, next)
+    {
+        res.locals.pageTitle = "Search All Media";
+        var search = decodeURIComponent(req.params.search);
+        var reg = new RegExp(search);
+        DAL.DB.find(
+        {
+            $and: [
+            {
+                dataType: "media"
+            },
+            {
+                $or: [
+                {
+                    _id: search
+                },
+                {
+                    title: reg
+                },
+                {
+                    description: reg
+                },
+                {
+                    url: reg
+                },
+                {
+                    owner: reg
+                }]
+            }]
+        }, function(err, results)
+        {
+            if (err)
+            {
+                res.locals.error = err;
+                res.render('error', res.locals);
+            }
+            else
+            {
+                DAL.getAllMediaTypes(function(err, types)
+                {
+                    for (var i in results)
+                    {
+                        results[i].launchKey = results[i]._id;
+                        results[i].owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].resultLink = "/results/" + results[i].launchKey;
+                        for (var j in types)
+                        {
+                            if (results[i].mediaTypeKey == types[j].uuid)
+                                results[i].mediaType = types[j];
+                        }
+                    }
+                    res.locals.results = results;
+                    res.render('mediaResults', res.locals);
+                });
+            }
+        })
+    });
+    app.get("/media/:key", function(req, res, next)
+    {
+        DAL.getMedia(req.params.key, function(err, content)
+        {
+            console.log('get content by key');
+            console.log(err);
+            if (content)
+            {
+                var data = content.dbForm();
+                res.status(200).send(data);
+            }
+            else
+            {
+                res.status(500).send(err);
+            }
+        })
+    });
+    app.get("/media/:key/xapi", function(req, res, next)
+    {
+        DAL.getMedia(req.params.key, function(err, content)
+        {
+            console.log('get content by key');
+            console.log(err);
+            if (content)
+            {
+                var data = content.xapiForm();
+                res.status(200).send(data);
+            }
+            else
+            {
+                res.status(500).send(err);
+            }
+        })
+    });
 }

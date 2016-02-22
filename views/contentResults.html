@@ -8,10 +8,21 @@
         <div class="col-md-4">
             <h2>{{title}}</h2>
             <em class="small">{{url}}</em>
-            <p style="    height: 200px;"><iframe style="transform:scale(.2) translate(-2000px,-2000px);overflow: hidden;pointer-events: none;" src="{{url}}" width="1000" height="1000" ></iframe></p>
-            <p>{{description}}</p>
+            <p style="    height: 200px;">
+
+            {{^iconURL}}
+                {{#mediaTypeKey}}<img style = "width:200px;height:200px" src="/static/img/player.png">{{/mediaTypeKey}}
+                {{^mediaTypeKey}}<img style = "width:200px;height:200px" src="/static/img/app.png">{{/mediaTypeKey}}
+            {{/iconURL}}
+            {{#iconURL}}
+                <img style = "width:200px;height:200px" src="{{iconURL}}">
+            {{/iconURL}}    
+
+            </p>
+            <p>{{description}}{{^description}}No Description{{/description}}</p>
             <div class="btn-group" role="group">
-            <a class="btn btn-default {{^user}}disabled{{/user}}" href="/launch/{{launchKey}}" role="button">Launch</a>
+            {{^mediaTypeKey}}<a class="btn btn-default {{^user}}disabled{{/user}}" href="/launch/{{launchKey}}" role="button">Launch</a>{{/mediaTypeKey}}
+            {{#mediaTypeKey}}<a class="btn btn-default" href="/mediaType/{{mediaTypeKey}}/media" role="button">Available Media</a>{{/mediaTypeKey}}
                 <div class="btn-group" role="group">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu{{launchKey}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span class="sr-only">Toggle Dropdown</span>...

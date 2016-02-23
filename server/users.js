@@ -19,7 +19,7 @@ exports.setup = function(app, DAL)
     app.use(session(
     {
         resave: false,
-        saveUninitialized: false,
+        saveUninitialized: true,
         secret: "foobar"
     }));
 

@@ -37,10 +37,27 @@ function saveableType(self)
         {
             if (self.DB)
             {
-                self.DB.update(
+                if (self.key !== null)
                 {
-                    _id: self.key
-                }, self.dbForm(), cb)
+                    self.DB.update(
+                    {
+                        _id: self.key
+                    }, self.dbForm(), function(err, num)
+                    {
+                        if (err)
+                            return cb(err);
+                        else
+                            cb(null, self);
+                    })
+                }
+                else
+                {
+                    self.DB.save(null, self.dbForm(), function(err, key)
+                    {
+                        self.key = key;
+                        cb(err, self);
+                    })
+                }
             }
             else
             {

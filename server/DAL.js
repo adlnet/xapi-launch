@@ -317,6 +317,47 @@ DAL.prototype.registerContent = function(request, contentRegistered)
         }
     })
 }
+
+function createGenerator(field, schema, typeConstructor, dataTypeName)
+{
+    var getter = getGenerator(field, schema, typeConstructor, dataTypeName);
+    return function(fieldVal, gotContent)
+    {
+        var self = this;
+        function create()
+        {
+            var content = new types[typeConstructor]();
+            content.init(null, self.DB, {});
+            content[field] = fieldVal;
+            content.save(function(err,content)
+            {
+                if(err)
+                    return gotContent(err);
+                
+                gotContent(null,content);
+            })
+        }
+        if (field)
+        {
+            console.log("call getter");
+            getter.call(this, fieldVal, function(err, gotVal)
+            {
+                console.log(err,gotVal);
+                if(err)
+                    return gotContent(err);
+                if (gotVal)
+                    return gotContent("value is not unique")
+                return create();
+            })
+        }
+        else
+        {
+            create();
+        }
+    }
+}
+
+
 DAL.prototype.createUser = function(request, userCreatedCB)
 {
     var self = this;

@@ -72,6 +72,11 @@ exports.setup = function(app, DAL)
         next();
     });
 
+    app.get("/users/testCookie", function(req, res, next)
+    {
+        console.log(req.sessionID);
+        res.status(200).send(req.cookies["connect.sid"]);
+    });
     app.get("/users/create", function(req, res, next)
     {
         res.locals.pageTitle = "Create Account";

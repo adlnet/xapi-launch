@@ -1,3 +1,4 @@
+"use strict";
 var ensureLoggedIn = require("./utils.js").ensureLoggedIn;
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper
 var schemas = require("./schemas.js");
@@ -111,7 +112,7 @@ exports.setup = function(app, DAL)
                         {
                             if(content.mediaTypeKey == types[i].uuid)
                             {
-                                types[i].selected = true;;
+                                types[i].virtuals.selected = true;;
                             }
                         }
 
@@ -182,9 +183,10 @@ exports.setup = function(app, DAL)
             {
                 for (var i in results)
                 {
-                    results[i].launchKey = results[i].key;
-                    results[i].owned = !!req.user && results[i].owner == req.user.email;
-                    results[i].resultLink = "/results/" + results[i].launchKey;
+                    results[i].virtuals.launchKey = results[i].key;
+                    results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                    results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                    console.log(results);
                 }
                 res.locals.results = results;
                 res.render('contentResults', res.locals);
@@ -268,31 +270,7 @@ exports.setup = function(app, DAL)
         res.locals.pageTitle = "Search All Apps";
         var search = decodeURIComponent(req.params.search);
         var reg = new RegExp(search);
-        DAL.DB.find(
-        {
-            $and: [
-            {
-                dataType: "contentRecord"
-            },
-            {
-                $or: [
-                {
-                    _id: search
-                },
-                {
-                    title: reg
-                },
-                {
-                    description: reg
-                },
-                {
-                    url: reg
-                },
-                {
-                    owner: reg
-                }]
-            }]
-        }, function(err, results)
+        DAL.findContent(reg, function(err, results)
         {
             if (err)
             {
@@ -303,9 +281,9 @@ exports.setup = function(app, DAL)
             {
                 for (var i in results)
                 {
-                    results[i].launchKey = results[i]._id;
-                    results[i].owned = !!req.user && results[i].owner == req.user.email;
-                    results[i].resultLink = "/results/" + results[i].launchKey;
+                    results[i].virtuals.launchKey = results[i]._id;
+                    results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                    results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                 }
                 res.locals.results = results;
                 res.render('contentResults', res.locals);

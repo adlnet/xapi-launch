@@ -1,3 +1,4 @@
+"use strict";
 var ensureLoggedIn = require("./utils.js").ensureLoggedIn;
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper
 var schemas = require("./schemas.js");
@@ -18,7 +19,7 @@ exports.setup = function(app, DAL)
             for (var i in types)
             {
                 if (req.user && types[i].owner == req.user.email)
-                    types[i].owned = true;
+                    types[i].virtuals.owned = true;
             }
 
             res.locals.results = types;
@@ -44,10 +45,10 @@ exports.setup = function(app, DAL)
                 {
                     for (var i in results)
                     {
-                        results[i].launchKey = results[i].key;
-                        results[i].owned = !!req.user && results[i].owner == req.user.email;
-                        results[i].resultLink = "/results/" + results[i].launchKey;
-                        results[i].mediaType = mediaType;
+                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                        results[i].virtuals.mediaType = mediaType;
                     }
                     res.locals.results = results;
                     res.render('mediaResults', res.locals);

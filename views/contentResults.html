@@ -21,22 +21,22 @@
             </p>
             <p>{{description}}{{^description}}No Description{{/description}}</p>
             <div class="btn-group" role="group">
-            {{^mediaTypeKey}}<a class="btn btn-default {{^user}}disabled{{/user}}" href="/launch/{{launchKey}}" role="button">Launch</a>{{/mediaTypeKey}}
+            {{^mediaTypeKey}}<a class="btn btn-default {{^user}}disabled{{/user}}" href="/launch/{{virtuals.launchKey}}" role="button">Launch</a>{{/mediaTypeKey}}
             {{#mediaTypeKey}}<a class="btn btn-default" href="/mediaType/{{mediaTypeKey}}/media" role="button">Available Media</a>{{/mediaTypeKey}}
                 <div class="btn-group" role="group">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu{{launchKey}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu{{virtuals.launchKey}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span class="sr-only">Toggle Dropdown</span>...
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{launchKey}}">
-                        <li><a href="/content/{{launchKey}}/launches" >View Launch History</a></li>
-                        <li><a href="/content/{{launchKey}}/xapi">View Associated Activity</a></li>
-                        <li><a href="/content/{{launchKey}}">View DB Record</a></li>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{virtuals.launchKey}}">
+                        <li><a href="/content/{{virtuals.launchKey}}/launches" >View Launch History</a></li>
+                        <li><a href="/content/{{virtuals.launchKey}}/xapi">View Associated Activity</a></li>
+                        <li><a href="/content/{{virtuals.launchKey}}">View DB Record</a></li>
                         {{#resultLink}}<li><a href="{{resultLink}}">View Results</a></li>{{/resultLink}}
-                        {{#owned}}
+                        {{#virtuals.owned}}
                         <li role="separator" class="divider"></li>
-                        <li><a href="/content/{{launchKey}}/delete">Remove</a></li>
-                        <li><a href="/content/{{launchKey}}/edit">Edit</a></li>
-                        {{/owned}}
+                        <li><a href="/content/{{virtuals.launchKey}}/delete">Remove</a></li>
+                        <li><a href="/content/{{virtuals.launchKey}}/edit">Edit</a></li>
+                        {{/virtuals.owned}}
                     </ul>
                 </div>
             </div>

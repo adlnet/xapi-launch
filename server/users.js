@@ -1,3 +1,4 @@
+"use strict";
 var schemas = require("./schemas.js");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
@@ -209,8 +210,8 @@ exports.setup = function(app, DAL)
                 console.log(results);
                 for (var i in results)
                 {
-                    results[i].launchKey = results[i].key;
-                    results[i].owned = !!req.user && results[i].owner == req.user.email;
+                    results[i].virtuals.launchKey = results[i].key;
+                    results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
 
                 }
                 res.locals.results = results;

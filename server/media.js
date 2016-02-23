@@ -1,3 +1,4 @@
+"use strict";
 var ensureLoggedIn = require("./utils.js").ensureLoggedIn;
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper
 var schemas = require("./schemas.js");
@@ -13,6 +14,7 @@ exports.setup = function(app, DAL)
         {
             DAL.getAllMedia(function(err, results)
             {
+                console.log(results);
                 if (err)
                 {
                     res.locals.error = err;
@@ -22,15 +24,16 @@ exports.setup = function(app, DAL)
                 {
                     for (var i in results)
                     {
-                        results[i].launchKey = results[i].key;
-                        results[i].owned = !!req.user && results[i].owner == req.user.email;
-                        results[i].resultLink = "/results/" + results[i].launchKey;
+                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         for (var j in types)
                         {
-                            if (results[i].mediaTypeKey == types[j].uuid)
-                                results[i].mediaType = types[j];
+                            if (results[i].virtuals.mediaTypeKey == types[j].uuid)
+                                results[i].virtuals.mediaType = types[j];
                         }
                     }
+                    
                     res.locals.results = results;
                     res.render('mediaResults', res.locals);
                 }
@@ -231,31 +234,7 @@ exports.setup = function(app, DAL)
         res.locals.pageTitle = "Search All Media";
         var search = decodeURIComponent(req.params.search);
         var reg = new RegExp(search);
-        DAL.DB.find(
-        {
-            $and: [
-            {
-                dataType: "media"
-            },
-            {
-                $or: [
-                {
-                    _id: search
-                },
-                {
-                    title: reg
-                },
-                {
-                    description: reg
-                },
-                {
-                    url: reg
-                },
-                {
-                    owner: reg
-                }]
-            }]
-        }, function(err, results)
+        DAL.findMedia( reg, function(err, results)
         {
             if (err)
             {
@@ -268,13 +247,13 @@ exports.setup = function(app, DAL)
                 {
                     for (var i in results)
                     {
-                        results[i].launchKey = results[i]._id;
-                        results[i].owned = !!req.user && results[i].owner == req.user.email;
-                        results[i].resultLink = "/results/" + results[i].launchKey;
+                        results[i].virtuals.launchKey = results[i]._id;
+                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         for (var j in types)
                         {
-                            if (results[i].mediaTypeKey == types[j].uuid)
-                                results[i].mediaType = types[j];
+                            if (results[i].virtuals.mediaTypeKey == types[j].uuid)
+                                results[i].virtuals.mediaType = types[j];
                         }
                     }
                     res.locals.results = results;

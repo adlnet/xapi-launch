@@ -1,3 +1,4 @@
+"use strict";
 var schemas = require("./schemas.js");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");

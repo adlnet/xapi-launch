@@ -29,11 +29,11 @@
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{launchKey}}">
                             <li><a href = "/mediaType/{{uuid}}/media">View All Media</a></li>
                             <li><a href = "/mediaType/{{uuid}}">View DB Record</a></li>
-                            {{#owned}}
+                            {{#virtuals.owned}}
                             <li role="separator" class="divider"></li>
                             <li><a href="/mediaType/{{uuid}}/delete">Remove</a></li>
                             <li><a href="/mediaType/{{uuid}}/edit">Edit</a></li>
-                            {{/owned}}
+                            {{/virtuals.owned}}
                         </ul>
                     </div>
                 </td>

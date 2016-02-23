@@ -42,7 +42,7 @@
                     <label>Handles Media Type</label>
                     <select id="mediaTypeKey" type="textarea" class='form-control' placeholder="MediaType">
                         {{#types}}
-                        <option {{#selected}} selected="selected" {{/selected }} name="{{name}}" value="{{uuid}}">{{name}}</option>
+                        <option {{#virtuals.selected}} selected="selected" {{/virtuals.selected }} name="{{name}}" value="{{uuid}}">{{name}}</option>
                         {{/types}}
                     </select>
                 </div>

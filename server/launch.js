@@ -211,7 +211,7 @@ exports.setup = function(app, DAL)
                         //this handles the case where the user refreshes the page. This is not a new launch, but client side content
                         //will need to re-fetch the actor data. Note that only the client that initially started the launch
                         //can re-fetch actor data from this endpoint. 
-                        if (launch.client == req.cookies["connect.sid"])
+                        if (launch.client == req.sessionID)
                         {
                             sendLaunchData(launch, req, res);
                             return;
@@ -232,7 +232,7 @@ exports.setup = function(app, DAL)
                         //make this check too restrictive. We could perhaps allow the content record
                         //to specify an alternitive list of domains that may initiate the launch
                         launch.state = 1;
-                        launch.client = req.cookies["connect.sid"];
+                        launch.client = req.sessionID;
                         launch.save(function(err)
                         {
                             //the launch is saved in the DB in the 1 state. The launch is active and 
@@ -286,7 +286,7 @@ exports.setup = function(app, DAL)
                 //activated the launch. Note that this is the students session on the launch server 
                 //in the case that the content is a dumb html file, but could be some thrid party 
                 //who is serving the content to the student. 
-                if (launch.client !== req.cookies["connect.sid"])
+                if (launch.client !== req.sessionID)
                 {
                     console.log(launch.client, req.cookies["connect.sid"])
                     res.status(500).send("You are not the registered consumer for this launch.");
@@ -312,7 +312,7 @@ exports.setup = function(app, DAL)
                     //you can also imagine that a given client might have more than one active launch on this server
                     //and so the same client session token is shared between several launches
                     //enforce this only if the time recorded for this content is a positive number
-                    if (content.sessionLength === 0 || (content.sessionLength > 0 && Date.now() - (new Date(launch.created)) > 1000 * content.sessionLength))
+                    if (content.sessionLength !== 0 && (content.sessionLength > 0 && Date.now() - (new Date(launch.created)) > 1000 * content.sessionLength))
                     {
                         launch.state = 2;
                         launch.termination = {

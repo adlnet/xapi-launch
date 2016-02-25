@@ -4,15 +4,20 @@
     <div class='row' >
         <div class="col-md-4"></div>
         <div class="col-md-4">
-            <h2 class="text-center">Launching  {{contentTitle}}</h2>
         </div>
         <div class="col-md-4"></div>
     </div>
     <div class='row' >
         <div class="col-md-4"></div>
-        <div class="col-md-4" style="border:1px solid #ddd;border-radius:3px;margin:2em 0em;padding:2em 2em">
-        </div>
+        <div class="col-md-4" style=""></div>
         <div class="col-md-4"></div>
+    </div>
+    <div class='row'>
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div id="content"></div>
+        </div>
+        <div class="col-md-1"></div>
     </div>
     <div class='row'>
         <div class="col-md-4"></div>
@@ -32,17 +37,45 @@ var endpoint = '{{{endpoint}}}';
 $(document).ready(function(){
     
     var url = new URL(content.url);
-    params  = "xAPILaunchKey="+launch.uuid + "&xAPILaunchService=" + encodeURIComponent(endpoint);
+    params = "xAPILaunchKey=" + launch.uuid + "&xAPILaunchService=" + encodeURIComponent(endpoint);
 
-    if(content.publicKey == true)
+    if (content.publicKey == true)
     {
-        params += "&"+"encryption=true"; 
+        params += "&" + "encryption=true";
     }
-    if(url.search)
+    if (url.search)
         url.search += "&";
     url.search += params;
-    window.open(url.toString(),"_blank");
-  
-    window.location = "/users/launches";
+
+    if (content.launchType == "popup")
+    {
+        window.open(url.toString(), "_blank");
+        window.location = "/users/launches";
+    }
+    if (content.launchType == "redirect")
+    {
+
+        window.location = url.toString();
+    }
+    if (content.launchType == "frame")
+    {
+        var frame = $("<iframe></iframe>").appendTo("#content");
+        $(frame).attr('src', url.toString());
+        $(frame).css(
+        {
+            "width": "100%",
+            "height": "calc(100% - 10em)"
+        })
+    }
+    if (content.launchType == "manual")
+    {
+        var frame = $("<h2 class='text-center'>Please copy the code below into the content's prompt.</h2>").appendTo("#content");
+        var frame = $("<h1 class='text-center'></h1>").appendTo("#content");
+        $(frame).text(launch.uuid);
+
+        var frame = $("<h2 class='text-center'>Use the following address if prompted to indentify the launch server.</h2>").appendTo("#content");
+        var frame = $("<h1 class='text-center'></h1>").appendTo("#content");
+        $(frame).text(endpoint)
+    }
 })
 </script>

@@ -23,6 +23,9 @@ exports.contentRecord = function(url, title, description, created, accessed, own
     this.sessionLength = 0;
     this.iconURL = "";
     this.mediaTypeKey = null;
+    this.launchType = 0;
+
+
     this.xapiForm = function()
     {
         var def = {};

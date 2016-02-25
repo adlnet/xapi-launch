@@ -30,6 +30,10 @@
             "type": "integer",
             "min": 0
         },
+        "launchType":
+        {
+            "type": "string"
+        },
         "publicKey":
         {
             "anyOf": [
@@ -50,5 +54,5 @@
         }
     },
     "additionalProperties": false,
-    "required": ["url", "title", "description","mediaTypeKey"]
+    "required": ["url", "title", "description","mediaTypeKey","launchType"]
 }

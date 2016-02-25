@@ -47,6 +47,17 @@
                         
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Launch Type</label>
+                    <select id="launchType" type="number" class='form-control' placeholder="0, Grace period for the content to launch">
+                        
+                        <option name="popup" value="popup">Popup</option>
+                        <option name="redirect" value="redirect">Redirect</option>
+                        <option name="frame" value="frame">Frame</option>
+                        <option name="manual" value="manual">Manual</option>
+
+                    </select>
+                </div>
             </form>
             <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Register App</button>
             <div id="feedback" class="hidden alert alert-danger" role="alert">
@@ -82,6 +93,8 @@
                 timeToConsume: parseFloat($('#timeToConsume').val()) ,
                 sessionLength: parseFloat($('#sessionLength').val()) ,
                 mediaTypeKey: $('#mediaTypeKey').val()
+                sessionLength: parseFloat($('#sessionLength').val()) ,
+                launchType: $('#launchType').val() 
             }
             $.ajax("/content/register",
             {

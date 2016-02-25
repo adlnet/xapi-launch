@@ -146,6 +146,7 @@ DAL.prototype.registerContent = function(request, contentRegistered)
             record.timeToConsume = request.timeToConsume;
             record.sessionLength = request.sessionLength;
             record.mediaTypeKey = request.mediaTypeKey;
+            record.launchType = request.launchType;
             self.DB.save(null, record.dbForm(), function(err, key)
             {
                 record.init(key, self.DB);

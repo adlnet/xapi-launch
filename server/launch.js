@@ -225,7 +225,7 @@ exports.setup = function(app, DAL)
                     //if the content does not initiate the launch in 60 seconds,
                     //it will time out and switch to the closed state
                     //enforce this only if the time recorded for this content is a positive number
-                    if (content.timeToConsume > 0 && Date.now() - (new Date(launch.created)) < 1000 * content.timeToConsume)
+                    if (content.timeToConsume === 0 || (content.timeToConsume > 0 && Date.now() - (new Date(launch.created)) < 1000 * content.timeToConsume))
                     {
                         //here, we need to verify that the incoming request came from the same domain
                         //that we sent the student to. It's possible that server redirect rules might
@@ -312,7 +312,7 @@ exports.setup = function(app, DAL)
                     //you can also imagine that a given client might have more than one active launch on this server
                     //and so the same client session token is shared between several launches
                     //enforce this only if the time recorded for this content is a positive number
-                    if (content.sessionLength > 0 && Date.now() - (new Date(launch.created)) > 1000 * content.sessionLength)
+                    if (content.sessionLength === 0 || (content.sessionLength > 0 && Date.now() - (new Date(launch.created)) > 1000 * content.sessionLength))
                     {
                         launch.state = 2;
                         launch.termination = {

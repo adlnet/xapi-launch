@@ -94,6 +94,7 @@ exports.contentRecord = function(url, title, description, created, accessed, own
     this.publicKey = key;
     this.timeToConsume = 0;
     this.sessionLength = 0;
+    this.launchType = 0;
 
 
     this.xapiForm = function()

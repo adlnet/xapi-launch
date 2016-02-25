@@ -38,6 +38,17 @@
                     <label>Launch Timeout (s)</label>
                     <input id="timeToConsume" type="number" class='form-control' placeholder="0,Grace period for the content to launch" value="{{content.timeToConsume}}"></input>
                 </div>
+                 <div class="form-group">
+                    <label>Launch Type</label>
+                    <select id="launchType" type="number" class='form-control' placeholder="0, Grace period for the content to launch">
+                        
+                        <option {{#launchIsPopup}} selected="selected" {{/launchIsPopup}} name="popup" value="popup">Popup</option>
+                        <option {{#launchIsRedirect}} selected="selected" {{/launchIsRedirect}}name="redirect" value="redirect">Redirect</option>
+                        <option {{#launchIsFrame}} selected="selected" {{/launchIsFrame}}name="frame" value="frame">Frame</option>
+                        <option {{#launchIsManuel}} selected="selected" {{/launchIsManuel}}name="manual" value="manual">Manual</option>
+
+                    </select>
+                </div>
             </form>
             <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Update Content</button>
             <div id="feedback" class="hidden alert alert-danger" role="alert">
@@ -69,7 +80,8 @@
                 title: $('#title').val(),
                 publicKey: $.trim($('#publicKey').val()),
                 timeToConsume: parseFloat($('#timeToConsume').val()) ,
-                sessionLength: parseFloat($('#sessionLength').val()) 
+                sessionLength: parseFloat($('#sessionLength').val()) ,
+                launchType: $('#launchType').val()
             }
             $.ajax("/content/{{content._id}}/edit",
             {

@@ -98,6 +98,10 @@ exports.setup = function(app, DAL)
                         res.locals = {};
                     res.locals.content = content;
                     res.locals.pageTitle = "Edit Content";
+                    res.locals.launchIsPopup = content.launchType == "popup";
+                    res.locals.launchIsRedirect= content.launchType == "redirect";
+                    res.locals.launchIsFrame = content.launchType == "frame";
+                    res.locals.launchIsManuel = content.launchType == "popup";
                     res.render("editContent", res.locals);
                 }
             }
@@ -134,6 +138,7 @@ exports.setup = function(app, DAL)
 
                     content.timeToConsume = req.body.timeToConsume;
                     content.sessionLength = req.body.sessionLength;
+                    content.launchType = req.body.launchType;
                     content.save(function(err)
                     {
                         if (err)

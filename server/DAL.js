@@ -209,6 +209,7 @@ DAL.prototype.registerContent = function(request, contentRegistered)
             var record = new types.contentRecord(request.url, request.title, request.description, Date.now(), Date.now(), request.owner,request.publicKey)
             record.timeToConsume = request.timeToConsume;
             record.sessionLength = request.sessionLength;
+            record.launchType = request.launchType;
             self.DB.save(null, record.dbForm(), function(err, key)
             {
                 record.init(key, self.DB);

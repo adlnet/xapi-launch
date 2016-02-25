@@ -89,8 +89,8 @@
                 publicKey: $.trim($('#publicKey').val()),
                 timeToConsume: parseFloat($('#timeToConsume').val()) ,
                 sessionLength: parseFloat($('#sessionLength').val()) ,
-                mediaTypeKey: $('#mediaTypeKey').val()
-                sessionLength: parseFloat($('#sessionLength').val()) ,
+                mediaTypeKey: $('#mediaTypeKey').val(),
+                
                 launchType: $('#launchType').val()
             }
             $.ajax("/content/{{content._id}}/edit",

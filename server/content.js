@@ -108,18 +108,18 @@ exports.setup = function(app, DAL)
                         res.locals.content = content;
                         res.locals.pageTitle = "Edit App";
                         res.locals.types = types;
-                        for(var i in types)
+                        for (var i in types)
                         {
-                            if(content.mediaTypeKey == types[i].uuid)
+                            if (content.mediaTypeKey == types[i].uuid)
                             {
                                 types[i].virtuals.selected = true;;
                             }
                         }
 
-                    res.locals.launchIsPopup = content.launchType == "popup";
-                    res.locals.launchIsRedirect= content.launchType == "redirect";
-                    res.locals.launchIsFrame = content.launchType == "frame";
-                    res.locals.launchIsManuel = content.launchType == "popup";
+                        res.locals.launchIsPopup = content.launchType == "popup";
+                        res.locals.launchIsRedirect = content.launchType == "redirect";
+                        res.locals.launchIsFrame = content.launchType == "frame";
+                        res.locals.launchIsManuel = content.launchType == "popup";
                         res.render("editContent", res.locals);
                     });
                 }
@@ -177,25 +177,30 @@ exports.setup = function(app, DAL)
     app.get("/content/browse", function(req, res, next)
     {
         res.locals.pageTitle = "Browse All Apps";
-        DAL.getAllContent(function(err, results)
+        DAL.getAllMediaTypes(function(err, types)
         {
-            if (err)
+            DAL.getAllContent(function(err, results)
             {
-                res.locals.error = err;
-                res.render('error', res.locals);
-            }
-            else
-            {
-                for (var i in results)
+                if (err)
                 {
-                    results[i].virtuals.launchKey = results[i].key;
-                    results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
-                    results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
-                    console.log(results);
+                    res.locals.error = err;
+                    res.render('error', res.locals);
                 }
-                res.locals.results = results;
-                res.render('contentResults', res.locals);
-            }
+                else
+                {
+                    for (var i in results)
+                    {
+                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                        for (var j in types)
+                            if (types[j].uuid == results[i].mediaTypeKey)
+                                results[i].virtuals.mediaType = types[j];
+                    }
+                    res.locals.results = results;
+                    res.render('contentResults', res.locals);
+                }
+            })
         })
     });
 
@@ -249,12 +254,12 @@ exports.setup = function(app, DAL)
                         i.uuid = "{{hidden}}";
                     }
 
-                    DAL.getMedia(i.mediaKey,function(err,media)
+                    DAL.getMedia(i.mediaKey, function(err, media)
                     {
                         i.media = media;
                         cb();
                     })
-                   
+
                 })
             }, function()
             {
@@ -275,24 +280,30 @@ exports.setup = function(app, DAL)
         res.locals.pageTitle = "Search All Apps";
         var search = decodeURIComponent(req.params.search);
         var reg = new RegExp(search);
-        DAL.findContent(reg, function(err, results)
+        DAL.getAllMediaTypes(function(err, types)
         {
-            if (err)
+            DAL.findContent(reg, function(err, results)
             {
-                res.locals.error = err;
-                res.render('error', res.locals);
-            }
-            else
-            {
-                for (var i in results)
+                if (err)
                 {
-                    results[i].virtuals.launchKey = results[i]._id;
-                    results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
-                    results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                    res.locals.error = err;
+                    res.render('error', res.locals);
                 }
-                res.locals.results = results;
-                res.render('contentResults', res.locals);
-            }
+                else
+                {
+                    for (var i in results)
+                    {
+                        results[i].virtuals.launchKey = results[i]._id;
+                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                    }
+                    res.locals.results = results;
+                    res.render('contentResults', res.locals);
+                    for (var j in types)
+                            if (types[j].uuid == results[i].mediaTypeKey)
+                                results[i].virtuals.mediaType = types[j];
+                }
+            })
         })
     });
     app.get("/content/:key", function(req, res, next)

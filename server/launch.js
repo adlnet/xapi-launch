@@ -35,7 +35,8 @@ exports.setup = function(app, DAL)
                     launchData.contextActivities.parent = content.xapiForm();
                     launchData.contextActivities.grouping = launch.xapiForm();
                     launchData.sessionLength = content.sessionLength;
-                    launchData.media = media;
+                    if (media)
+                        launchData.media = media.dbForm();
                     if (content.publicKey)
                     {
                         var key = require("node-rsa").key(content.publicKey);
@@ -410,7 +411,7 @@ exports.setup = function(app, DAL)
                         {
                             contextActivities.grouping.push(req.content.xapiForm());
                         }
-                        if(req.media)
+                        if (req.media)
                         {
                             var included = false;
                             for (var i in contextActivities.grouping)
@@ -432,16 +433,16 @@ exports.setup = function(app, DAL)
                         contextActivities.grouping = [contextActivities.grouping, req.content.xapiForm()];
                         if(request.media)
                         {
-                        	contextActivities.grouping.push(req.media.xapiForm());
+                            contextActivities.grouping.push(req.media.xapiForm());
                         }
                     }
                 }
                 else
                 {
-                	if(!req.media)
-                    	contextActivities.grouping = req.content.xapiForm();
+                    if (!req.media)
+                        contextActivities.grouping = req.content.xapiForm();
                     else
-                    	contextActivities.grouping = [req.content.xapiForm(),req.media.xapiForm()];
+                        contextActivities.grouping = [req.content.xapiForm(), req.media.xapiForm()];
                 }
             }
         }

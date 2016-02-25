@@ -18,13 +18,14 @@
             </p>
             <p>{{description}}{{^description}}No Description{{/description}}</p>
             <div class="btn-group" role="group">
+            
             <a class="btn btn-default {{^user}}disabled{{/user}}" href="/launch/media/{{virtuals.launchKey}}" role="button">Launch</a>
                 <div class="btn-group" role="group">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu{{virtuals.launchKey}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span class="sr-only">Toggle Dropdown</span>...
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{virtuals.launchKey}}">
-                        
+                            
                         <li><a href="/media/{{virtuals.launchKey}}/launches">View Launch History</a></li>
                         <li><a href="/media/{{virtuals.launchKey}}/xapi">View Associated Activity</a></li>
                         <li><a href="/media/{{virtuals.launchKey}}">View DB Record</a></li>

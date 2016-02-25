@@ -1,6 +1,7 @@
 
 var schemas = require("./schemas.js");
 var types = require("./types.js");
+var async = require("async");
 
 
 require("./dalFunctionFactory.js").init(types);

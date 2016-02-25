@@ -29,8 +29,11 @@ exports.setup = function(app, DAL)
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         for (var j in types)
                         {
-                            if (results[i].virtuals.mediaTypeKey == types[j].uuid)
+                            if (results[i].mediaTypeKey == types[j].uuid)
+                            {
+                                console.log("got here");
                                 results[i].virtuals.mediaType = types[j];
+                            }
                         }
                     }
                     
@@ -252,7 +255,7 @@ exports.setup = function(app, DAL)
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         for (var j in types)
                         {
-                            if (results[i].virtuals.mediaTypeKey == types[j].uuid)
+                            if (results[i].mediaTypeKey == types[j].uuid)
                                 results[i].virtuals.mediaType = types[j];
                         }
                     }

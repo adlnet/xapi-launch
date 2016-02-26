@@ -7,6 +7,20 @@ var async = require('async');
 var ensureOneCall = require('./utils.js').ensureOneCall;
 var validate = require('jsonschema').validate;
 
+function ensureOneCall(cb)
+{
+    var calls = 0;
+    return function(arg1, arg2, arg3, arg4, arg5, arg6)
+    {
+        calls++;
+        if (calls == 1)
+            cb(arg1, arg2, arg3, arg4, arg5, arg6);
+        else
+        {
+            console.log("callback already called!");
+        }
+    }
+}
 exports.init = function(types)
 {
     function getGenerator(keyname, schema, typeConstructor, dataTypeName)
@@ -36,8 +50,11 @@ exports.init = function(types)
                             if (record.dataType == dataTypeName)
                             {
                                 var content = new types[typeConstructor]();
-                                content.init(keyval, self.DB, record);
-                                return got(null, content);
+                                content.init(keyval, self.DB, self, record, function(err)
+                                {
+                                    if (err) got(err);
+                                    return got(null, content);
+                                });
                             }
                             else
                                 return got("wrong data type");
@@ -58,7 +75,7 @@ exports.init = function(types)
                     dataType: dataTypeName,
                 }
                 query[keyname] = keyval;
-                console.log(query)
+               
                 self.DB.find(
                     query, ensureOneCall(function(err, results)
                     {
@@ -78,8 +95,12 @@ exports.init = function(types)
                             if (record.dataType == dataTypeName)
                             {
                                 var content = new types[typeConstructor]();
-                                content.init(record._id, self.DB, record);
-                                return got(null, content);
+                                content.init(record._id, self.DB, self, record, function(err)
+                                {
+                                    if (err)
+                                        return got(err);
+                                    return got(null, content);
+                                });
                             }
                             else
                                 return got("wrong data type");
@@ -94,52 +115,49 @@ exports.init = function(types)
     {
         return function(cond, gotContent)
         {
-            try
+           
+            if (!condition)
+                gotContent = cond;
+            var self = this;
+            var query = {
+                dataType: dataTypeName
+            }
+            if (condition)
             {
-                console.log(condition, cond)
-                if (!condition)
-                    gotContent = cond;
-                var self = this;
-                var query = {
-                    dataType: dataTypeName
-                }
-                if (condition)
+                query[condition] = cond;
+            }
+            this.DB.find(
+                query, ensureOneCall(function(err, results)
                 {
-                    query[condition] = cond;
-                }
-                this.DB.find(
-                    query, ensureOneCall(function(err, results)
+                    if (err)
+                        gotContent(err)
+                    else
                     {
-                        try
-                        {
-                            if (err)
-                                gotContent(err)
-                            else
+                        var allcontent = [];
+                        async.eachSeries(results, function(i, cb)
                             {
-                                var allcontent = [];
-                                for (var i in results)
+                                var record = i;// results[i];
+                                console.log("I is:" + JSON.stringify(i));
+                                if(!record) return cb();
+                                if (record.dataType == dataTypeName)
                                 {
-                                    var record = results[i];
-                                    if (record.dataType == dataTypeName)
+                                    var content = new types[typeConstructor]();
+                                    content.init(record._id, self.DB, self, record, function(err)
                                     {
-                                        var content = new types[typeConstructor]();
-                                        content.init(record._id, self.DB, record);
+                                        if (err) return cb(err);
                                         allcontent.push(content);
-                                    }
+                                        cb();
+                                    });
                                 }
+                            },
+                            function(err)
+                            {
+                                if (err) return gotContent(err);
                                 gotContent(null, allcontent);
                             }
-                        }
-                        catch (e)
-                        {
-                            console.log(e)
-                        }
-                    }))
-            }
-            catch (e)
-            {
-                console.log(e)
-            }
+                        )
+                    }
+                }))
         }
     }
 
@@ -153,22 +171,26 @@ exports.init = function(types)
             function create()
             {
                 var content = new types[typeConstructor]();
-                content.init(null, self.DB,
-                {});
-                content[field] = fieldVal;
-                content.save(function(err, content)
+                content.init(null, self.DB, self,
+                {}, function(err)
                 {
                     if (err)
                         return gotContent(err);
-                    gotContent(null, content);
-                })
+                    content[field] = fieldVal;
+                    content.save(function(err, content)
+                    {
+                        if (err)
+                            return gotContent(err);
+                        gotContent(null, content);
+                    })
+                });
             }
             if (field)
             {
-                console.log("call getter");
+                
                 getter.call(this, fieldVal, function(err, gotVal)
                 {
-                    console.log(err, gotVal);
+                   
                     if (err)
                         return gotContent(err);
                     if (gotVal)
@@ -221,17 +243,23 @@ exports.init = function(types)
                 if (err)
                     return gotContent(err);
                 var allcontent = [];
-                for (var i in results)
+                async.eachSeries(results, function(i, cb)
                 {
                     var record = results[i];
                     if (record.dataType == dataTypeName)
                     {
                         var content = new types[typeConstructor]();
-                        content.init(record._id, self.DB, record);
-                        allcontent.push(content);
+                        content.init(record._id, self.DB, self, record, function(err)
+                        {
+                            if (err) return cb(err);
+                            allcontent.push(content);
+                            cb();
+                        });
                     }
-                }
-                gotContent(null, allcontent);
+                }, function(err)
+                {
+                    gotContent(null, allcontent);
+                });
             };
             if (!skip && !limit && !sort)
             {

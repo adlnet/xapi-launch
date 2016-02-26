@@ -1,15 +1,12 @@
-
 var schemas = require("./schemas.js");
 var types = require("./types.js");
 var async = require("async");
-
-
 require("./dalFunctionFactory.js").init(types);
-
 var getGenerator = require("./dalFunctionFactory.js").getGenerator;
 var getAllGenerator = require("./dalFunctionFactory.js").getAllGenerator;
 var createGenerator = require("./dalFunctionFactory.js").createGenerator;
 var searchGenerator = require("./dalFunctionFactory.js").searchGenerator;
+
 function DAL(DB)
 {
     this.DB = DB;
@@ -36,7 +33,6 @@ function DAL(DB)
         });
     }
 }
-
 //AWWWW SO META!
 DAL.prototype.getContent = getGenerator("url", schemas.content, "contentRecord", "contentRecord");
 DAL.prototype.getContentByKey = getGenerator("_id", schemas.content, "contentRecord", "contentRecord");
@@ -54,8 +50,8 @@ DAL.prototype.getAllMedia = getAllGenerator(null, schemas.media, "media", "media
 DAL.prototype.getAllMediaByType = getAllGenerator("mediaTypeKey", schemas.media, "media", "media");
 DAL.prototype.getAllContentByMediaType = getAllGenerator("mediaTypeKey", schemas.content, "contentRecord", "contentRecord");
 DAL.prototype._getAllMediaTypes = getAllGenerator(null, schemas.mediaType, "mediaType", "mediaType");
-DAL.prototype.findContent = searchGenerator(["url","description","title","owner","_id"], schemas.content, "contentRecord", "contentRecord");
-DAL.prototype.findMedia = searchGenerator(["url","description","title","mediaType","_id"], schemas.media, "media", "media");
+DAL.prototype.findContent = searchGenerator(["url", "description", "title", "owner", "_id"], schemas.content, "contentRecord", "contentRecord");
+DAL.prototype.findMedia = searchGenerator(["url", "description", "title", "mediaType", "_id"], schemas.media, "media", "media");
 //hard coded test for now
 DAL.prototype.getAllMediaTypes = function(cb)
 {
@@ -150,8 +146,10 @@ DAL.prototype.registerContent = function(request, contentRegistered)
             record.launchType = request.launchType;
             self.DB.save(null, record.dbForm(), function(err, key)
             {
-                record.init(key, self.DB);
-                contentRegistered(err, record);
+                record.init(key, self.DB, self, null, function()
+                {
+                    contentRegistered(err, record);
+                });
             })
         }
     })
@@ -189,8 +187,10 @@ DAL.prototype.createUser = function(request, userCreatedCB)
             var account = new types.userAccount(request.email, request.username, request.salt, request.password);
             self.DB.save(null, account.dbForm(), function(err, key)
             {
-                account.init(key, self.DB)
-                userCreatedCB(err, account);
+                account.init(key, self.DB, self, null, function()
+                {
+                    userCreatedCB(err, account);
+                })
             })
         }
     })
@@ -204,8 +204,10 @@ DAL.prototype.createLaunchRecord = function(request, requestCreated)
         launch.mediaKey = request.mediaKey;
         self.DB.save(null, launch.dbForm(), function(err, key)
         {
-            launch.init(key, self.DB);
-            requestCreated(err, launch);
+            launch.init(key, self.DB, self, null, function()
+            {
+                requestCreated(err, launch);
+            });
         })
     }
     catch (e)
@@ -226,8 +228,10 @@ DAL.prototype.createMediaType = function(name, description, iconURL, owner, medi
         mediaType.uuid = require("guid").raw();
         self.DB.save(null, mediaType.dbForm(), function(err, key)
         {
-            mediaType.init(key, self.DB);
-            mediaCreated(err, mediaType);
+            mediaType.init(key, self.DB, self, null, function()
+            {
+                mediaCreated(err, mediaType);
+            });
         })
     }
     catch (e)
@@ -248,8 +252,10 @@ DAL.prototype.createMediaRecord = function(url, mediaTypeKey, title, description
         media.owner = owner;
         self.DB.save(null, media.dbForm(), function(err, key)
         {
-            media.init(key, self.DB);
-            mediaCreated(err, media);
+            media.init(key, self.DB, self, null, function()
+            {
+                mediaCreated(err, media);
+            });
         })
     }
     catch (e)

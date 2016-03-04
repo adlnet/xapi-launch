@@ -296,12 +296,13 @@ exports.setup = function(app, DAL)
                         results[i].virtuals.launchKey = results[i]._id;
                         results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                         for (var j in types)
+                            if (types[j].uuid == results[i].mediaTypeKey)
+                                results[i].virtuals.mediaType = types[j];
                     }
                     res.locals.results = results;
                     res.render('contentResults', res.locals);
-                    for (var j in types)
-                            if (types[j].uuid == results[i].mediaTypeKey)
-                                results[i].virtuals.mediaType = types[j];
+                   
                 }
             })
         })

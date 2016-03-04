@@ -245,7 +245,7 @@ exports.init = function(types)
                 var allcontent = [];
                 async.eachSeries(results, function(i, cb)
                 {
-                    var record = results[i];
+                    var record = i;
                     if (record.dataType == dataTypeName)
                     {
                         var content = new types[typeConstructor]();

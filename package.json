@@ -22,6 +22,7 @@
     "nstore": "^0.5.2",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
+    "pretty-error": "^2.0.0",
     "request": "^2.69.0",
     "requirejs": "^2.1.22"
   }

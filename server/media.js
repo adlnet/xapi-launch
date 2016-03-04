@@ -127,7 +127,7 @@ exports.setup = function(app, DAL)
                 {
                     if (media.mediaTypeKey == types[i].uuid)
                     {
-                        types[i].selected = true;
+                        types[i].virtuals.selected = true;
                     }
                 }
 

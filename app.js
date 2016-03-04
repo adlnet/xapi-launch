@@ -4,6 +4,7 @@ var app = express();
 var Datastore = require('nedb');
 var DB = null;
 var hoganExpress = require('hogan-express');
+require('pretty-error').start();
 async.series([
 	function loadDB(cb)
 	{

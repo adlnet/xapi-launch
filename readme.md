@@ -8,7 +8,7 @@ XAPI-Launch allows a user to initiate an interaction with some xAPI enabled lear
 * Launch content that is dynamic **HTML content rendered by a server**
 * Launch a **desktop application** through a URL Protocol Handler
 * Launch a **mobile application** through a URL Protocol Handler
-* Launch an **disconnected experience** by allowing the student to manually enter a code
+* Launch a **disconnected experience** by allowing the student to manually enter a code
 
 #### The xAPI-Launch algorithm
 The launch algorithm is designed to allow the maximum flexibility while still maintaining privacy for the learner, a guarantee that the statements are submitted by the proper content, and that all statements can be grouped by the LMS according to the Launch Attempt

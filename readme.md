@@ -53,7 +53,7 @@ The learner may optionally move the launch token to the content manually. We ima
 1. Create a user account
 2. Find "Register New Content"
 3. Use "/static/staticContentDemo/demo.html" as the URL
-4. Do no enter a private key.
+4. Do not enter a private key.
 5. Browse all content
 6. Click "Launch"
 

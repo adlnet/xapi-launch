@@ -1,3 +1,4 @@
+"use strict";
 var schemas = require("./schemas.js");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
@@ -156,7 +157,7 @@ exports.setup = function(app, DAL)
                 rest.push(data);
             }
 
-            rest = rest.sort(function(a,b)
+            rest = rest.sort(function(a, b)
             {
                 return (new Date(b.created)) - (new Date(a.created));
             })
@@ -167,24 +168,29 @@ exports.setup = function(app, DAL)
                 {
 
 
-
-                    if(content)
+                    if (content)
                     {
                         i.contentURL = content.url;
                         i.contentTitle = content.title;
-                    }else
+                    }
+                    else
                     {
                         i.contentURL = "{{content removed}}";
                         i.contentTitle = "{{content removed}}";
                     }
                     i.owned = req.user && i.email == req.user.email;
-                    cb();
+
+                    DAL.getMedia(i.mediaKey, function(err, media)
+                    {
+                        i.media = media;
+                        cb();
+                    })
+
                 })
             }, function()
             {
                 res.locals.results = rest;
                 res.locals.pageTitle = "My Launch History";
-
 
 
                 res.render("launchHistory", res.locals);
@@ -194,29 +200,71 @@ exports.setup = function(app, DAL)
     }));
     app.get("/users/content", ensureLoggedIn(function(req, res, next)
     {
-        DAL.getAllContentByOwner(req.user.email, function(err, results)
+        DAL.getAllMediaTypes(function(err, types)
         {
-            res.locals.pageTitle = "Your Content";
-            if (err)
+            DAL.getAllContentByOwner(req.user.email, function(err, results)
             {
-                res.locals.error = err;
-
-                res.render('error', res.locals);
-            }
-            else
-            {
-                console.log(results);
-                for (var i in results)
+                res.locals.pageTitle = "Your Apps";
+                if (err)
                 {
-                    results[i].launchKey = results[i].key;
-                    results[i].owned = !!req.user && results[i].owner == req.user.email;
+                    res.locals.error = err;
 
+                    res.render('error', res.locals);
                 }
-                res.locals.results = results;
-                res.render('results', res.locals);
-            }
+                else
+                {
+                    console.log(results);
+                    for (var i in results)
+                    {
+                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        for (var j in types)
+                            if (types[j].uuid == results[i].mediaTypeKey)
+                                results[i].virtuals.mediaType = types[j];
+                    }
+                    res.locals.results = results;
+                    res.render('contentResults', res.locals);
+                }
+            })
         })
     }));
+
+
+    app.get("/users/media", ensureLoggedIn(function(req, res, next)
+    {
+
+
+        res.locals.pageTitle = "Your Media";
+        DAL.getAllMediaTypes(function(err, types)
+        {
+            DAL.getAllMediaByOwner(req.user.email, function(err, results)
+            {
+                if (err)
+                {
+                    res.locals.error = err;
+                    res.render('error', res.locals);
+                }
+                else
+                {
+                    for (var i in results)
+                    {
+                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                        for (var j in types)
+                        {
+                            if (results[i].mediaTypeKey == types[j].uuid)
+                                results[i].virtuals.mediaType = types[j];
+                        }
+                    }
+                    res.locals.results = results;
+                    res.render('mediaResults', res.locals);
+                }
+            })
+        });
+    }));
+
+
     app.post('/users/login', function(req, res, next)
     {
         if (req.user)

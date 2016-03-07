@@ -9,14 +9,30 @@
             </button>
             <a class="navbar-brand" href="/">xAPI-Launch</a>
         </div>
+        <div class="collapse navbar-collapse" style = "    overflow-x: hidden;" id="navbar">
         <ul class="nav navbar-nav">
             <li class="active {{^pageTitle}}hidden{{/pageTitle}}"><a href="/">{{pageTitle}}</a></li>
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Content <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Apps <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/content/search">Search</a></li>
                     <li><a href="/content/browse">Browse</a></li>
-                    <li><a href="/content/register">Register Content</a></li>
+                    <li><a href="/content/register">Register Apps</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Media <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/media/search">Search</a></li>
+                    <li><a href="/media/browse">Browse</a></li>
+                    <li><a href="/media/register">Register Media</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Media Types <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/mediaType/browse">Browse</a></li>
+                    <li><a href="/mediaType/register">Register Media Type</a></li>
                 </ul>
             </li>
             
@@ -30,7 +46,8 @@
                     <li><a href="/users/logout">Logout</a></li>
                     <li><a href="/users/me">Account</a></li>
                     <li><a href="/users/launches">My Launch History</a></li>
-                    <li><a href="/users/content">My Content</a></li>
+                    <li><a href="/users/content">My Apps</a></li>
+                    <li><a href="/users/media">My Media</a></li>
                 </ul>
             </li>
             {{/user}}
@@ -44,7 +61,7 @@
             </li>
             {{/user}}
         </ul>
-        
+        </div>
         
     </div>
 </nav>

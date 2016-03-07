@@ -1,3 +1,4 @@
+"use strict";
 var ensureLoggedIn = require("./utils.js").ensureLoggedIn;
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper
 var schemas = require("./schemas.js");
@@ -13,9 +14,15 @@ exports.setup = function(app, DAL)
     });
     app.get("/content/register", ensureLoggedIn(function(res, req, next)
     {
-        res.locals = {};
-        res.locals.pageTitle = "Register New Content";
-        req.render('registerContent', res.locals)
+
+        DAL.getAllMediaTypes(function(err, types)
+        {
+            res.locals = {};
+            res.locals.pageTitle = "Register New App";
+            res.locals.types = types;
+            req.render('registerContent', res.locals)
+        });
+
     }));
     app.post("/content/register", ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
     {
@@ -94,15 +101,27 @@ exports.setup = function(app, DAL)
             {
                 if (content.owner == req.user.email)
                 {
-                    if (!res.locals)
-                        res.locals = {};
-                    res.locals.content = content;
-                    res.locals.pageTitle = "Edit Content";
-                    res.locals.launchIsPopup = content.launchType == "popup";
-                    res.locals.launchIsRedirect= content.launchType == "redirect";
-                    res.locals.launchIsFrame = content.launchType == "frame";
-                    res.locals.launchIsManuel = content.launchType == "popup";
-                    res.render("editContent", res.locals);
+                    DAL.getAllMediaTypes(function(err, types)
+                    {
+                        if (!res.locals)
+                            res.locals = {};
+                        res.locals.content = content;
+                        res.locals.pageTitle = "Edit App";
+                        res.locals.types = types;
+                        for (var i in types)
+                        {
+                            if (content.mediaTypeKey == types[i].uuid)
+                            {
+                                types[i].virtuals.selected = true;;
+                            }
+                        }
+
+                        res.locals.launchIsPopup = content.launchType == "popup";
+                        res.locals.launchIsRedirect = content.launchType == "redirect";
+                        res.locals.launchIsFrame = content.launchType == "frame";
+                        res.locals.launchIsManuel = content.launchType == "popup";
+                        res.render("editContent", res.locals);
+                    });
                 }
             }
             else
@@ -138,6 +157,7 @@ exports.setup = function(app, DAL)
 
                     content.timeToConsume = req.body.timeToConsume;
                     content.sessionLength = req.body.sessionLength;
+                    content.mediaTypeKey = req.body.mediaTypeKey;
                     content.launchType = req.body.launchType;
                     content.save(function(err)
                     {
@@ -156,28 +176,34 @@ exports.setup = function(app, DAL)
     })));
     app.get("/content/browse", function(req, res, next)
     {
-        res.locals.pageTitle = "Browse All Content";
-        DAL.getAllContent(function(err, results)
+        res.locals.pageTitle = "Browse All Apps";
+        DAL.getAllMediaTypes(function(err, types)
         {
-            if (err)
+            DAL.getAllContent(function(err, results)
             {
-                res.locals.error = err;
-                res.render('error', res.locals);
-            }
-            else
-            {
-                for (var i in results)
+                if (err)
                 {
-                    results[i].launchKey = results[i].key;
-                    results[i].owned = !!req.user && results[i].owner == req.user.email;
-                    results[i].resultLink = "/results/" + results[i].launchKey;
+                    res.locals.error = err;
+                    res.render('error', res.locals);
                 }
-                res.locals.results = results;
-                res.render('results', res.locals);
-            }
+                else
+                {
+                    for (var i in results)
+                    {
+                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                        for (var j in types)
+                            if (types[j].uuid == results[i].mediaTypeKey)
+                                results[i].virtuals.mediaType = types[j];
+                    }
+                    res.locals.results = results;
+                    res.render('contentResults', res.locals);
+                }
+            })
         })
     });
-    
+
     app.get("/content/:key/xapi", function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
@@ -215,6 +241,10 @@ exports.setup = function(app, DAL)
             {
                 DAL.getContentByKey(i.contentKey, function(err, content)
                 {
+                    if (!content)
+                    {
+                        return res.status(500).send("bad content key");
+                    }
                     i.contentURL = content.url;
                     i.contentTitle = content.title;
                     i.owned = req.user && i.email == req.user.email;
@@ -223,12 +253,18 @@ exports.setup = function(app, DAL)
                     {
                         i.uuid = "{{hidden}}";
                     }
-                    cb();
+
+                    DAL.getMedia(i.mediaKey, function(err, media)
+                    {
+                        i.media = media;
+                        cb();
+                    })
+
                 })
             }, function()
             {
                 res.locals.results = rest;
-                res.locals.pageTitle = "Content Launch History";
+                res.locals.pageTitle = "App Launch History";
                 res.render("launchHistory", res.locals);
             })
 
@@ -236,59 +272,42 @@ exports.setup = function(app, DAL)
     });
     app.get("/content/search", function(req, res, next)
     {
-        res.locals.pageTitle = "Search All Content";
+        res.locals.pageTitle = "Search All Apps";
         res.render("search", res.locals);
     })
     app.get("/content/search/:search", function(req, res, next)
     {
-        res.locals.pageTitle = "Search All Content";
+        res.locals.pageTitle = "Search All Apps";
         var search = decodeURIComponent(req.params.search);
         var reg = new RegExp(search);
-        DAL.DB.find(
+        DAL.getAllMediaTypes(function(err, types)
         {
-            $and: [
+            DAL.findContent(reg, function(err, results)
             {
-                dataType: "contentRecord"
-            },
-            {
-                $or: [
+                if (err)
                 {
-                    _id: search
-                },
-                {
-                    title: reg
-                },
-                {
-                    description: reg
-                },
-                {
-                    url: reg
-                },
-                {
-                    owner: reg
-                }]
-            }]
-        }, function(err, results)
-        {
-            if (err)
-            {
-                res.locals.error = err;
-                res.render('error', res.locals);
-            }
-            else
-            {
-                for (var i in results)
-                {
-                    results[i].launchKey = results[i]._id;
-                    results[i].owned = !!req.user && results[i].owner == req.user.email;
-                    results[i].resultLink = "/results/" + results[i].launchKey;
+                    res.locals.error = err;
+                    res.render('error', res.locals);
                 }
-                res.locals.results = results;
-                res.render('results', res.locals);
-            }
+                else
+                {
+                    for (var i in results)
+                    {
+                        results[i].virtuals.launchKey = results[i]._id;
+                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                         for (var j in types)
+                            if (types[j].uuid == results[i].mediaTypeKey)
+                                results[i].virtuals.mediaType = types[j];
+                    }
+                    res.locals.results = results;
+                    res.render('contentResults', res.locals);
+                   
+                }
+            })
         })
     });
-	app.get("/content/:key", function(req, res, next)
+    app.get("/content/:key", function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {

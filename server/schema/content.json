@@ -37,6 +37,9 @@
 			"type": "integer",
 			"min":"0"
 		},
+		"playsMediaType": {
+			"type": "string"
+		},
 		"dataType": {
 			"type": "string",
 			"enum": ["contentRecord"]
@@ -57,5 +60,5 @@
         }
 	},
 	"additionalProperties": false,
-	"required": ["url", "title","description","owner","created","dataType","timeToConsume","sessionLength"]
+	"required": ["url", "title","description","owner","created","dataType","timeToConsume","sessionLength","playsMediaType"]
 }

@@ -1,77 +1,4 @@
-function saveableType(self)
-{
-
-
-    Object.defineProperty(self, "init",
-    {
-        value: function(key, DB, record)
-        {
-            self.DB = DB;
-            self.key = key;
-            console.log("init " + key);
-            for (var i in record)
-                this[i] = record[i];
-        }
-    })
-    Object.defineProperty(self, "dbForm",
-    {
-        value: function()
-        {
-            return JSON.parse(JSON.stringify(self, function(key, val)
-            {
-                if (key == "_id")
-                    return undefined;
-                if (key == "DB")
-                    return undefined;
-                if (key == "init")
-                    return undefined;
-                if (key == "dbForm")
-                    return undefined;
-                return val;
-            }))
-        }
-    })
-    Object.defineProperty(self, "save",
-    {
-        value: function(cb)
-        {
-            if (self.DB)
-            {
-                self.DB.update(
-                {
-                    _id: self.key
-                }, self.dbForm(), cb)
-            }
-            else
-            {
-                if (cb)
-                    cb("saveableType not initialized")
-            }
-        }
-    })
-    Object.defineProperty(self, "delete",
-    {
-        value: function(cb)
-        {
-
-            if (self.DB)
-            {
-                console.log('remove ', self.key);
-                self.DB.remove(
-                {
-                    _id: self.key
-                },
-                {}, cb)
-            }
-            else
-            {
-                console.log("this.DB is null");
-                if (cb)
-                    cb("saveableType not initialized")
-            }
-        }
-    })
-}
+var saveableType = require("./saveableType").saveableType;
 exports.userAccount = function(email, username, salt, password)
 {
     saveableType(this);
@@ -94,6 +21,8 @@ exports.contentRecord = function(url, title, description, created, accessed, own
     this.publicKey = key;
     this.timeToConsume = 0;
     this.sessionLength = 0;
+    this.iconURL = "";
+    this.mediaTypeKey = null;
     this.launchType = 0;
 
 
@@ -111,6 +40,7 @@ exports.contentRecord = function(url, title, description, created, accessed, own
         def.definition.type= "http://localhost:3000/content/";
         return def;
     }
+    Object.preventExtensions(this);
 }
 
 exports.launchRecord = function(email, key, uuid)
@@ -124,6 +54,8 @@ exports.launchRecord = function(email, key, uuid)
     this.uuid = uuid;
     this.client = "uninitialized";
     this.publicKey = null;
+    this.mediaKey = null;
+    this.termination = null;
     this.xapiForm = function()
     {
         var def = {};
@@ -140,4 +72,47 @@ exports.launchRecord = function(email, key, uuid)
         
         return def;
     }
+    Object.preventExtensions(this);
+}
+
+exports.mediaType = function()
+{
+	saveableType(this);
+	this.dataType = "mediaType";
+	this.uuid = "";
+	this.title = "";
+	this.name = "";
+    this.description = "";
+    this.iconURL = "";
+    this.owner = "";
+    Object.preventExtensions(this);
+}
+
+exports.media= function()
+{
+	saveableType(this);
+	this.dataType = "media";
+	this.uuid = "";
+	this.title = "";
+	this.name = "";
+    this.url = "";
+    this.mediaTypeKey = ""; 
+    this.description = "";
+    this.owner = "";
+
+	this.xapiForm = function()
+    {
+        var def = {};
+        def.id = "http://localhost:3000/media/"+this.key;
+        def.definition = {};
+        def.definition.name = {
+            "en-US": this.title
+        };
+        def.definition.description = {
+            "en-US": this.description
+        };
+        def.definition.type= "http://localhost:3000/media/";
+        return def;
+    }
+    Object.preventExtensions(this);
 }

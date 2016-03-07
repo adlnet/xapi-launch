@@ -6,6 +6,11 @@ exports.content = JSON.parse(fs.readFileSync("./server/schema/content.json"));
 exports.account = JSON.parse(fs.readFileSync("./server/schema/account.json"));
 exports.launch = JSON.parse(fs.readFileSync("./server/schema/launch.json"));
 exports.termination = JSON.parse(fs.readFileSync("./server/schema/termination.json"));
+exports.mediaType = JSON.parse(fs.readFileSync("./server/schema/mediaType.json"));
+exports.media = JSON.parse(fs.readFileSync("./server/schema/media.json"));
+exports.registerMediaRequest = JSON.parse(fs.readFileSync("./server/schema/registerMediaRequest.json"));
+exports.registerMediaTypeRequest = JSON.parse(fs.readFileSync("./server/schema/registerMediaTypeRequest.json"));
+
 }catch(e)
 {
 	console.log(e);

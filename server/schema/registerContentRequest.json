@@ -47,8 +47,12 @@
                 "minLength": 0,
                 "maxLength": 0
             }]
+        },
+        "mediaTypeKey":
+        {
+            "type": "string"
         }
     },
     "additionalProperties": false,
-    "required": ["url", "title", "description","launchType"]
+    "required": ["url", "title", "description","mediaTypeKey","launchType"]
 }

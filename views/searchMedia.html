@@ -1,0 +1,47 @@
+<!-- Main jumbotron for a primary marketing message or call to action -->
+{{>header}}
+<div class="container" style="margin-top:3em">
+    <!-- Example row of columns -->
+    <div class='row' >
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <h2 class="text-center">Search for Media</h2>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class='row' >
+        <div class="col-md-4"></div>
+        <div class="col-md-4" style="border:1px solid #ddd;border-radius:3px;margin:2em 0em;padding:2em 2em">
+            
+            <div class="form-signin">
+                <div class="form-group">
+                    <label for="query">Search</label>
+                    <input name= 'query' type="text" class='form-control' placeholder="query"></input>
+                </div>
+            </div>
+            <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Search</button>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class='row'>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            {{>footer}}
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+</div>
+
+<!-- /container -->
+<script type="text/javaScript">
+
+        $('form').submit(function()
+        {
+            window.location = "/media/search/" + $("input[name=query]").val();
+        })
+        $('button').click(function()
+        {
+            window.location = "/media/search/" + $("input[name=query]").val();
+        })
+        
+</script>

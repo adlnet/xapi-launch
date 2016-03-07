@@ -1,0 +1,25 @@
+{
+    "type": "object",
+    "name": "mediaType",
+    "properties":
+    {
+        "uuid":
+        {
+            "type": "string"
+        },
+        "description":
+        {
+            "type": "string"
+        },
+        "name":
+        {
+            "type": "string"
+        },
+        "dataType":
+        {
+            "type": "string",
+            "enum": ["mediaType"]
+        }
+    },
+    "required": ["uuid", "description", "name","dataType"]
+}

@@ -90,7 +90,7 @@ function getQueryVariable(variable) {
                         var key = CryptoJS.PBKDF2(loginRequest.password, salt,
                         {
                             keySize: 512 / 32,
-                            iterations: 1000
+                            iterations: 100
                         });
                         loginRequest.password = key.toString();
                         

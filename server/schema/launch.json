@@ -32,6 +32,9 @@
 			"type": "string",
 			 "enum": ["launchRecord"]
 		},
+		"mediaKey": {
+			"type": "string"
+		},
 		"created": {
 			"type": "integer"
 		},
@@ -43,5 +46,5 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["email", "contentKey","state","dataType","created","uuid","client"]
+	"required": ["email", "contentKey","state","dataType","created","uuid","client","mediaKey"]
 }

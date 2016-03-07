@@ -84,7 +84,7 @@
                         var key = CryptoJS.PBKDF2(createRequest.password, createRequest.salt,
                         {
                             keySize: 512 / 32,
-                            iterations: 1000
+                            iterations: 100
                         });
                         createRequest.password = key.toString();
                         createRequest.salt = createRequest.salt.toString();

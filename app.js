@@ -4,6 +4,7 @@ var app = express();
 var Datastore = require('nedb');
 var DB = null;
 var hoganExpress = require('hogan-express');
+require('pretty-error').start();
 async.series([
 	function loadDB(cb)
 	{
@@ -73,6 +74,8 @@ async.series([
 	require('./server/xapi.js').setup(app, DB);
 	require('./server/admin.js').setup(app, DB);
 	require('./server/content.js').setup(app, DB);
+	require('./server/media.js').setup(app, DB);
+	require('./server/mediaType.js').setup(app, DB);
 	require('./server/launch.js').setup(app, DB);
 	/*app.all("*",function(req,res,next)
 	{

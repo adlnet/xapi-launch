@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "name": "media",
+    "properties":
+    {
+        "url":
+        {
+            "type": "uri"
+        },
+        "title":
+        {
+            "type": "string"
+        },
+        "description":
+        {
+            "type": "string"
+        },
+        "mediaTypeKey":
+        {
+            "type": "string"
+        },
+        "dataType":
+        {
+            "type": "string",
+            "enum": ["media"]
+        },
+        "owner": {
+            "type": "string",
+            "format":"email"
+        }
+    },
+    "required": ["url", "description", "name", "mediaTypeKey","dataType","owner"]
+}

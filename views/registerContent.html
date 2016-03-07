@@ -5,7 +5,7 @@
      <div class='row' >
         <div class="col-md-4"></div>
         <div class="col-md-4">
-            <h2 class="text-center">Register a content URL</h2>
+            <h2 class="text-center">Register an App URL</h2>
         </div>
         <div class="col-md-4"></div>
     </div>
@@ -15,7 +15,7 @@
             <form class="form-signin">
                 
                 <div class="form-group">
-                    <label>Content launch URL</label>
+                    <label>App launch URL</label>
                     <input id="launchURL" type="text" class='form-control' placeholder="URL"></input>
                 </div>
                 <div class="form-group">
@@ -39,6 +39,15 @@
                     <input id="timeToConsume" type="number" class='form-control' placeholder="0, Grace period for the content to launch">{{content.timeToConsume}}</input>
                 </div>
                 <div class="form-group">
+                    <label>Media Type</label>
+                    <select id="mediaTypeKey" type="textarea" class='form-control' placeholder="MediaType">
+                        {{#types}}
+                        <option name="{{name}}" value="{{uuid}}">{{name}}</option>
+                        {{/types}}
+                        
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Launch Type</label>
                     <select id="launchType" type="number" class='form-control' placeholder="0, Grace period for the content to launch">
                         
@@ -50,7 +59,7 @@
                     </select>
                 </div>
             </form>
-            <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Register Content</button>
+            <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Register App</button>
             <div id="feedback" class="hidden alert alert-danger" role="alert">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 <span class="sr-only">Error:</span> <span role="message"></span>
@@ -83,6 +92,8 @@
                 publicKey: $.trim($('#publicKey').val()),
                 timeToConsume: parseFloat($('#timeToConsume').val()) ,
                 sessionLength: parseFloat($('#sessionLength').val()) ,
+                mediaTypeKey: $('#mediaTypeKey').val(),
+                
                 launchType: $('#launchType').val() 
             }
             $.ajax("/content/register",

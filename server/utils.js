@@ -1,3 +1,4 @@
+"use strict";
 var validate = require('jsonschema').validate;
 var schemas = require("./schemas.js");
 

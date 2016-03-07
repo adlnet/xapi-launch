@@ -25,6 +25,7 @@
 
             </p>
             <p>{{description}}{{^description}}No Description{{/description}}</p>
+            <p><span class="glyphicon glyphicon-share-alt"></span> {{launches}} Launches</p>
             <div class="btn-group" role="group">
             {{^mediaTypeKey}}<a class="btn btn-default {{^user}}disabled{{/user}}" href="/launch/{{virtuals.launchKey}}" role="button">Launch</a>{{/mediaTypeKey}}
             {{#mediaTypeKey}}<a class="btn btn-default" href="/mediaType/{{mediaTypeKey}}/media" role="button">Available Media</a>{{/mediaTypeKey}}

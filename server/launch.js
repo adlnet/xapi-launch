@@ -71,6 +71,7 @@ exports.setup = function(app, DAL)
                         res.status(500).send(err);
                     else
                     {
+                        content.incLaunches();
 
                         var clientlaunch = launch.dbForm();
                         var clientContent = content.dbForm();
@@ -132,11 +133,14 @@ exports.setup = function(app, DAL)
                         mediaKey: req.params.key
                     }, function(err, launch)
                     {
+
                         if (err)
                             res.status(500).send(err);
                         else
                         {
-
+                            content.incLaunches();
+                            media.incLaunches();
+                            
                             var clientlaunch = launch.dbForm();
                             var clientContent = content.dbForm();
 

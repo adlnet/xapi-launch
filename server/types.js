@@ -1,4 +1,23 @@
 var saveableType = require("./saveableType").saveableType;
+
+
+function incGenerator(key,self)
+{
+    return function(cb)
+    {
+        var inc = { $inc: {} };
+        inc.$inc[key] = 1;
+        self.DB.update({_id:self._id},inc,function(err)
+        {
+            if(err && cb)
+                return cb(err);
+            else if(cb) return cb();
+        })
+    }
+}
+
+
+
 exports.userAccount = function(email, username, salt, password)
 {
     saveableType(this);
@@ -24,6 +43,8 @@ exports.contentRecord = function(url, title, description, created, accessed, own
     this.iconURL = "";
     this.mediaTypeKey = null;
     this.launchType = 0;
+    this.launches = 0;
+    this.incLaunches = incGenerator("launches",this);
 
 
     this.xapiForm = function()
@@ -100,6 +121,9 @@ exports.media= function()
     this.description = "";
     this.owner = "";
 
+    this.launches = 0;
+    this.incLaunches = incGenerator("launches",this);
+    
 	this.xapiForm = function()
     {
         var def = {};

@@ -16,6 +16,37 @@ function incGenerator(key,self)
     }
 }
 
+function setGenerator(key,self)
+{
+    return function(val,cb)
+    {
+        var addToSet = { $addToSet: {} };
+        addToSet.$addToSet[key] = val;
+        self.DB.update({_id:self._id},addToSet,function(err)
+        {
+            if(err && cb)
+                return cb(err);
+            else if(cb) return cb();
+        })
+    }
+}
+
+function pullGenerator(key,self)
+{
+    return function(val,cb)
+    {
+        var pull = { $pull: {} };
+        pull.$pull[key] = val;
+        self.DB.update({_id:self._id},pull,function(err)
+        {
+            if(err && cb)
+                return cb(err);
+            else if(cb) return cb();
+        })
+    }
+}
+
+
 
 
 exports.userAccount = function(email, username, salt, password)
@@ -45,6 +76,9 @@ exports.contentRecord = function(url, title, description, created, accessed, own
     this.launchType = 0;
     this.launches = 0;
     this.incLaunches = incGenerator("launches",this);
+    this.stars = [];
+    this.star = setGenerator("stars",this);
+    this.unStar = pullGenerator("stars",this);
 
 
     this.xapiForm = function()
@@ -123,7 +157,10 @@ exports.media= function()
 
     this.launches = 0;
     this.incLaunches = incGenerator("launches",this);
-    
+    this.stars = [];
+    this.star = setGenerator("stars",this);
+    this.unStar = pullGenerator("stars",this);
+
 	this.xapiForm = function()
     {
         var def = {};

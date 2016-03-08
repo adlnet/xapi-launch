@@ -17,7 +17,16 @@
             {{/virtuals.mediaType.iconURL}}    
             </p>
             <p>{{description}}{{^description}}No Description{{/description}}</p>
-            <p><span class="glyphicon glyphicon-share-alt"></span> {{launches}} Launches</p>
+            <p><span class="glyphicon glyphicon-share-alt"></span> {{launches}} Launches
+
+                    {{^virtuals.stared}} 
+                    <span class="star"   content="{{virtuals.launchKey}}"  style="color:black"><span class="glyphicon glyphicon-star"></span> {{stars.length}} Stars</span>
+                    {{/virtuals.stared}} 
+                    {{#virtuals.stared}} 
+                    <span class="unstar"  content="{{virtuals.launchKey}}"  style="color:#44E"><span class="glyphicon glyphicon-star"></span> {{stars.length}} Stars</span>
+                    {{/virtuals.stared}} 
+
+            </p>
             <div class="btn-group" role="group">
             
             <a class="btn btn-default {{^user}}disabled{{/user}}" href="/launch/media/{{virtuals.launchKey}}" role="button">Launch</a>
@@ -44,4 +53,28 @@
     </div>
     <hr> {{>footer}}
 </div>
+<script type="text/javascript">
+    
+        {{#user}}
+        $(".star").css("cursor","pointer")
+        $(".unstar").css("cursor","pointer")
+            $(".star").click(function()
+            {
+                $(this).css("color","#55E")
+                $.post("/media/" + $(this).attr("content") +"/star",function()
+                {
+                    window.location.reload();
+                }) 
+            })
+            $(".unstar").click(function()
+            {
+                $(this).css("color","#000");
+                $.post("/media/" + $(this).attr("content") +"/unstar",function()
+                {
+                    window.location.reload();
+                }) 
+            })
+        {{/user}}
+
+</script>
 <!-- /container -->

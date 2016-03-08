@@ -191,6 +191,7 @@ exports.setup = function(app, DAL)
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
                         results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         for (var j in types)
@@ -222,6 +223,34 @@ exports.setup = function(app, DAL)
             }
         })
     });
+    app.post("/content/:key/star", ensureLoggedIn(function(req, res, next)
+    {
+            DAL.getContentByKey(req.params.key,function(err,content)
+            {
+                    if(err)
+                        return res.status(500).send(err);
+                    if(!content)
+                        return res.status(400).send("content not found");
+                    content.star(req.user.email,function()
+                    {
+                            res.status(200).send();
+                    })
+            });
+    }));
+    app.post("/content/:key/unstar", ensureLoggedIn(function(req, res, next)
+    {
+            DAL.getContentByKey(req.params.key,function(err,content)
+            {
+                    if(err)
+                        return res.status(500).send(err);
+                    if(!content)
+                        return res.status(400).send("content not found");
+                    content.unStar(req.user.email,function()
+                    {
+                            res.status(200).send();
+                    })
+            });
+    }));
     app.get("/content/:key/launches", function(req, res, next)
     {
         DAL.getAllContentLaunch(req.params.key, function(err, results)
@@ -296,6 +325,7 @@ exports.setup = function(app, DAL)
                         results[i].virtuals.launchKey = results[i]._id;
                         results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                        results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
                          for (var j in types)
                             if (types[j].uuid == results[i].mediaTypeKey)
                                 results[i].virtuals.mediaType = types[j];

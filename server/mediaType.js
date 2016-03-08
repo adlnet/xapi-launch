@@ -48,6 +48,7 @@ exports.setup = function(app, DAL)
                         results[i].virtuals.launchKey = results[i].key;
                         results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                        results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
                         results[i].virtuals.mediaType = mediaType;
                     }
                     res.locals.results = results;

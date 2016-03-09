@@ -13,7 +13,7 @@ var config = require("./config.js").config;
 exports.setup = function(app, DAL)
 {
     //need some input on actual xAPI data here.
-    function sendLaunchData(launch, req, res)
+    function sendLaunchData(launch, req, res, reinit)
     {
         DAL.getUser(launch.email, function(err, user)
         {
@@ -35,12 +35,13 @@ exports.setup = function(app, DAL)
                     launchData.contextActivities.parent = content.xapiForm();
                     launchData.contextActivities.grouping = launch.xapiForm();
                     launchData.sessionLength = content.sessionLength;
+                    launchData.initializationCode = reinit ? 1 : 0;
                     if (media)
                         launchData.media = media.dbForm();
                     if (content.publicKey)
                     {
                         var key = require("node-rsa").key(content.publicKey);
-                        launchData = key.encrypt(key, 'hex', 'utf8');
+                        launchData = key.encrypt(launchData, 'hex', 'utf8');
                     }
 
                     res.status(200).send(launchData);
@@ -218,7 +219,7 @@ exports.setup = function(app, DAL)
                         //can re-fetch actor data from this endpoint. 
                         if (launch.client == req.sessionID)
                         {
-                            sendLaunchData(launch, req, res);
+                            sendLaunchData(launch, req, res,true);
                             return;
                         }
                         else

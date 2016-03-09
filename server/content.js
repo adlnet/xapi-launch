@@ -388,6 +388,8 @@ exports.setup = function(app, DAL)
                     }
                     res.locals.pageTitle = "Results for " + (content ? content.title : launch.email);
                     res.locals.results = JSON.parse(body).statements;
+                    for(var i in res.locals.results)
+                        res.locals.results[i].str = JSON.stringify(res.locals.results[i],null,2);
                     res.render("statements", res.locals);
                 }).auth(config.LRS_Username, config.LRS_Password, true)
             })

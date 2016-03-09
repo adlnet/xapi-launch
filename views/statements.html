@@ -28,11 +28,31 @@
                 <td>{{timestamp}}</td>
             </tr>
             <tr>
-                <td colspan="6" ></td>
+                <td colspan="6" >
+                    <span style="cursor:pointer;" class="showStatement glyphicon glyphicon-align-justify"></span>
+                    <pre style = "display:none">
+                    <code >
+{{{str}}}
+                    </code>
+                    </pre>
+                    
+                </td>
+                    
             </tr>
             {{/results}}
         </table>
     </div>
     <hr> {{>footer}}
 </div>
+<script type="text/javascript">
+    
+        $(".showStatement").click(function()
+        {
+            if($(this).next().css('display') == "none")
+                    $(this).next().show();
+            else
+                   $(this).next().hide();    
+        })
+
+</script>
 <!-- /container -->

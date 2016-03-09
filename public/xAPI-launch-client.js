@@ -29,8 +29,6 @@ function cb_wrap(cb)
         }, 0)
     }
 }
-
-
 //The library will append the necessary launch info to each new A that is linked to the page. 
 //NOTE: This cannot work if you programmatically change the window location. If you do, you must
 //execute the logic in setupCourseLinks to send the initialization data to the new location (if
@@ -41,12 +39,12 @@ function observeForNewLinks()
     var target = document.body;
     // create an observer instance
     var observer = new MutationObserver(function(mutations)
-    {  
+    {
         mutations.forEach(function(mutation)
         {
-            for(var i in mutation.addedNodes)
+            for (var i in mutation.addedNodes)
             {
-                if(mutation.addedNodes[i].constructor == HTMLAnchorElement)
+                if (mutation.addedNodes[i].constructor == HTMLAnchorElement)
                 {
                     var node = $(mutation.addedNodes[i]);
                     setupCourseLinks(node);
@@ -58,12 +56,12 @@ function observeForNewLinks()
     var config = {
         attributes: true,
         childList: true,
-        subtree:true
+        subtree: true
     };
     // pass in the target node, as well as the observer options
     observer.observe(target, config);
     // later, you can stop observing
-  ///  observer.disconnect();
+    ///  observer.disconnect();
 }
 //This library will init all links in the DOM that include the attribute "courseLink = true"
 //with the information necessary for the document at that link to track as part of this session.
@@ -108,12 +106,24 @@ function xAPILaunch(cb, terminate_on_unload)
         {
             //here, we'd have to implement decryption for the data. This makes little sense in a client side only course
         }
+        debugger;
         if (!launchToken || !launchEndpoint)
             return cb("invalid launch parameters");
         var launch = new URL(launchEndpoint);
         launch.pathname += "launch/" + launchToken;
-        $.post(launch.toString(), function() {}).success(function(body, xhr)
+        $.ajax(
         {
+            url: launch.toString(),
+            type: "POST",
+            dataType: "json",
+            xhrFields:
+            {
+                withCredentials: true
+            },
+            crossDomain: true
+        }).success(function(body, xhr)
+        {
+
             var launchData = body;
             var conf = {};
             conf['endpoint'] = launchData.endpoint;
@@ -134,7 +144,6 @@ function xAPILaunch(cb, terminate_on_unload)
                 })
             }
             ADL.XAPIWrapper.changeConfig(conf);
-
             //Links that include "courseLink='true'"
             setupCourseLinks($(document.body).find("a"));
             //Also, if links are added dynamically, we will do the same logic for those links.

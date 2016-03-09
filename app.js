@@ -82,4 +82,16 @@ async.series([
 		res.redirect("/");
 	});*/
 	app.listen(3000, function() {})
+
+	var app2 = express();
+	app2.use('/static', express.static('public'));
+	app2.listen(3001, function() {});
+
+	var app3 = express();
+	app3.use('/static', express.static('public'));
+	app3.listen(3002, function() {})
+
+	var app4 = express();
+	app4.use('/static', express.static('public'));
+	app4.listen(3003, function() {})
 });

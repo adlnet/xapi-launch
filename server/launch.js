@@ -21,14 +21,12 @@ exports.setup = function(app, DAL)
             {
                 DAL.getMedia(launch.mediaKey, function(err, media)
                 {
-
                     var launchData = {};
                     launchData.actor = {
                         objectType: "Agent",
                         name: user.username,
                         mbox: "mailto:" + user.email
                     };
-
                     var localServer = "http://localhost:3000/"; //this should come from a config file
                     launchData.endpoint = localServer + "launch/" + launch.uuid + "/xAPI/";
                     launchData.contextActivities = {};
@@ -36,6 +34,7 @@ exports.setup = function(app, DAL)
                     launchData.contextActivities.grouping = launch.xapiForm();
                     launchData.sessionLength = content.sessionLength;
                     launchData.initializationCode = reinit ? 1 : 0;
+                    console.log("Sending launch data");
                     if (media)
                         launchData.media = media.dbForm();
                     if (content.publicKey)
@@ -43,10 +42,8 @@ exports.setup = function(app, DAL)
                         var key = require("node-rsa").key(content.publicKey);
                         launchData = key.encrypt(launchData, 'hex', 'utf8');
                     }
-
                     res.status(200).send(launchData);
                 })
-
             })
         })
     }
@@ -73,14 +70,10 @@ exports.setup = function(app, DAL)
                     else
                     {
                         content.incLaunches();
-
                         var clientlaunch = launch.dbForm();
                         var clientContent = content.dbForm();
-
                         clientContent.publicKey = !!clientContent.publicKey; //be sure not to send the actual public key to the client
-
                         res.locals.endpoint = "http://localhost:3000/"; //this should come from the config file
-
                         //the the content has a public key, use it to encrypt the data. Note that the student has access to
                         //the launch uuid in plaintext... is this ok?
                         if (content.publicKey)
@@ -89,11 +82,8 @@ exports.setup = function(app, DAL)
                             clientlaunch.uuid = key.encrypt(clientlaunch.uuid, 'hex', 'utf8');
                             res.locals.endpoint = key.encrypt(res.locals.endpoint, 'hex', 'utf8');
                         }
-
                         res.locals.launch = JSON.stringify(clientlaunch);
                         res.locals.content = JSON.stringify(clientContent);
-
-
                         res.render("launch.html", res.locals);
                     }
                 })
@@ -104,8 +94,6 @@ exports.setup = function(app, DAL)
             }
         })
     }));
-
-
     //Get a new launch token for a given piece of content. This must be requested by the student logged into
     //the launchpad. If there is valid content, we create a new launch token and save it to the DB.
     //Some client will trade this token for credentials and an endpoint for xAPI statements.
@@ -122,7 +110,6 @@ exports.setup = function(app, DAL)
                     return res.status(401).send(err);
                 if (!allPlayers || allPlayers.length == 0)
                     return res.status(401).send("No apps can play this content");
-
                 //might want to let the use choose which player
                 var content = allPlayers[0];
                 if (content)
@@ -134,21 +121,16 @@ exports.setup = function(app, DAL)
                         mediaKey: req.params.key
                     }, function(err, launch)
                     {
-
                         if (err)
                             res.status(500).send(err);
                         else
                         {
                             content.incLaunches();
                             media.incLaunches();
-                            
                             var clientlaunch = launch.dbForm();
                             var clientContent = content.dbForm();
-
                             clientContent.publicKey = !!clientContent.publicKey; //be sure not to send the actual public key to the client
-
                             res.locals.endpoint = "http://localhost:3000/"; //this should come from the config file
-
                             //the the content has a public key, use it to encrypt the data. Note that the student has access to
                             //the launch uuid in plaintext... is this ok?
                             if (content.publicKey)
@@ -157,11 +139,8 @@ exports.setup = function(app, DAL)
                                 clientlaunch.uuid = key.encrypt(clientlaunch.uuid, 'hex', 'utf8');
                                 res.locals.endpoint = key.encrypt(res.locals.endpoint, 'hex', 'utf8');
                             }
-
                             res.locals.launch = JSON.stringify(clientlaunch);
                             res.locals.content = JSON.stringify(clientContent);
-
-
                             res.render("launch.html", res.locals);
                         }
                     })
@@ -170,16 +149,28 @@ exports.setup = function(app, DAL)
                 {
                     res.status(500).send(err);
                 }
-
             })
         })
     }));
-
     //Some client is trading the launch key for endpoints and actor info. This can only happen
     //once. After the token is exchanged, the client session identifier is used to access the database
     //and xAPI operations. We do this becaus the client will forward the launch token to some other server
     //via a querystring. That server will either exchange the token itself, or serve code to the client that will
     //exchange the token directly.
+    app.use(function(req, res, next)
+    {
+        if (req.headers["referer"])
+        {
+            var referer = require('url').parse(req.headers['referer']);
+            res.set("Access-Control-Allow-Origin", referer.protocol + "//" +referer.host);
+        }
+        else
+            res.set("Access-Control-Allow-Origin", "*");
+        res.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+
+        res.set("Access-Control-Allow-Credentials","true");
+        next();
+    });
     app.post("/launch/:key", function(req, res, next)
     {
         if (lockedKeys[req.params.key])
@@ -219,7 +210,7 @@ exports.setup = function(app, DAL)
                         //can re-fetch actor data from this endpoint. 
                         if (launch.client == req.sessionID)
                         {
-                            sendLaunchData(launch, req, res,true);
+                            sendLaunchData(launch, req, res, true);
                             return;
                         }
                         else
@@ -298,20 +289,15 @@ exports.setup = function(app, DAL)
                     res.status(500).send("You are not the registered consumer for this launch.");
                     return;
                 }
-
                 req.launch = launch;
                 DAL.getContentByKey(launch.contentKey, function(err, content)
                 {
-
-
                     if (err || !content)
                     {
                         res.status(500).send("The content associated with this launch has been removed");
                         return
                     }
                     req.content = content;
-
-
                     //it might also be better to use the cookie timeout to scope this... but I think that 
                     //the client could hold onto the cookie longer than the specified timeout if 
                     //the client is a server and implementing its own HTTP
@@ -336,18 +322,14 @@ exports.setup = function(app, DAL)
                         req.media = media;
                         cb(req, res, next);
                     })
-
                 })
-
             });
         }
     }
-
     app.post("/launch/:key/xAPI/statements", validateLaunchSession(function(req, res, next)
     {
         //here, we need to validate the activity and append the context data
         //then forward to our registered LRS
-
         var postedStatement = req.body;
         if (postedStatement.constructor !== 'Array')
         {
@@ -436,7 +418,7 @@ exports.setup = function(app, DAL)
                     else
                     {
                         contextActivities.grouping = [contextActivities.grouping, req.content.xapiForm()];
-                        if(request.media)
+                        if (request.media)
                         {
                             contextActivities.grouping.push(req.media.xapiForm());
                         }
@@ -451,7 +433,6 @@ exports.setup = function(app, DAL)
                 }
             }
         }
-
         (function post(url)
         {
             //send the modified statement up to the configured LRS
@@ -472,14 +453,12 @@ exports.setup = function(app, DAL)
                 if (e)
                 {
                     res.status(500).send(e);
-
                 }
                 else
                 {
                     if (r.statusCode == 301)
                     {
                         post(r.headers.location);
-
                     }
                     else
                     {
@@ -491,14 +470,12 @@ exports.setup = function(app, DAL)
             }).auth(config.LRS_Username, config.LRS_Password, true);
         })(config.LRS_Url + "/statements");
     }));
-
     app.all("/launch/:key/xAPI/*", validateLaunchSession(function(req, res, next)
     {
         //passthrough all other XAPI statements
         var proxyAddress = config.LRS_Url + req.params[0];
         req.pipe(require('request')(proxyAddress)).pipe(res);
     }));
-
     app.get("/launches/:key", function(req, res, next)
     {
         DAL.getLaunchByGuid(req.params.key, function(err, launch)
@@ -527,8 +504,6 @@ exports.setup = function(app, DAL)
             }
         });
     });
-
-
     app.post("/launch/:key/terminate", validateLaunchSession(validateTypeWrapper(schemas.termination, function(req, res, next)
     {
         //the content explicitly terminates the launch session

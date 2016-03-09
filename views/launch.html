@@ -1,6 +1,6 @@
 <!-- Main jumbotron for a primary marketing message or call to action -->
 {{>header}}
-<div class="container" style="margin-top:3em">
+<div class="container" style="margin-top:4em">
     <!-- Example row of columns -->
     <div class='row' >
         <div class="col-md-4"></div>
@@ -23,7 +23,7 @@
     <div class='row'>
         <div class="col-md-4"></div>
         <div class="col-md-4">
-            {{>footer}}
+           
         </div>
         <div class="col-md-4"></div>
     </div>
@@ -66,8 +66,9 @@ $(document).ready(function(){
         {
             "width": "100%",
             "height": "calc(100% - 10em)",
-            "border":"none"
+            "border":"3px solid black"
         })
+        $("<div><span class = 'glyphicon glyphicon-arrow-up' ></span>Hosted at "+ content.url+"</div>").insertAfter(frame);
     }
     if (content.launchType == "manual")
     {

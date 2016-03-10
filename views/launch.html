@@ -50,8 +50,17 @@ $(document).ready(function(){
 
     if (content.launchType == "popup")
     {
-        window.open(url.toString(), "_blank");
-        window.location = "/users/launches";
+        var newWin = window.open(url.toString(), "_blank");
+
+        if(!newWin || newWin.closed || typeof newWin.closed=='undefined') 
+        {
+           var frame = $("<h2 class='text-center'>Please enable popup windows to view this content.</h2>").appendTo("#content");
+        }else
+        {
+            window.location = "/users/launches";    
+        }
+
+        
     }
     if (content.launchType == "redirect")
     {

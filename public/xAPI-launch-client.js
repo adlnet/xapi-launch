@@ -106,7 +106,7 @@ function xAPILaunch(cb, terminate_on_unload)
         {
             //here, we'd have to implement decryption for the data. This makes little sense in a client side only course
         }
-        debugger;
+        
         if (!launchToken || !launchEndpoint)
             return cb("invalid launch parameters");
         var launch = new URL(launchEndpoint);

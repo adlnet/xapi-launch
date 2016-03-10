@@ -167,8 +167,15 @@ exports.setup = function(app, DAL)
         else
             res.set("Access-Control-Allow-Origin", "*");
         res.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-
+        res.set("Access-Control-Allow-Headers","X-Experience-API-Version, Authorization, Content-Type")
         res.set("Access-Control-Allow-Credentials","true");
+
+        if(req.method == 'OPTIONS')
+        {
+             res.status(200).send();
+             return;
+        }
+
         next();
     });
     app.post("/launch/:key", function(req, res, next)

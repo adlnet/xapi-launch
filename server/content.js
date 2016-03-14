@@ -359,8 +359,10 @@ exports.setup = function(app, DAL)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
+            console.log("got content");
             DAL.getLaunchByGuid(req.params.key, function(err, launch)
             {
+                console.log("got launch");
                 if (content && req.user.email !== content.owner)
                     return res.status(401).send("You are not the owner of this content.");
                 if (launch && launch.email !== req.user.email)

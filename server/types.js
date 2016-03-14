@@ -1,5 +1,8 @@
 var saveableType = require("./saveableType").saveableType;
 
+var mongo = require('mongodb')
+
+
 
 function incGenerator(key,self)
 {
@@ -7,7 +10,7 @@ function incGenerator(key,self)
     {
         var inc = { $inc: {} };
         inc.$inc[key] = 1;
-        self.DB.update({_id:self._id},inc,function(err)
+        self.DB.update({_id:(new mongo.ObjectID(self._id))},inc,function(err)
         {
             if(err && cb)
                 return cb(err);
@@ -22,7 +25,7 @@ function setGenerator(key,self)
     {
         var addToSet = { $addToSet: {} };
         addToSet.$addToSet[key] = val;
-        self.DB.update({_id:self._id},addToSet,function(err)
+        self.DB.update({_id:(new mongo.ObjectID(self._id))},addToSet,function(err)
         {
             if(err && cb)
                 return cb(err);
@@ -37,7 +40,7 @@ function pullGenerator(key,self)
     {
         var pull = { $pull: {} };
         pull.$pull[key] = val;
-        self.DB.update({_id:self._id},pull,function(err)
+        self.DB.update({_id:(new mongo.ObjectID(self._id))},pull,function(err)
         {
             if(err && cb)
                 return cb(err);

@@ -7,14 +7,24 @@ var getAllGenerator = require("./dalFunctionFactory.js").getAllGenerator;
 var createGenerator = require("./dalFunctionFactory.js").createGenerator;
 var searchGenerator = require("./dalFunctionFactory.js").searchGenerator;
 
+
+var mongo = require('mongodb')
+
+
 function DAL(DB)
 {
     this.DB = DB;
     this.DB.get = function(key, cb)
     {
+        try{
+        var ID = (new mongo.ObjectID(key));
+    }catch(e)
+    {
+        return cb();
+    }
         DB.findOne(
         {
-            _id: key
+            _id: ID
         }, function(err, doc)
         {
             cb(err, doc)
@@ -23,7 +33,7 @@ function DAL(DB)
     this.DB.save = function(key, value, cb)
     {
         if (key)
-            value._id = key;
+            value._id = (new mongo.ObjectID(key));
         DB.insert(value, function(err, doc)
         {
             if (err)

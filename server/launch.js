@@ -103,7 +103,11 @@ exports.setup = function(app, DAL)
     app.get("/launch/media/:key", ensureLoggedIn(function(req, res, next)
     {
         DAL.getMedia(req.params.key, function(err, media)
-        {
+        {   
+            if(!media)
+            {
+                return res.status(401).send("invalid media key");
+            }
             DAL.getAllContentByMediaType(media.mediaTypeKey, function(err, allPlayers)
             {
                 if (err)

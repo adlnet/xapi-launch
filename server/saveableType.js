@@ -1,5 +1,9 @@
 "use strict";
 
+
+var mongo = require('mongodb')
+
+
 function saveableType(self)
 {
     self.virtuals = {};
@@ -64,7 +68,7 @@ function saveableType(self)
                 {
                     self.DB.update(
                     {
-                        _id: self.key
+                        _id: (new mongo.ObjectID(self.key))
                     }, self.dbForm(), function(err, num)
                     {
                         if (err)
@@ -99,7 +103,7 @@ function saveableType(self)
                 console.log('remove ', self.key);
                 self.DB.remove(
                 {
-                    _id: self.key
+                    _id: (new mongo.ObjectID(self.key))
                 },
                 {}, cb)
             }

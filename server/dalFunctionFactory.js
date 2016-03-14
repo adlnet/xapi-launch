@@ -6,6 +6,7 @@
 var async = require('async');
 var ensureOneCall = require('./utils.js').ensureOneCall;
 var validate = require('jsonschema').validate;
+var mongo = require('mongodb')
 
 function ensureOneCall(cb)
 {
@@ -30,6 +31,7 @@ exports.init = function(types)
             return function(keyval, got)
             {
                 var self = this;
+               
                 self.DB.get(
                     keyval, ensureOneCall(function(err, doc)
                     {
@@ -50,7 +52,7 @@ exports.init = function(types)
                             if (record.dataType == dataTypeName)
                             {
                                 var content = new types[typeConstructor]();
-                                content.init(keyval, self.DB, self, record, function(err)
+                                content.init(keyval.toString(), self.DB, self, record, function(err)
                                 {
                                     if (err) got(err);
                                     return got(null, content);
@@ -77,7 +79,7 @@ exports.init = function(types)
                 query[keyname] = keyval;
                
                 self.DB.find(
-                    query, ensureOneCall(function(err, results)
+                    query).toArray( ensureOneCall(function(err, results)
                     {
                         if (results.length > 1)
                         {
@@ -95,7 +97,7 @@ exports.init = function(types)
                             if (record.dataType == dataTypeName)
                             {
                                 var content = new types[typeConstructor]();
-                                content.init(record._id, self.DB, self, record, function(err)
+                                content.init(record._id.toString(), self.DB, self, record, function(err)
                                 {
                                     if (err)
                                         return got(err);
@@ -115,7 +117,7 @@ exports.init = function(types)
     {
         return function(cond, gotContent)
         {
-           
+            console.log(cond)
             if (!condition)
                 gotContent = cond;
             var self = this;
@@ -127,8 +129,9 @@ exports.init = function(types)
                 query[condition] = cond;
             }
             this.DB.find(
-                query, ensureOneCall(function(err, results)
+                query).toArray( ensureOneCall(function(err, results)
                 {
+                    console.log(results);
                     if (err)
                         gotContent(err)
                     else
@@ -137,12 +140,12 @@ exports.init = function(types)
                         async.eachSeries(results, function(i, cb)
                             {
                                 var record = i;// results[i];
-                                console.log("I is:" + JSON.stringify(i));
+                               // console.log("I is:" + JSON.stringify(i));
                                 if(!record) return cb();
                                 if (record.dataType == dataTypeName)
                                 {
                                     var content = new types[typeConstructor]();
-                                    content.init(record._id, self.DB, self, record, function(err)
+                                    content.init(record._id.toString(), self.DB, self, record, function(err)
                                     {
                                         if (err) return cb(err);
                                         allcontent.push(content);
@@ -234,7 +237,20 @@ exports.init = function(types)
             for (var i in searchfields)
             {
                 var field = {};
-                field[searchfields[i]] = regex;
+                         
+                if(searchfields[i] == "_id")
+                {
+                    try{
+                    console.log(regex.source);
+                    field[searchfields[i]] = new mongo.ObjectID(regex.source);  
+                    }catch(e)
+                    {
+
+                    }
+                }else
+                {
+                    field[searchfields[i]] = regex;    
+                }
                 search.$and[1].$or.push(field);
             }
 
@@ -249,7 +265,7 @@ exports.init = function(types)
                     if (record.dataType == dataTypeName)
                     {
                         var content = new types[typeConstructor]();
-                        content.init(record._id, self.DB, self, record, function(err)
+                        content.init(record._id.toString(), self.DB, self, record, function(err)
                         {
                             if (err) return cb(err);
                             allcontent.push(content);
@@ -263,11 +279,11 @@ exports.init = function(types)
             };
             if (!skip && !limit && !sort)
             {
-                self.DB.find(search).exec(searchComplete);
+                self.DB.find(search).toArray(searchComplete);
             }
             else
             {
-                self.DB.find(search).skip(skip).limit(limit).sort(sort).exec(searchComplete);
+                self.DB.find(search).skip(skip).limit(limit).sort(sort).toArray(searchComplete);
             }
         }
     }

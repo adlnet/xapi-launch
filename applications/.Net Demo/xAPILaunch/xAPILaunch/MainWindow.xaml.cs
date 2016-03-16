@@ -122,7 +122,7 @@ namespace WpfApplication1
                 Question1Tab.IsEnabled = true;
                 Question1Tab.Focus();
                 lblWelcome.Content = "Welcome " + launchData.Actor.name + "!";
-
+                launchAPI.postInitialize(null);
             }else
             {
                 System.Windows.Forms.MessageBox.Show(launchData.response);

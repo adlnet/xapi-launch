@@ -182,8 +182,8 @@ exports.setup = function(app, DAL) {
                             sendLaunchData(launch, req, res, true);
                             return;
                         } else {
-                            res.status(500).send("The launch token has already been used.");
-                            return
+                            //      res.status(500).send("The launch token has already been used.");
+                            //    return
                         }
                     }
                     //if the content does not initiate the launch in 60 seconds,
@@ -360,48 +360,57 @@ exports.setup = function(app, DAL) {
         var demoPrivateKey = "-----BEGIN RSA PRIVATE KEY-----\nMIICXgIBAAKBgQCq480SFNQfy/HSkox2swxsan4w6zEXQGyMmSMyvxInEj26wuOY\nxj3N7E0GzX5qjKXS12ZjSi618XNgdFuJq4b68oyf5URiR1qrTa3EAK36hPsxtXnE\nO9fse0tcMI5gh5mVk378mTTOl5Kv7MLe9gBkjMveoqg3Tmu1It3Zmh8wZwIDAQAB\nAoGBAIHKOGNmPGHV9Nl4goRYorPpAeTHjGZbgNYcLPaK1g+ktAuXn2LWFfTDZxEm\nm7/zCLKk9Feu7OE0++sjFK7v/rh2D9gU+ocGljjp+uySZkpFovtrszs9mnT7iLMR\nNytenT/sZUsLA72PUP9MDryzMdW1dJi95PdstGJxugAy943hAkEA1uy4jpl6TDai\nITc7Z4IVnH/w2X8p4pkSQJtOtFm2RQlX7MIDNlNZJx4g2G8wc2juonoAIWnWjEnO\nMsKO4szGFwJBAMuMqEORZru0NgVXB2vkVYsZ6fZdcwZlavpaj2wI0miUEIb2dPLe\niNQhuGOL6wZTTIwpphUAp0hmfDOg79TuqjECQQCXiHmrWPzIRXDUWHvSw/32xKIM\nx0LB2EjtMlMwh1wimq7aaAQZxnRCR1TDJMoVZPNzrO7woA28BcGTOmfB8rzrAkEA\ngV83GyrxNuBFbYNxDhwkWrLvx0yB7VDMe67PdYTt5tYk4wMGNc9G/D0qaurlSDHt\ndzCJhNPTfurUiiQCCz5eIQJACZgrfK3pe8YzkmCWJMzFUgcX7O/8qU2aSuP+xkMI\nCvTe0zjWjU7wB5ftdvcQb6Pf7NCKwYJyMgwQHZttHmb4WQ==\n-----END RSA PRIVATE KEY-----";
         var demoPublicKey = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCq480SFNQfy/HSkox2swxsan4w\n6zEXQGyMmSMyvxInEj26wuOYxj3N7E0GzX5qjKXS12ZjSi618XNgdFuJq4b68oyf\n5URiR1qrTa3EAK36hPsxtXnEO9fse0tcMI5gh5mVk378mTTOl5Kv7MLe9gBkjMve\noqg3Tmu1It3Zmh8wZwIDAQAB\n-----END PUBLIC KEY-----";
         var jwt = require('jsonwebtoken');
-        var token = jwt.sign(postedStatement, demoPrivateKey, {
-            algorithm: 'RS256'
-        });
-        const hash = require("crypto").createHash('sha256')
-            .update(token)
-            .digest('hex');
-        if (!postedStatement.attachments)
-            postedStatement.attachments = [];
-        var attachmentMetadata = {
-            "usageType": "http://adlnet.gov/expapi/attachments/signature",
-            "display": {
-                "en-US": "A JWT signature"
-            },
-            "description": {
-                "en-US": "Signing this doc was posted from the Launch Server"
-            },
-            "contentType": "application/octet-stream",
-            "length": Buffer.byteLength(token),
-            "sha2": hash,
-            "x5c": demoPublicKey
-        }
-        postedStatement.attachments.push(attachmentMetadata);
-
-        console.log(postedStatement);
 
         var FormData = require('form-data');
         var form = new FormData();
 
-        var CRLF = "\r\n";
+        var CRLF = "\n\r";
 
         var options = {
-            header: CRLF + '--' + form.getBoundary() + CRLF + 'Content-Type:application/json' + CRLF + CRLF
+            header: CRLF + '--' + form.getBoundary() + CRLF + 'content-type:application/json' + CRLF + CRLF
 
         };
 
+
+
+        var sigs = [];
+        for (var i = 0; i < postedStatement.length; i++) {
+            var token = jwt.sign(postedStatement[i], demoPrivateKey, {
+                algorithm: 'RS256'
+            });
+            const hash = require("crypto").createHash('sha256')
+                .update(token)
+                .digest('hex');
+            if (!postedStatement[i].attachments)
+                postedStatement[i].attachments = [];
+            var attachmentMetadata = {
+                "usageType": "http://adlnet.gov/expapi/attachments/signature",
+                "display": {
+                    "en-US": "A JWT signature"
+                },
+                "description": {
+                    "en-US": "Signing this doc was posted from the Launch Server"
+                },
+                "contentType": "application/octet-stream",
+                "length": Buffer.byteLength(token),
+                "sha2": hash,
+                "x5c": demoPublicKey
+            }
+            postedStatement[i].attachments.push(attachmentMetadata);
+
+            sigs.push({
+                options: {
+                    header: CRLF + '--' + form.getBoundary() + CRLF + 'x-experience-api-hash:' + hash + CRLF + "content-type:application/octet-stream" + CRLF + CRLF
+                },
+                val: new Buffer(token)
+            })
+
+
+
+        }
         form.append('statement', JSON.stringify(postedStatement), options);
-
-        options = {
-            header: CRLF + '--' + form.getBoundary() + CRLF + 'X-Experience-API-Hash:' + hash + "Content-Type:application/octet-stream" + CRLF + CRLF
-        };
-
-        form.append('signature', new Buffer(token), options);
+        for (var i in sigs)
+            form.append('signature', sigs[i].val, sigs[i].options);
 
         function combine(a, b) {
             for (var i in b)
@@ -411,51 +420,67 @@ exports.setup = function(app, DAL) {
         form.getLength(function(err, len) {
 
             console.log("got len ", len);
-            (function post(url) {
-                //send the modified statement up to the configured LRS
-                var postReq = require('request')({
-                    uri: url,
-                    method: "POST",
-                    json: true,
-                    followRedirect: true,
-                    headers: combine({
-                        "X-Experience-API-Version": req.headers[
-                            "x-experience-api-version"],
-                        "Content-Length": len
-                    }, form.getHeaders())
-                }).auth(config.LRS_Username, config.LRS_Password, true);
-                form.pipe(postReq);
-                postReq.on('response', function(r) {
+            var concat = require('concat-stream');
 
-                });
-                postReq.on("response", function(r) {
+            form.pipe(concat(function(buf) {
+                // buf is a Node Buffer instance which contains the entire data in stream
+                // if your stream sends textual data, use buf.toString() to get entire stream as string
+                var streamContent = buf.toString();
 
-                    var data = "";
 
-                    postReq.on('data', function(chunk) {
-                        console.log(chunk);
-                        data += chunk;
+
+                (function post(url) {
+                    //send the modified statement up to the configured LRS
+                    var postReq = require('request')({
+                        uri: url,
+                        method: "POST",
+                        
+                        followRedirect: true,
+                        data: postedStatement,
+                        headers: combine({
+                            "X-Experience-API-Version": req.headers[
+                                "x-experience-api-version"],
+                            "Content-Length": len
+                        }, form.getHeaders())
+                    }).auth(config.LRS_Username, config.LRS_Password, true);
+
+
+                    postReq.headers["content-type"] = postReq.headers["content-type"].replace("form-data", "mixed");
+                    console.log(postReq.headers);
+                    console.log(streamContent);
+                    postReq.on('response', function(r) {
+
+                    });
+                    postReq.on("response", function(r) {
+
+                        var data = "";
+
+                        postReq.on('data', function(chunk) {
+
+                            data += chunk;
+                        });
+
+                        postReq.on('end', function() {
+                            if (r.statusCode == 301) {
+                                post(r.headers.location);
+                            } else {
+
+                                res.status(r.statusCode).send(data);
+                                console.log(data);
+                            }
+                        })
+
+
                     });
 
-                    postReq.on('end', function() {
-                        if (r.statusCode == 301) {
-                            post(r.headers.location);
-                        } else {
-                            console.log(r.request.headers);
-                            console.log(config.LRS_Username, config.LRS_Password);
-                            res.status(r.statusCode).send(data);
-                            console.log(r);
-                        }
-                    })
 
+                    postReq.on('error', function(e) {
+                        res.status(500).send(e);
+                    });
 
-                });
-
-
-                postReq.on('error', function(e) {
-                    res.status(500).send(e);
-                });
-            })(config.LRS_Url + "/statements");
+                    postReq.pipe(require('fs').createWriteStream("./debug"));
+                })(config.LRS_Url + "/statements");
+            }));
 
         })
 

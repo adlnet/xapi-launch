@@ -286,7 +286,7 @@ exports.setup = function(app, DAL) {
         }
         for (var i = 0; i < postedStatement.length; i++) {
             if (!postedStatement[i].context) {
-                postedStatement[i].context = {};
+                postedStatement[i].context = {}; 
             }
             var contextActivities = postedStatement[i].context.contextActivities;
             if (!contextActivities)
@@ -364,10 +364,10 @@ exports.setup = function(app, DAL) {
         var FormData = require('form-data');
         var form = new FormData();
 
-        var CRLF = "\n\r";
+        var CRLF = "\r\n";
 
         var options = {
-            header: CRLF + '--' + form.getBoundary() + CRLF + 'content-type:application/json' + CRLF + CRLF
+            header: CRLF + '--' + form.getBoundary() + CRLF + 'content-type: application/json' + CRLF+ "Content-Disposition: form-data; name=\"statement\"" +  CRLF + CRLF
 
         };
 
@@ -378,9 +378,10 @@ exports.setup = function(app, DAL) {
             var token = jwt.sign(postedStatement[i], demoPrivateKey, {
                 algorithm: 'RS256'
             });
-            const hash = require("crypto").createHash('sha256')
-                .update(token)
-                .digest('hex');
+            var hash = require("crypto").createHash('sha256')
+                .update(token).digest();
+            hash = hash.toString('base64');
+          
             if (!postedStatement[i].attachments)
                 postedStatement[i].attachments = [];
             var attachmentMetadata = {
@@ -394,15 +395,15 @@ exports.setup = function(app, DAL) {
                 "contentType": "application/octet-stream",
                 "length": Buffer.byteLength(token),
                 "sha2": hash,
-                "x5c": demoPublicKey
+             
             }
             postedStatement[i].attachments.push(attachmentMetadata);
 
             sigs.push({
                 options: {
-                    header: CRLF + '--' + form.getBoundary() + CRLF + 'x-experience-api-hash:' + hash + CRLF + "content-type:application/octet-stream" + CRLF + CRLF
+                    header: CRLF + '--' + form.getBoundary() + CRLF + 'x-experience-api-hash: ' + hash + CRLF + "content-type: application/octet-stream" + CRLF+ "Content-Disposition: form-data; name=\"signature\"" +CRLF + CRLF
                 },
-                val: new Buffer(token)
+                val: (new Buffer(token)).toString("base64")
             })
 
 
@@ -436,7 +437,7 @@ exports.setup = function(app, DAL) {
                         method: "POST",
                         
                         followRedirect: true,
-                        data: postedStatement,
+                        body: buf,
                         headers: combine({
                             "X-Experience-API-Version": req.headers[
                                 "x-experience-api-version"],

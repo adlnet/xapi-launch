@@ -1,7 +1,9 @@
 # xAPI-Launch
 
-##### The xAPI-Launch server is a demonstration of the XAPI Launch algorithm. 
-XAPI-Launch allows a user to initiate an interaction with some xAPI enabled learning experience. The content, be it an online module, a static HTML file, or an immersive simulation, need not know ahead of time the identity of the learner, the LRS to which the learning data should be submitted, nor the "session" into which the events should be grouped. Content need only implement a minimal HTTP request to become "xAPI-Launch" enabled. 
+##### The xAPI-Launch server is a demonstration of the xAPI Launch algorithm. 
+xAPI-Launch allows a user to initiate an interaction with some xAPI enabled learning experience. The content, be it an online module, a static HTML file, or an immersive simulation, need not know ahead of time the identity of the learner, the LRS to which the learning data should be submitted, nor the "session" into which the events should be grouped. Content need only implement a minimal HTTP request to become "xAPI-Launch" enabled. 
+
+xAPI Launch exists primarily to enable a learner to track experiences from any learning resource without some out-of-band method to add LRS credentials to the content, and without asking the user to input these credentials into some untrused third-party system. It also ensures that statements which claim to be part of an experience really came from that experience. xAPI Launch differs from other launch algorithms in a few important ways. First, it avoids placing personally indentifying information (PII) in a query string. This helps protect the learner's identity. We also avoid initiating the launch session from an HTTP POST request. The body of a post request is not visible when using a URL to launch a native application. In order to avoid both PII in the query string and an initial POST, we generate a one time use random token that can be exchanged for the name and LRS endpoints of the learner, but can be safely transfered as part of the URL.
 
 #### We support the following user cases
 * Launch content that is a **static HTML resource**
@@ -15,11 +17,11 @@ The launch algorithm is designed to allow the maximum flexibility while still ma
 
 1. The student requests a launch of a given piece of content
 2. The launch server generates a unique ID for this launch attempt. The unique ID is called the Launch Token
-3. The token is saved along with the associated content and associated learner identity
+3. The token is saved along with the associated content record and associated learner identity
 4. **Optional:** The launch token is encrypted with the content's registered public key
-4. The student delivers the (possibly encrypted) token and the Launch service address to the content (often as query string parameters in an HTTP Get request)
+4. The student delivers the (possibly encrypted) token and the Launch Service address to the content (often as query string parameters in an HTTP Get request)
 5. **Optional:** The content decrypts the Launch Token
-5. The content issues an HTTP Post request to the Launch service address containing the Launch Token
+5. The content issues an HTTP Post request containing the Launch Token to the Launch Service address
 6. The Launch Server verifies that the submitted Launch Token
    * Is a valid token
    * Is in the uninitialized state
@@ -32,15 +34,15 @@ The launch algorithm is designed to allow the maximum flexibility while still ma
 2.  The Launch Server will enforce that each incoming statement associated with the given launch contains at minimum the Context Activities for the Launch and the Content URL.
 
 #### Static HTML course content
-In the case of a static HTML file, the content should use JavaScript to read the query string and post to the xAPI-Launch endpoint. The cookie will be set automatically, and handled natively by the browser. The content may choose to decrypt the launch token, but note that this is seldom secure enough to leave to the client. Most often the information should pass as plain text. Content should be delivered via TLS or SSL.
+In the case of a static HTML file, the content should use JavaScript to read the query string and post to the Launch Service address. The cookie will be set automatically, and handled natively by the browser. The content may choose to decrypt the Launch Token, but note that this is seldom secure enough to leave to the client. Most often the information should pass as plain text. Content should be delivered via TLS or SSL.
 
 #### Dynamic HTML rendered by a server
-The client will deliver to the content server the Launch Token and the Launch Server address via the resource request query string. This server should establish session for the user, and initiate the xAPI Launch on their behalf. The method that the content server uses to gather performance information from the client's browser is out of scope for the Launch service, but could use xAPI as well. The server should initiate the launch on the user's behalf, and keep the session cookie returned in step **10** above hidden from the learner. The server may choose to persist this information or forward it to other parties. If possible, a public key should be provided to the Launch Server. If this information is available, then the Launch Token will be delivered to the learner encrypted. The content server should decrypt this information before initializing the launch. In this way, the Launch Server can be confident that the incoming xAPI data did in fact originate with the content server. 
+The client will deliver to the content server the Launch Token and the Launch Service address via the request query string. This server should establish session for the user, and initiate the xAPI Launch on their behalf. The method that the content server uses to gather performance information from the client's browser is out of scope, but could use xAPI as well. The server should initiate the launch on the user's behalf, and keep the session cookie returned in step **10** above hidden from the learner. The server may choose to persist this information or forward it to other parties. If possible, a public key should be provided to the Launch Server at the time the content is enlisted. If this information is available, then the Launch Token will be delivered to the learner in an encrypted form. The content server should decrypt this information before initializing the launch. Because the learner cannot access the plaintext of the token, the Launch Server can be confident that the incoming xAPI data did in fact originate with the proper content server. 
 
-The content server may optionally terminate the launch attempt immediately. Any business logic is valid for the server to make this decision. We intend that the content server may check a given number of registrations, check the provided actor against a list of authorized users, or initiate some sort of payment process with the learner. The content should use the Launch Service endpoint to identify the Launch Server. 
+The content server may optionally terminate the launch attempt immediately. Any business logic is valid for the server to make this decision. We intend that the content server may check a given number of registrations, check the provided actor against a list of authorized users, or initiate some sort of payment process with the learner. The content should use the Launch Service address to identify the Launch Server. 
 
 #### Offline systems
-The learner may optionally move the launch token to the content manually. We imagine that sit-down simulators or desktop applications might prompt the user to enter their xAPI Launch key. Other than the method used to gather this information from the user, this sort of non-HTML content should  behave as the content server described above. An offline system could optionally store the launch key and the interactions to be posted later.
+The learner may optionally move the Launch Token to the content manually. We imagine that sit-down simulators or desktop applications might prompt the user to enter their xAPI Launch Token. Other than the method used to gather this information from the user, this sort of non-HTML content should behave in the same manor as the content server described above. An offline system could optionally store the launch token and the interactions to be posted later.
 
 
 ## Running the server
@@ -52,7 +54,7 @@ The learner may optionally move the launch token to the content manually. We ima
 ## Running the demo content
 1. Create a user account
 2. Find "Register New Content"
-3. Use "/static/staticContentDemo/demo.html" as the URL
+3. Use "http://localhost:3000/static/staticContentDemo/demo.html" as the URL
 4. Do not enter a private key.
 5. Browse all content
 6. Click "Launch"

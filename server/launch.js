@@ -378,6 +378,7 @@ exports.setup = function(app, DAL) {
             var token = jwt.sign(postedStatement[i], demoPrivateKey, {
                 algorithm: 'RS256'
             });
+            console.log(token);
             var hash = require("crypto").createHash('sha256')
                 .update(token).digest();
             hash = hash.toString('base64');
@@ -403,7 +404,7 @@ exports.setup = function(app, DAL) {
                 options: {
                     header: CRLF + '--' + form.getBoundary() + CRLF + 'x-experience-api-hash: ' + hash + CRLF + "content-type: application/octet-stream" + CRLF+ "Content-Disposition: form-data; name=\"signature\"" +CRLF + CRLF
                 },
-                val: (new Buffer(token)).toString("base64")
+                val: (new Buffer(token)).toString('base64')
             })
 
 

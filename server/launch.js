@@ -359,6 +359,7 @@ exports.setup = function(app, DAL) {
 
         var demoPrivateKey = "-----BEGIN RSA PRIVATE KEY-----\nMIICXgIBAAKBgQCq480SFNQfy/HSkox2swxsan4w6zEXQGyMmSMyvxInEj26wuOY\nxj3N7E0GzX5qjKXS12ZjSi618XNgdFuJq4b68oyf5URiR1qrTa3EAK36hPsxtXnE\nO9fse0tcMI5gh5mVk378mTTOl5Kv7MLe9gBkjMveoqg3Tmu1It3Zmh8wZwIDAQAB\nAoGBAIHKOGNmPGHV9Nl4goRYorPpAeTHjGZbgNYcLPaK1g+ktAuXn2LWFfTDZxEm\nm7/zCLKk9Feu7OE0++sjFK7v/rh2D9gU+ocGljjp+uySZkpFovtrszs9mnT7iLMR\nNytenT/sZUsLA72PUP9MDryzMdW1dJi95PdstGJxugAy943hAkEA1uy4jpl6TDai\nITc7Z4IVnH/w2X8p4pkSQJtOtFm2RQlX7MIDNlNZJx4g2G8wc2juonoAIWnWjEnO\nMsKO4szGFwJBAMuMqEORZru0NgVXB2vkVYsZ6fZdcwZlavpaj2wI0miUEIb2dPLe\niNQhuGOL6wZTTIwpphUAp0hmfDOg79TuqjECQQCXiHmrWPzIRXDUWHvSw/32xKIM\nx0LB2EjtMlMwh1wimq7aaAQZxnRCR1TDJMoVZPNzrO7woA28BcGTOmfB8rzrAkEA\ngV83GyrxNuBFbYNxDhwkWrLvx0yB7VDMe67PdYTt5tYk4wMGNc9G/D0qaurlSDHt\ndzCJhNPTfurUiiQCCz5eIQJACZgrfK3pe8YzkmCWJMzFUgcX7O/8qU2aSuP+xkMI\nCvTe0zjWjU7wB5ftdvcQb6Pf7NCKwYJyMgwQHZttHmb4WQ==\n-----END RSA PRIVATE KEY-----";
         var demoPublicKey = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCq480SFNQfy/HSkox2swxsan4w\n6zEXQGyMmSMyvxInEj26wuOYxj3N7E0GzX5qjKXS12ZjSi618XNgdFuJq4b68oyf\n5URiR1qrTa3EAK36hPsxtXnEO9fse0tcMI5gh5mVk378mTTOl5Kv7MLe9gBkjMve\noqg3Tmu1It3Zmh8wZwIDAQAB\n-----END PUBLIC KEY-----";
+
         var jwt = require('jsonwebtoken');
 
         var FormData = require('form-data');
@@ -370,8 +371,6 @@ exports.setup = function(app, DAL) {
             header: CRLF + '--' + form.getBoundary() + CRLF + 'content-type: application/json' + CRLF+ "Content-Disposition: form-data; name=\"statement\"" +  CRLF + CRLF
 
         };
-
-
 
         var sigs = [];
         for (var i = 0; i < postedStatement.length; i++) {
@@ -406,9 +405,6 @@ exports.setup = function(app, DAL) {
                 },
                 val: (new Buffer(token)).toString('base64')
             })
-
-
-
         }
         form.append('statement', JSON.stringify(postedStatement), options);
         for (var i in sigs)
@@ -444,7 +440,7 @@ exports.setup = function(app, DAL) {
                                 "x-experience-api-version"],
                             "Content-Length": len
                         }, form.getHeaders())
-                    }).auth(config.LRS_Username, config.LRS_Password, true);
+                    }).auth(req.user.lrsConfig.username, req.user.lrsConfig.password, true);
 
 
                     postReq.headers["content-type"] = postReq.headers["content-type"].replace("form-data", "mixed");
@@ -481,7 +477,7 @@ exports.setup = function(app, DAL) {
                     });
 
                     postReq.pipe(require('fs').createWriteStream("./debug"));
-                })(config.LRS_Url + "/statements");
+                })(req.user.lrsConfig.endpoint + "/statements");
             }));
 
         })

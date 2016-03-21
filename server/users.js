@@ -67,6 +67,22 @@ exports.setup = function(app, DAL)
             done(err, user);
         });
     });
+
+    app.use(function defaultToServerLRS(req, res, next)
+    {
+      if(!req.user)
+        return next();
+      if(!req.user.lrsConfig)
+      {
+        req.user.lrsConfig = {
+            username: config.LRS_Username, 
+            password: config.LRS_Password,
+            endpoint: config.LRS_Url
+        }
+      }
+      next();
+    });
+
     app.use(function saveUserToLocals(req, res, next)
     {
         res.locals.user = req.user;

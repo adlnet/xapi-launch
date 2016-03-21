@@ -20,9 +20,25 @@
 		"email": {
 			"type": "string",
 			"format": "email"
-		}
-		
+		},
+		"lrsConfig":
+		{
+			"type": "object",
+			"properties": {
+				"username": {
+					"type": "string"
+				},
+				"password": {
+					"type": "string"
+				},
+				"endpoint": {
+					"type": "uri"
+				}
+			},
+			"additionalProperties": false,
+			"required": ["username", "password","endpoint"]
+		}	
 	},
 	"additionalProperties": false,
-	"required": ["username", "password","salt","email"]
+	"required": ["username", "password","salt","email","lrsConfig"]
 }

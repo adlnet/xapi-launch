@@ -143,7 +143,7 @@ namespace WpfApplication1
             key = Microsoft.Win32.Registry.ClassesRoot.CreateSubKey("xAPILaunchDemo");
 
             key.SetValue("", "URL:xAPILaunchDemo");
-            key.SetValue("URL Protocol ", "");
+            key.SetValue("URL Protocol", "");
             key.CreateSubKey("shell").CreateSubKey("open").CreateSubKey("command").SetValue("", "\"" + System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName.Replace(".vshost.exe", ".exe") + "\" \"%1\"");
             Console.WriteLine(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             key.Close();

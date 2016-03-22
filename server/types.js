@@ -107,10 +107,11 @@ exports.launchRecord = function(email, key, uuid)
     this.created = Date.now();
     this.state = 0;
     this.uuid = uuid;
-    this.client = "uninitialized";
     this.publicKey = null;
     this.mediaKey = null;
     this.termination = null;
+    this.userguid = null;
+    this.passguid = null;
     this.xapiForm = function()
     {
         var def = {};

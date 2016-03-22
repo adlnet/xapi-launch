@@ -122,6 +122,7 @@ function xAPILaunch(cb, terminate_on_unload) {
                 })
             }
             ADL.XAPIWrapper.changeConfig(conf);
+            ADL.XAPIWrapper.updateAuth(ADL.XAPIWrapper.lrs, launchData.credentials.username, launchData.credentials.password);
             //Links that include "courseLink='true'"
             setupCourseLinks($(document.body).find("a"));
             //Also, if links are added dynamically, we will do the same logic for those links.

@@ -29,6 +29,18 @@
                     <label>Confirm Password</label>
                     <input id="pass2" type="password" class='form-control' placeholder="Confirm password"></input>
                 </div>
+                <div class="form-group">
+                    <label>LRS Endpoing</label>
+                    <input id="lrsendpoint" type="text" class='form-control' placeholder="Confirm password"></input>
+                </div>
+                <div class="form-group">
+                    <label>LRS Password</label>
+                    <input id="lrspassword" type="password" class='form-control' placeholder="Confirm password"></input>
+                </div>
+                <div class="form-group">
+                    <label>LRS Username</label>
+                    <input id="lrsusername" type="text" class='form-control' placeholder="Confirm password"></input>
+                </div>
             </form>
             <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Create Account</button>
             <div id="feedback" class="hidden alert alert-danger" role="alert">
@@ -78,7 +90,12 @@
                             email: $('input[type=email]').val(),
                             username: $('input[type=text]').val(),
                             password: $('input[type=password]').val(),
-                            salt: CryptoJS.lib.WordArray.random(128 / 8)
+                            salt: CryptoJS.lib.WordArray.random(128 / 8),
+                            lrsConfig:{
+                                username: $("#lrsusername").val(),
+                                password: $("#lrspassword").val(),
+                                endpoint: $("#lrsendpoint").val()
+                            }
                         }
 
                         var key = CryptoJS.PBKDF2(createRequest.password, createRequest.salt,

@@ -185,6 +185,7 @@ DAL.prototype.createUser = function(request, userCreatedCB)
         else
         {
             var account = new types.userAccount(request.email, request.username, request.salt, request.password);
+            account.lrsConfig = request.lrsConfig;
             self.DB.save(null, account.dbForm(), function(err, key)
             {
                 account.init(key, self.DB, self, null, function()

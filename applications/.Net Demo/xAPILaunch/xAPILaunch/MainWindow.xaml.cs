@@ -243,6 +243,13 @@ namespace WpfApplication1
             Question2Tab.Focus();
             FinishTab.IsEnabled = true;
             FinishTab.Focus();
+            launchAPI.terminate(0, "User Closed Content");
+        }
+
+        private void LaunchAppWindow_Closed(object sender, EventArgs e)
+        {
+            if (launchAPI.launchData != null)
+                launchAPI.terminate(0,"User Closed Content");
         }
     }
 }

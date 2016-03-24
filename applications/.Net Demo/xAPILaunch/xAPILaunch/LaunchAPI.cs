@@ -29,6 +29,16 @@ namespace xAPILaunch
             this.id = verb;
         }
     }
+    public class termination
+    {
+        public int code;
+        public string description;
+        public string toString()
+        {
+            var str = JsonConvert.SerializeObject(this);
+            return str;
+        }
+    }
     public class xAPIObject
     {
         public string id;
@@ -148,9 +158,14 @@ namespace xAPILaunch
                 return _launchData;
             }
         }
-        public void terminate()
+        public void terminate(int code, string des)
         {
-            client.PostAsync(launchUrl + "launch/" + launchToken +"/terminate", null);
+            var term = new termination();
+            term.code = code;
+            term.description = des;
+            var content = new System.Net.Http.StringContent(term.toString(), Encoding.UTF8, "application/json");
+            content.Headers.Add("cookie", this.cookie.ToString());
+            client.PostAsync(launchUrl + "launch/" + launchToken + "/terminate", content);
         }
         public void postInitialize(string _object)
         {

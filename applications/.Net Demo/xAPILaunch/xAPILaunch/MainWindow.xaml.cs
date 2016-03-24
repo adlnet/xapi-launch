@@ -146,6 +146,7 @@ namespace WpfApplication1
             key.SetValue("URL Protocol", "");
             key.CreateSubKey("shell").CreateSubKey("open").CreateSubKey("command").SetValue("", "\"" + System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName.Replace(".vshost.exe", ".exe") + "\" \"%1\"");
             Console.WriteLine(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+            MessageBox.Show("Handler for URL:xAPILaunchDemo installed for " + System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             key.Close();
         }
 
@@ -158,6 +159,7 @@ namespace WpfApplication1
             try
             {
                 Microsoft.Win32.Registry.ClassesRoot.DeleteSubKeyTree("xAPILaunchDemo");
+                MessageBox.Show("Handler for URL:xAPILaunchDemo removed");
             }
             catch (Exception ex)
             {
@@ -174,6 +176,18 @@ namespace WpfApplication1
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
+            if (question1Answer.Text == "")
+                return;
+            var answer = question1Answer.Text;
+            var result = new xAPILaunch.xAPIResult();
+            result.completion = true;
+            result.success = Int16.Parse(answer) == 40;
+            if (result.success)
+                result.score = new xAPILaunch.xAPIScore(100,0,100);
+            else
+                result.score = new xAPILaunch.xAPIScore(0, 0, 100);
+            result.response = answer;
+            launchAPI.postStatement("http://adlnet.gov/expapi/verbs/answered",launchAPI.launchUrl +"/question1",result );
             Question2Tab.IsEnabled = true;
             Question2Tab.Focus();
         }
@@ -186,6 +200,20 @@ namespace WpfApplication1
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
+            if (question2Answer.Text == "")
+                return;
+            var answer = question2Answer.Text;
+            var result = new xAPILaunch.xAPIResult();
+            result.completion = true;
+            result.success = Int16.Parse(answer) == 45;
+            if (result.success)
+                result.score = new xAPILaunch.xAPIScore(100, 0, 100);
+            else
+                result.score = new xAPILaunch.xAPIScore(0, 0, 100);
+            result.response = answer;
+            launchAPI.postStatement("http://adlnet.gov/expapi/verbs/answered", launchAPI.launchUrl + "/question1", result);
+            Question2Tab.IsEnabled = true;
+            Question2Tab.Focus();
             Question3Tab.IsEnabled = true;
             Question3Tab.Focus();
 
@@ -199,6 +227,20 @@ namespace WpfApplication1
 
         private void button6_Click(object sender, RoutedEventArgs e)
         {
+            if (question3Answer.Text == "")
+                return;
+            var answer = question3Answer.Text;
+            var result = new xAPILaunch.xAPIResult();
+            result.completion = true;
+            result.success = Int16.Parse(answer) == 48;
+            if (result.success)
+                result.score = new xAPILaunch.xAPIScore(100, 0, 100);
+            else
+                result.score = new xAPILaunch.xAPIScore(0, 0, 100);
+            result.response = answer;
+            launchAPI.postStatement("http://adlnet.gov/expapi/verbs/answered", launchAPI.launchUrl + "/question1", result);
+            Question2Tab.IsEnabled = true;
+            Question2Tab.Focus();
             FinishTab.IsEnabled = true;
             FinishTab.Focus();
         }

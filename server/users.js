@@ -57,7 +57,7 @@ exports.setup = function(app, DAL)
 
     passport.serializeUser(function(user, done)
     {
-        console.log("SERIALIZING USER");
+        //console.log("SERIALIZING USER");
         done(null, user.email);
     });
     passport.deserializeUser(function(id, done)
@@ -91,7 +91,7 @@ exports.setup = function(app, DAL)
 
     app.get("/users/testCookie", function(req, res, next)
     {
-        console.log(req.sessionID);
+        //console.log(req.sessionID);
         res.status(200).send(req.cookies["connect.sid"]);
     });
     app.get("/users/create", function(req, res, next)
@@ -229,7 +229,7 @@ exports.setup = function(app, DAL)
                 }
                 else
                 {
-                    console.log(results);
+                    //console.log(results);
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i].key;
@@ -289,7 +289,7 @@ exports.setup = function(app, DAL)
         }
         passport.authenticate('local', function(err, user, info)
         {
-            console.log(err, user, info)
+            //console.log(err, user, info)
             if (err)
             {
                 return next(err);
@@ -298,10 +298,10 @@ exports.setup = function(app, DAL)
             {
                 return res.status(400).send("login failed");
             }
-            console.log("login");
+            //console.log("login");
             req.login(user, function(err)
             {
-                console.log("login " + err)
+                //console.log("login " + err)
                 if (err)
                 {
                     return next(err);

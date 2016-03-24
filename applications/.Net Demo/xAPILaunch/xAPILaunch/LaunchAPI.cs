@@ -39,11 +39,38 @@ namespace xAPILaunch
             this.objectType = "Activity";
         }
     }
+    public class xAPIScore
+    {
+        public int raw;
+        public int min;
+        public int max;
+        public xAPIScore(int val,int min = 0, int max = 100 )
+        {
+            this.raw = val;
+            this.min = min;
+            this.max = max;
+        }
+    }
+    public class xAPIResult
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public xAPIScore score;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Boolean success;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Boolean completion;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string response;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public object extensions;
+    }
     public class xAPIStatement
     {
         public xAPIActor actor;
         public xAPIVerb verb;
         public xAPIObject _object;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public xAPIResult result;
         public xAPIStatement(xAPIActor a, xAPIVerb v, xAPIObject o)
         {
             this.actor = a;
@@ -76,9 +103,9 @@ namespace xAPILaunch
     {
         private HttpClient client;
         private Cookie cookie;
-        private LaunchData launchData;
-        private string launchUrl;
-        private string launchToken;
+        public LaunchData launchData;
+        public string launchUrl;
+        public string launchToken;
         public LaunchData Launch(string launchUrl, string launchToken)
         {
             this.launchToken = launchToken;
@@ -121,26 +148,38 @@ namespace xAPILaunch
                 return _launchData;
             }
         }
-       
+        public void terminate()
+        {
+            client.PostAsync(launchUrl + "launch/" + launchToken +"/terminate", null);
+        }
         public void postInitialize(string _object)
         {
             var statement = new xAPIStatement(null, "http://adlnet.gov/expapi/verbs/launched", launchUrl + "launch/" + launchToken);
             statement.actor = this.launchData.Actor;
+            postStatement(statement);
+        }
+        public void postStatement(xAPIStatement statement)
+        {
             var body = statement.toString();
-            var content = new System.Net.Http.StringContent(body,Encoding.UTF8, "application/json");
+            var content = new System.Net.Http.StringContent(body, Encoding.UTF8, "application/json");
             content.Headers.Add("cookie", this.cookie.ToString());
             content.Headers.Add("X-Experience-API-Version", "1.0");
             try
             {
                 var responseMessage = client.PostAsync(this.launchData.endpoint + "statements", content).Result;
                 string responseText = responseMessage.Content.ReadAsStringAsync().Result;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 var s = e.Message;
             }
-            
-            
-        //            {"actor":{"objectType":"Agent","name":"Rob","mbox":"mailto:rchadwic@gmail.com"},"verb":{"id":"http://adlnet.gov/expapi/verbs/launched"},"object":{"objectType":"Activity","id":"http://localhost:3000/static/staticContentDemo/demo.html?xAPILaunchKey=985ca7b8-8afa-4190-b21c-42113a4e73b1&xAPILaunchService=http%3A%2F%2Flocalhost%3A3000%2F/test"},"id":"be7ef605-14a2-4743-9335-94647dbbb152"}
+        }
+        public void postStatement(string _verb, string _object, xAPIResult result)
+        {
+            var statement = new xAPIStatement(null, _verb, _object);
+            statement.result = result;
+            statement.actor = this.launchData.Actor;
+            postStatement(statement);
         }
     }
 }

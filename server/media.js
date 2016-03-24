@@ -14,7 +14,7 @@ exports.setup = function(app, DAL)
         {
             DAL.getAllMedia(function(err, results)
             {
-                console.log(results);
+                //console.log(results);
                 if (err)
                 {
                     res.locals.error = err;
@@ -32,7 +32,7 @@ exports.setup = function(app, DAL)
                         {
                             if (results[i].mediaTypeKey == types[j].uuid)
                             {
-                                console.log("got here");
+                                //console.log("got here");
                                 results[i].virtuals.mediaType = types[j];
                             }
                         }
@@ -54,7 +54,7 @@ exports.setup = function(app, DAL)
             
             res.locals.pageTitle = "Register New Media";
             res.locals.types = types;
-            console.log(types);
+            //console.log(types);
             res.render('registerMedia', res.locals);
         })
 
@@ -271,8 +271,8 @@ exports.setup = function(app, DAL)
     {
         DAL.getMedia(req.params.key, function(err, content)
         {
-            console.log('get content by key');
-            console.log(err);
+            //console.log('get content by key');
+            //console.log(err);
             if (content)
             {
                 var data = content.dbForm();
@@ -288,8 +288,8 @@ exports.setup = function(app, DAL)
     {
         DAL.getMedia(req.params.key, function(err, content)
         {
-            console.log('get content by key');
-            console.log(err);
+            //console.log('get content by key');
+            //console.log(err);
             if (content)
             {
                 var data = content.xapiForm();

@@ -17,7 +17,7 @@ function ensureOneCall(cb)
             cb(arg1, arg2, arg3, arg4, arg5, arg6);
         else
         {
-            console.log("callback already called!");
+            //console.log("callback already called!");
         }
     }
 }
@@ -137,7 +137,7 @@ exports.init = function(types)
                         async.eachSeries(results, function(i, cb)
                             {
                                 var record = i;// results[i];
-                                console.log("I is:" + JSON.stringify(i));
+                                //console.log("I is:" + JSON.stringify(i));
                                 if(!record) return cb();
                                 if (record.dataType == dataTypeName)
                                 {

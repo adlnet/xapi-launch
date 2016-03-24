@@ -213,7 +213,7 @@ DAL.prototype.createLaunchRecord = function(request, requestCreated)
     }
     catch (e)
     {
-        console.log(e)
+        //console.log(e)
     }
 }
 DAL.prototype.createMediaType = function(name, description, iconURL, owner, mediaCreated)
@@ -237,7 +237,7 @@ DAL.prototype.createMediaType = function(name, description, iconURL, owner, medi
     }
     catch (e)
     {
-        console.log(e)
+        //console.log(e)
     }
 }
 DAL.prototype.createMediaRecord = function(url, mediaTypeKey, title, description, owner, mediaCreated)
@@ -261,7 +261,7 @@ DAL.prototype.createMediaRecord = function(url, mediaTypeKey, title, description
     }
     catch (e)
     {
-        console.log(e)
+        //console.log(e)
     }
 }
 exports.setup = function(DB)

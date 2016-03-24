@@ -29,7 +29,7 @@ exports.setup = function(app, DAL) {
                     launchData.contextActivities.grouping = launch.xapiForm();
                     launchData.sessionLength = content.sessionLength;
                     launchData.initializationCode = reinit ? 1 : 0;
-                    console.log("Sending launch data");
+                    //console.log("Sending launch data");
                     if (media)
                         launchData.media = media.dbForm();
                     if (content.publicKey) {
@@ -182,8 +182,8 @@ exports.setup = function(app, DAL) {
                             sendLaunchData(launch, req, res, true);
                             return;
                         } else {
-                            //      res.status(500).send("The launch token has already been used.");
-                            //    return
+                                  res.status(500).send("The launch token has already been used.");
+                                return
                         }
                     }
                     //if the content does not initiate the launch in 60 seconds,
@@ -240,8 +240,12 @@ exports.setup = function(app, DAL) {
                 //activated the launch. Note that this is the students session on the launch server 
                 //in the case that the content is a dumb html file, but could be some thrid party 
                 //who is serving the content to the student. 
+                
+                console.log("launch client", launch.client);
+                console.log("sessionID", req.sessionID);
+
                 if (launch.client !== req.sessionID) {
-                    console.log(launch.client, req.cookies["connect.sid"])
+                    //console.log(launch.client, req.cookies["connect.sid"])
                     res.status(500).send("You are not the registered consumer for this launch.");
                     return;
                 }
@@ -271,7 +275,20 @@ exports.setup = function(app, DAL) {
                     }
                     DAL.getMedia(launch.mediaKey, function(err, media) {
                         req.media = media;
-                        cb(req, res, next);
+                        DAL.getUser(launch.email, function(err, user) {
+                            // the passport user is not used for the following processing - the user of the 
+                            //request is the user of the launch
+                            req.user = user;
+                            if (!req.user.lrsConfig) {
+                                req.user.lrsConfig = {
+                                    username: config.LRS_Username,
+                                    password: config.LRS_Password,
+                                    endpoint: config.LRS_Url
+                                }
+                            }
+                            cb(req, res, next);
+                        })
+
                     })
                 })
             });
@@ -286,7 +303,7 @@ exports.setup = function(app, DAL) {
         }
         for (var i = 0; i < postedStatement.length; i++) {
             if (!postedStatement[i].context) {
-                postedStatement[i].context = {}; 
+                postedStatement[i].context = {};
             }
             var contextActivities = postedStatement[i].context.contextActivities;
             if (!contextActivities)
@@ -368,7 +385,7 @@ exports.setup = function(app, DAL) {
         var CRLF = "\r\n";
 
         var options = {
-            header: CRLF + '--' + form.getBoundary() + CRLF + 'content-type: application/json' + CRLF+ "Content-Disposition: form-data; name=\"statement\"" +  CRLF + CRLF
+            header: CRLF + '--' + form.getBoundary() + CRLF + 'content-type: application/json' + CRLF + "Content-Disposition: form-data; name=\"statement\"" + CRLF + CRLF
 
         };
 
@@ -377,11 +394,11 @@ exports.setup = function(app, DAL) {
             var token = jwt.sign(postedStatement[i], demoPrivateKey, {
                 algorithm: 'RS256'
             });
-            console.log(token);
+            //console.log(token);
             var hash = require("crypto").createHash('sha256')
                 .update(token).digest();
             hash = hash.toString('base64');
-          
+
             if (!postedStatement[i].attachments)
                 postedStatement[i].attachments = [];
             var attachmentMetadata = {
@@ -395,13 +412,13 @@ exports.setup = function(app, DAL) {
                 "contentType": "application/octet-stream",
                 "length": Buffer.byteLength(token),
                 "sha2": hash,
-             
+
             }
             postedStatement[i].attachments.push(attachmentMetadata);
 
             sigs.push({
                 options: {
-                    header: CRLF + '--' + form.getBoundary() + CRLF + 'x-experience-api-hash: ' + hash + CRLF + "content-type: application/octet-stream" + CRLF+ "Content-Disposition: form-data; name=\"signature\"" +CRLF + CRLF
+                    header: CRLF + '--' + form.getBoundary() + CRLF + 'x-experience-api-hash: ' + hash + CRLF + "content-type: application/octet-stream" + CRLF + "Content-Disposition: form-data; name=\"signature\"" + CRLF + CRLF
                 },
                 val: (new Buffer(token)).toString('base64')
             })
@@ -417,7 +434,7 @@ exports.setup = function(app, DAL) {
         }
         form.getLength(function(err, len) {
 
-            console.log("got len ", len);
+            //console.log("got len ", len);
             var concat = require('concat-stream');
 
             form.pipe(concat(function(buf) {
@@ -432,7 +449,7 @@ exports.setup = function(app, DAL) {
                     var postReq = require('request')({
                         uri: url,
                         method: "POST",
-                        
+
                         followRedirect: true,
                         body: buf,
                         headers: combine({
@@ -444,8 +461,8 @@ exports.setup = function(app, DAL) {
 
 
                     postReq.headers["content-type"] = postReq.headers["content-type"].replace("form-data", "mixed");
-                    console.log(postReq.headers);
-                    console.log(streamContent);
+                    //console.log(postReq.headers);
+                    //console.log(streamContent);
                     postReq.on('response', function(r) {
 
                     });
@@ -464,7 +481,7 @@ exports.setup = function(app, DAL) {
                             } else {
 
                                 res.status(r.statusCode).send(data);
-                                console.log(data);
+                                //console.log(data);
                             }
                         })
 

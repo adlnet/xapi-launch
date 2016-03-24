@@ -71,14 +71,14 @@ exports.setup = function(app, DAL)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
-            console.log('get content by key');
-            console.log(err);
+            //console.log('get content by key');
+            //console.log(err);
             if (content)
             {
-                console.log(content.owner, req.user.email);
+                //console.log(content.owner, req.user.email);
                 if (content.owner == req.user.email)
                 {
-                    console.log("user is the owner");
+                    //console.log("user is the owner");
                     content.delete(function(err)
                     {
                         res.redirect("/content/browse")
@@ -143,7 +143,7 @@ exports.setup = function(app, DAL)
             catch (e)
             {
                 res.status(500).send(e.message);
-                console.log(e);
+                //console.log(e);
                 return;
             }
             if (content)
@@ -209,8 +209,8 @@ exports.setup = function(app, DAL)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
-            console.log('get content by key');
-            console.log(err);
+            //console.log('get content by key');
+            //console.log(err);
             if (content)
             {
                 var data = content.xapiForm();
@@ -341,8 +341,8 @@ exports.setup = function(app, DAL)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
-            console.log('get content by key');
-            console.log(err);
+            //console.log('get content by key');
+            //console.log(err);
             if (content)
             {
                 var data = content.dbForm();

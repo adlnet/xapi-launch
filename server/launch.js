@@ -418,7 +418,7 @@ exports.setup = function(app, DAL) {
 
             sigs.push({
                 options: {
-                    header: CRLF + '--' + form.getBoundary() + CRLF + 'x-experience-api-hash: ' + hash + CRLF + "content-type: application/octet-stream" + CRLF + "Content-Disposition: form-data; name=\"signature\"" + CRLF + CRLF
+                    header: CRLF + '--' + form.getBoundary() + CRLF + 'x-experience-api-hash: ' + hash + CRLF + "content-type: application/octet-stream" + CRLF + "Content-Transfer-Encoding: binary" + CRLF + CRLF
                 },
                 val: (new Buffer(token)).toString('base64')
             })
@@ -442,7 +442,7 @@ exports.setup = function(app, DAL) {
                 // if your stream sends textual data, use buf.toString() to get entire stream as string
                 var streamContent = buf.toString();
 
-
+require('fs').writeFile("./base64",buf);
 
                 (function post(url) {
                     //send the modified statement up to the configured LRS
@@ -493,7 +493,7 @@ exports.setup = function(app, DAL) {
                         res.status(500).send(e);
                     });
 
-                    postReq.pipe(require('fs').createWriteStream("./debug"));
+                    
                 })(req.user.lrsConfig.endpoint + "/statements");
             }));
 

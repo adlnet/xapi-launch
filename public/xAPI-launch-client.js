@@ -121,12 +121,14 @@ function xAPILaunch(cb, terminate_on_unload) {
                     crossDomain: true
                 })
             }
-            ADL.XAPIWrapper.changeConfig(conf);
+
+            var wrapper = new ADL.XAPIWrapper.constructor();
+            wrapper.changeConfig(conf);
             //Links that include "courseLink='true'"
             setupCourseLinks($(document.body).find("a"));
             //Also, if links are added dynamically, we will do the same logic for those links.
             observeForNewLinks();
-            return cb(null, body, ADL.XAPIWrapper);
+            return cb(null, body, wrapper);
         }).error(function(err) {
             //exit the try catch so inner execptions in the callback don't trigger this catch
             window.setTimeout(function() {

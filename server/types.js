@@ -111,6 +111,8 @@ exports.launchRecord = function(email, key, uuid)
     this.publicKey = null;
     this.mediaKey = null;
     this.termination = null;
+    this.userguid = null;
+    this.passguid = null;
     this.xapiForm = function()
     {
         var def = {};

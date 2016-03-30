@@ -279,8 +279,9 @@ exports.setup = function(app, DAL) {
                             // the passport user is not used for the following processing - the user of the 
                             //request is the user of the launch
                             req.user = user;
-                            if (!req.user.lrsConfig) {
-                                req.user.lrsConfig = {
+                            req.lrsConfig = user.lrsConfig;
+                            if (!req.lrsConfig) {
+                                req.lrsConfig = {
                                     username: config.LRS_Username,
                                     password: config.LRS_Password,
                                     endpoint: config.LRS_Url
@@ -460,7 +461,7 @@ require('fs').writeFile("./base64",buf);
                                 "x-experience-api-version"],
                             "Content-Length": len
                         }, form.getHeaders())
-                    }).auth(req.user.lrsConfig.username, req.user.lrsConfig.password, true);
+                    }).auth(req.lrsConfig.username, req.lrsConfig.password, true);
 
 
                     postReq.headers["content-type"] = postReq.headers["content-type"].replace("form-data", "mixed");
@@ -497,7 +498,7 @@ require('fs').writeFile("./base64",buf);
                     });
 
                     
-                })(req.user.lrsConfig.endpoint + "/statements");
+                })(req.lrsConfig.endpoint + "/statements");
             }));
 
         })

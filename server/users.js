@@ -74,11 +74,15 @@ exports.setup = function(app, DAL)
         return next();
       if(!req.user.lrsConfig)
       {
-        req.user.lrsConfig = {
+        req.lrsConfig = {
             username: config.LRS_Username, 
             password: config.LRS_Password,
             endpoint: config.LRS_Url
         }
+      }
+      else if(req.user)
+      {
+        req.lrsConfig = req.user.lrsConfig;
       }
       next();
     });
@@ -160,6 +164,7 @@ exports.setup = function(app, DAL)
     }))
     app.get('/users/launches', ensureLoggedIn(function(req, res, next)
     {
+
         DAL.getAllUsersLaunch(req.user.email, function(err, results)
         {
             if (err)

@@ -392,9 +392,12 @@ exports.setup = function(app, DAL) {
         var sigs = [];
         for (var i = 0; i < postedStatement.length; i++) {
             var token = jwt.sign(postedStatement[i], demoPrivateKey, {
-                algorithm: 'RS256'
+                algorithm: 'RS256',
+                'headers':{
+                    'x5c':[(new Buffer(demoPublicKey)).toString('base64')]
+                }
             });
-            //console.log(token);
+            console.log(token);
             var hash = require("crypto").createHash('sha256')
                 .update(token).digest();
             hash = hash.toString('base64');

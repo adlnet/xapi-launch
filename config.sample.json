@@ -1,0 +1,11 @@
+//be sure to remove the comments from this file if you rename it to config.json, since JSON cannot include comments
+//settings should be saved in config.json, formatted as described here.
+
+{
+	"LRS_Url": "https://lrs.adlnet.gov/xAPI",   //the LRS endpoint to which statements should be saved. Note: No trailing slash.  The user profile can override this
+	"LRS_Username": "",  //the username of the authority to use. The user profile can override this.
+	"LRS_Password": "", //the password to use. The user profile can override this
+	"host" :"http://localhost:3000/", //this information is used in the context activities. You should set this to the public facing URL of the launch server
+	"publicSigningKey" : "", // a full RSA public key. Should include the -----BEGIN PUBLIC KEY----- header and footer. Be sure that you include \n chars for newlines
+	"privateSigningKey" : "", //the associated privte key. Also includes header and footer and newlines.
+}

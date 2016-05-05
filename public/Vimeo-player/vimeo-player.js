@@ -1,6 +1,6 @@
 $(document).ready(function()
 {
-    xAPILaunch(function(err, apiData, xAPI)
+    ADL.launch(function(err, apiData, xAPI)
     {
         if (err)
         {

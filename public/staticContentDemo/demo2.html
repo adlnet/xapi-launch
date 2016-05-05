@@ -9,12 +9,12 @@
 	</head>
 	<body>
 		This is a demo of using static content with the XAPI Launch platform. When you click the button, your LRS will include the statement.
-		<script src="/static/xAPI-launch-client.js"></script>
+		
 		<script>
 			$(document).ready(function()
 			{
 	
-			    xAPILaunch(function(err,apiData,xAPI){
+			    ADL.launch(function(err,apiData,xAPI){
 			    	if(err)
 			    	{
 

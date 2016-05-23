@@ -111,3 +111,6 @@ The xAPI-Launch sample implementation includes a client side JavaScript library 
     3.  Set `terminate_on_unload` to automatically terminate the launch session when the user leaves the page
 4.  If the algorithm fails (because of a misconfiguration or an invalid launch) you can still setup the xAPIWrapper manually, and use it as if Launch has never occured. (however you did it before.)
 5.  You can link together multiple static pages by including the `courselink="true"` attribute on HTML links. The library will edit the page to include the launch token and endpoint in the address of these links. If you are navigating the browser via JavaScript, and you want the next page in a set of static pages to be included in the launch, you will need to manually append the launch token and endpoint to the next address.
+
+##License
+[Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)

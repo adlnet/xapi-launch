@@ -46,9 +46,10 @@ The learner may optionally move the Launch Token to the content manually. We ima
 
 
 ## Running the server
-1. Clone the repo (https://github.com/adlnet/xapi-launch.git)
-2. npm install
-3. node app.js
+
+1. Clone the repo: `git clone https://github.com/adlnet/xapi-launch.git`
+2. `npm install`
+3. `node app.js`
 4. enter LRS credentials
 
 ## Running the demo content
@@ -111,3 +112,26 @@ The xAPI-Launch sample implementation includes a client side JavaScript library 
     3.  Set `terminate_on_unload` to automatically terminate the launch session when the user leaves the page
 4.  If the algorithm fails (because of a misconfiguration or an invalid launch) you can still setup the xAPIWrapper manually, and use it as if Launch has never occured. (however you did it before.)
 5.  You can link together multiple static pages by including the `courselink="true"` attribute on HTML links. The library will edit the page to include the launch token and endpoint in the address of these links. If you are navigating the browser via JavaScript, and you want the next page in a set of static pages to be included in the launch, you will need to manually append the launch token and endpoint to the next address.
+
+## Contributing to the project
+We welcome contributions to this project. Fork this repository,
+make changes, and submit pull requests. If you're not comfortable
+with editing the code, please [submit an issue](https://github.com/adlnet/xapi-launch/issues) and we'll be happy
+to address it. 
+
+## License
+   Copyright &copy;2016 Advanced Distributed Learning
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+

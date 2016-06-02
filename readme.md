@@ -46,9 +46,10 @@ The learner may optionally move the Launch Token to the content manually. We ima
 
 
 ## Running the server
-1. Clone the repo (https://github.com/adlnet/xapi-launch.git)
-2. npm install
-3. node app.js
+
+1. Clone the repo: `git clone https://github.com/adlnet/xapi-launch.git`
+2. `npm install`
+3. `node app.js`
 4. enter LRS credentials
 
 ## Running the demo content
@@ -112,77 +113,11 @@ The xAPI-Launch sample implementation includes a client side JavaScript library 
 4.  If the algorithm fails (because of a misconfiguration or an invalid launch) you can still setup the xAPIWrapper manually, and use it as if Launch has never occured. (however you did it before.)
 5.  You can link together multiple static pages by including the `courselink="true"` attribute on HTML links. The library will edit the page to include the launch token and endpoint in the address of these links. If you are navigating the browser via JavaScript, and you want the next page in a set of static pages to be included in the launch, you will need to manually append the launch token and endpoint to the next address.
 
-Experience API LRS Test
-=============
-
-## Policies and Procedures for Conformance Testing Group:
-
-## Forum Link: https://groups.google.com/a/adlnet.gov/forum/#!forum/xapi-spec
-
-##Requirements
-[Testing requirements.](https://github.com/adlnet/xAPI_LRS_Test/blob/master/TestingRequirements.md)
-
-### Goal
-
-This group exists to create a single conformance test to be used as the official Experience API 
-(xAPI) v1.0.1 conformance test.  This test will have the backing of the Advanced Distributed 
-Learning (ADL) Initiative.
-
-### Conformance Test Scope
-
-* The conformance test will test ONLY an LRS and test ONLY mandatory requirements within the xAPI Specification.
-* An LRS that passes this conformance test can and should be used to test conformance of content/clients of xAPI.
-* All tests must be passed to achieve conformance, as opposed to “passing” all requirements in the TR document (these should be the same, but conformance is driven by the test results)
-* It is anticipated that additional tests for communities of practice may be created, such as for CMI5.  Those collections of tests can be included in this group, but are not part of the conformance endorsed by ADL.
-
-### Conformance Testing Requirements Document
-
-* All conformance requirements will be listed in the Testing Requirements (TR) document in a means which tests/documents can refer to a specific requirement number.
-* All conformance requirements in the TR document will link directly to the specification by section and requirement # within that section.
-* The end goal is to have a direct mapping of every TR requirement to the specification document, however it is anticipated that some indirect mappings or changes to the specification itself may be necessary.
-* An example of an indirect mapping would be a requirement imposed on a Statement but not on an LRS to validate a Statement in that way.  Clearly the intention is for the LRS to validate conformance in this case, but may not have been explicitly mentioned.
-
-
-### Process 
-
-* The group will work to create the TR document and test cases, which will be called tests.
-* The group will use current tests to create a process for new tests.
-* In the event of a requirement needed in the TR, but does not show up in the spec document, an issue will be created within the specification group.
-* Differing TR expectations must have group consensus before bringing a change to the specification group.
-* After the TR document is complete, the specification will be examined for requirements not referenced by the TR document.
-* Another post-TR document thing to look at is LRS to LRS Statement transfer and if specific requirements are needed.
-
-### Tests
-
-* Every TR will have one or more test associated with it.  
-* Tests and the TR will reference each other, as opposed to the TR document to specification references, which only go one way.
-* There may be more than one test that references the same TR document entry.
-* Tests may only test things referenced within the TR document.
-* Issues can be opened within this group to perform gap analysis on whether what the test is testing should be a part of the TR document.  This will most commonly occur on existing tests as they migrate into this effort.
-* All tests upon being run must explicitly state if they pass or fail, and if there is a failure, refer to the exact requirement that has failed via the TR document numbering system.
-
-## Contributing to the Experience API LRS Test Suite
-
-#### Testing Requirements
-
-#### Test Suite
-
-##### About the Branches
-
-The conformance branch exists so that LRS vendors can have a chance to make sure they are conformant before the next conformance version of the test suite is released.
-It also means that an LRS can claim conformance to a specific conformance version of the test suite, ultimately this becomes what an LRS user should be interested in.
-
-Changes can be made to the `master` branch that do not affect whether an LRS is conformant and therefore vendors do not need to track this version as closely.
-
-##### Pull Requests
-
-When making a source only change submit a Pull Request against the `master` branch.
-
-When making a change that can affect whether an LRS is deemed conformant with a particular conformance version then submit a Pull Request against the `conformance` branch.
-
-It is recommended that change sets are minimal, and made against the tip of the current branch.
-
-Turn on `developer` flag in config file to make sure files are linted.
+## Contributing to the project
+We welcome contributions to this project. Fork this repository,
+make changes, and submit pull requests. If you're not comfortable
+with editing the code, please [submit an issue](https://github.com/adlnet/xapi-launch/issues) and we'll be happy
+to address it. 
 
 ## License
    Copyright &copy;2016 Advanced Distributed Learning

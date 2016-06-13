@@ -24,6 +24,7 @@ exports.setup = function(app, DAL)
         secret: "foobar"
     }));
 
+    
     passport.use(new LocalStrategy(
         function(username, password, done)
         {

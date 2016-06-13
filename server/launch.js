@@ -469,13 +469,14 @@ exports.setup = function(app, DAL)
         {
             var token = jwt.sign(postedStatement[i], demoPrivateKey,
             {
-                algorithm: 'RS256',
-                'headers':
-                {
-                    'x5c': [(new Buffer(demoPublicKey)).toString('base64')]
-                }
+                algorithm: 'RS256'
+                //NOTE: This does not work properly with the ADL LRS
+    //            'headers':
+    //            {
+    //                'x5c': [(new Buffer(demoPublicKey)).toString('base64')]
+    //            }
             });
-            console.log(token);
+           
             var hash = require("crypto").createHash('sha256')
                 .update(token).digest();
             hash = hash.toString('base64');
@@ -524,7 +525,7 @@ exports.setup = function(app, DAL)
                 // buf is a Node Buffer instance which contains the entire data in stream
                 // if your stream sends textual data, use buf.toString() to get entire stream as string
                 var streamContent = buf.toString();
-                require('fs').writeFile("./base64", buf);
+               
                 (function post(url)
                 {
                     //send the modified statement up to the configured LRS
@@ -554,6 +555,7 @@ exports.setup = function(app, DAL)
                         });
                         postReq.on('end', function()
                         {
+                            console.log(data);
                             if (r.statusCode == 301)
                             {
                                 post(r.headers.location);

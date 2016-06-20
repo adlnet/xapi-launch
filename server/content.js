@@ -376,7 +376,8 @@ exports.setup = function(app, DAL)
                 if (!content && !launch)
                     return res.status(400).send("Unknown Identifier.");
                 var content_or_launch = content || launch;
-                var resultLink = config.LRS_Url + "statements?format=exact&activity=" + encodeURIComponent(content_or_launch.xapiForm().id) + "&related_activities=true&limit=1000";
+                console.log(req.lrsConfig.endpoint);
+                var resultLink = req.lrsConfig.endpoint + "statements?format=exact&activity=" + encodeURIComponent(content_or_launch.xapiForm().id) + "&related_activities=true&limit=1000";
 
                 res.locals.searchLink = resultLink;
                 require('request')(
@@ -399,7 +400,7 @@ exports.setup = function(app, DAL)
                     for(var i in res.locals.results)
                         res.locals.results[i].str = JSON.stringify(res.locals.results[i],null,2);
                     res.render("statements", res.locals);
-                }).auth(config.LRS_Username, config.LRS_Password, true)
+                }).auth(req.lrsConfig.username, req.lrsConfig.password, true)
             })
 
         })

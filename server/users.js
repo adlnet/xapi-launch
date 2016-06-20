@@ -92,7 +92,7 @@ exports.setup = function(app, DAL)
     {
       if(!req.user)
         return next();
-      if(!req.user.lrsConfig)
+      if(!req.user.lrsConfig || !req.user.lrsConfig.endpoint)
       {
         req.lrsConfig = {
             username: config.LRS_Username, 

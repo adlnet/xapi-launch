@@ -376,7 +376,7 @@ exports.setup = function(app, DAL)
                 if (!content && !launch)
                     return res.status(400).send("Unknown Identifier.");
                 var content_or_launch = content || launch;
-                var resultLink = config.LRS_Url + "/statements?format=exact&activity=" + encodeURIComponent(content_or_launch.xapiForm().id) + "&related_activities=true&limit=1000";
+                var resultLink = config.LRS_Url + "statements?format=exact&activity=" + encodeURIComponent(content_or_launch.xapiForm().id) + "&related_activities=true&limit=1000";
 
                 res.locals.searchLink = resultLink;
                 require('request')(

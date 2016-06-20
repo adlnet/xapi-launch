@@ -573,7 +573,7 @@ exports.setup = function(app, DAL)
                         res.status(500).send("Error posting to the LRS" + e);
                         console.log("Error posting to the LRS " + req.lrsConfig.endpoint +": " + e);
                     });
-                })(req.lrsConfig.endpoint + "/statements");
+                })(req.lrsConfig.endpoint + "statements");
             }));
         })
     }));

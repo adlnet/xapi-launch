@@ -8,4 +8,6 @@
 	"host" :"http://localhost:3000/", //this information is used in the context activities. You should set this to the public facing URL of the launch server
 	"publicSigningKey" : "", // a full RSA public key. Should include the -----BEGIN PUBLIC KEY----- header and footer. Be sure that you include \n chars for newlines
 	"privateSigningKey" : "", //the associated privte key. Also includes header and footer and newlines.
+	"demoModeUser":"rchadwic@gmail.com", //the user email of the account that is always logged in during demo mode
+	"demoMode":true //enable or disable demo mode
 }

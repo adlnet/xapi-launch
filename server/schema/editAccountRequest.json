@@ -1,0 +1,29 @@
+{
+	"title": "editAccountRequest",
+	"type": "object",
+	"properties": {
+		"lrsConfig":
+		{
+			"type": "object",
+			"properties": {
+				"username": {
+					"type": "string"
+				},
+				"password": {
+					"type": "string"
+				},
+				"endpoint": {"oneOf": [{
+					"type": "string",
+					"format":"uri"
+				},{
+					"type":"string",
+					"maxLength" : 0
+				}]}
+			},
+			"additionalProperties": false,
+			"required": []
+		}	
+	},
+	"additionalProperties": false,
+	"required": ["lrsConfig"]
+}

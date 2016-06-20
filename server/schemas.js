@@ -10,7 +10,7 @@ exports.mediaType = JSON.parse(fs.readFileSync("./server/schema/mediaType.json")
 exports.media = JSON.parse(fs.readFileSync("./server/schema/media.json"));
 exports.registerMediaRequest = JSON.parse(fs.readFileSync("./server/schema/registerMediaRequest.json"));
 exports.registerMediaTypeRequest = JSON.parse(fs.readFileSync("./server/schema/registerMediaTypeRequest.json"));
-
+exports.editAccountRequest =  JSON.parse(fs.readFileSync("./server/schema/editAccountRequest.json"));
 }catch(e)
 {
 	console.log(e);

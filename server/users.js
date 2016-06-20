@@ -140,6 +140,23 @@ exports.setup = function(app, DAL)
         });
     }));
 
+    app.get("/users/me", ensureLoggedIn(function(req, res, next)
+    {
+        res.render("editAccount",{
+            user:req.user
+        })
+    }));
+    app.post("/users/edit", ensureLoggedIn(validateTypeWrapper(schemas.editAccountRequest, function(req, res, next)
+    {
+        if(!req.user)
+            return res.status(404).send("User not found");
+        req.user.lrsConfig = req.body.lrsConfig;
+        req.user.save(function(err)
+        {
+            res.status(200).send("200 - OK");
+        })
+    })));
+
     app.get('/users/logout', ensureLoggedIn(function(req, res, next)
     {
         req.logout();

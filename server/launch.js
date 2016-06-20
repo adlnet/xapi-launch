@@ -333,7 +333,8 @@ exports.setup = function(app, DAL)
                             //request is the user of the launch
                             req.user = user;
                             req.lrsConfig = user.lrsConfig;
-                            if (!req.lrsConfig)
+
+                            if (!req.lrsConfig.endpoint)
                             {
                                 req.lrsConfig = {
                                     username: config.LRS_Username,
@@ -569,7 +570,8 @@ exports.setup = function(app, DAL)
                     });
                     postReq.on('error', function(e)
                     {
-                        res.status(500).send(e);
+                        res.status(500).send("Error posting to the LRS" + e);
+                        console.log("Error posting to the LRS " + req.lrsConfig.endpoint +": " + e);
                     });
                 })(req.lrsConfig.endpoint + "/statements");
             }));

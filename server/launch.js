@@ -377,12 +377,12 @@ exports.setup = function(app, DAL)
                 {
                     //if it's an array, check that the parent launch is included, add if not. 
                     //if it's not an array, make it an array and include the context
-                    if (contextActivities.parent.constructor == "Array")
+                    if (contextActivities.parent.constructor == Array)
                     {
                         var included = false;
                         for (var i in contextActivities.parent)
                         {
-                            if (contextActivities.parent[i].uuid = req.launch.uuid)
+                            if (contextActivities.parent[i].id == req.launch.xapiForm().id)
                             {
                                 included = true;
                                 break;
@@ -406,12 +406,12 @@ exports.setup = function(app, DAL)
                 //if it's not an array, make it an array and include the context
                 if (contextActivities.grouping)
                 {
-                    if (contextActivities.grouping.constructor == "Array")
+                    if (contextActivities.grouping.constructor == Array)
                     {
                         var included = false;
                         for (var i in contextActivities.grouping)
                         {
-                            if (contextActivities.grouping[i].url = req.content.url)
+                            if (contextActivities.grouping[i].id == req.content.xapiForm().id)
                             {
                                 included = true;
                                 break;
@@ -426,7 +426,7 @@ exports.setup = function(app, DAL)
                             var included = false;
                             for (var i in contextActivities.grouping)
                             {
-                                if (contextActivities.grouping[i].url = req.media.url)
+                                if (contextActivities.grouping[i].id == req.media.xapiForm().id)
                                 {
                                     included = true;
                                     break;
@@ -441,7 +441,7 @@ exports.setup = function(app, DAL)
                     else
                     {
                         contextActivities.grouping = [contextActivities.grouping, req.content.xapiForm()];
-                        if (request.media)
+                        if (req.media)
                         {
                             contextActivities.grouping.push(req.media.xapiForm());
                         }
@@ -573,7 +573,7 @@ exports.setup = function(app, DAL)
                         res.status(500).send("Error posting to the LRS" + e);
                         console.log("Error posting to the LRS " + req.lrsConfig.endpoint +": " + e);
                     });
-                })(req.user.lrsConfig.endpoint + "statements");
+                })(req.lrsConfig.endpoint + "statements");
             }));
         })
     }));

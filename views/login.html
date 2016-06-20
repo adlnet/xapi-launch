@@ -19,10 +19,10 @@
                 </div>
                 <div class="form-group">
                     <label for="pwd">Password</label>
-                    <input name='pwd' type="password" class='form-control' placeholder="Password"></input>
+                    <input id="password" name='pwd' type="password" class='form-control' placeholder="Password"></input>
                 </div>
             </form>
-            <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Sign in</button>
+            <button type='' id="button" class="btn btn-lg btn-primary btn-block" href="#" role="button">Sign in</button>
             <div id="feedback" class="hidden alert alert-danger" role="alert">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 <span class="sr-only">Error:</span> <span role="message">Enter a valid email address</span>
@@ -53,11 +53,17 @@ function getQueryVariable(variable) {
         }
     }
     console.log('Query variable %s not found', variable);
-}
-
+}   
+    $('#password').keypress(function(e)
+    {
+        if(e.keyCode == 13)
+        {
+            $('#button').click()
+        }
+    })
     require(['/static/scripts/pbkdf2.js'], function(CryptoJS)
     {
-        $('button').click(function()
+        $('#button').click(function()
             {
                 $('#feedback').addClass('hidden');
 

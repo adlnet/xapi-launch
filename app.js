@@ -14,7 +14,7 @@ async.series([
 			autoload: true
 		})
 		DB = require("./server/DAL.js").setup(DB);
-		console.log("ghot here")
+		
 		cb();
 	},
 	function loadConfig(cb)

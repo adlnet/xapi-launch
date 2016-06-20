@@ -17,7 +17,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="/content/search">Search</a></li>
                     <li><a href="/content/browse">Browse</a></li>
-                    <li><a href="/content/register">Register Apps</a></li>
+                    {{^demoMode}}<li><a href="/content/register">Register Apps</a></li>{{/demoMode}}
                 </ul>
             </li>
             <li class="dropdown">
@@ -25,9 +25,10 @@
                 <ul class="dropdown-menu">
                     <li><a href="/media/search">Search</a></li>
                     <li><a href="/media/browse">Browse</a></li>
-                    <li><a href="/media/register">Register Media</a></li>
+                    {{^demoMode}}<li><a href="/media/register">Register Media</a></li>{{/demoMode}}
                 </ul>
             </li>
+            {{^demoMode}}
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Media Types <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -35,6 +36,7 @@
                     <li><a href="/mediaType/register">Register Media Type</a></li>
                 </ul>
             </li>
+            {{/demoMode}}
             
            
         </ul>
@@ -43,8 +45,10 @@
               <li class="nav navbar-nav dropdown navbar-right">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user.username}} <span class="caret"></span></a>
                 <ul class="dropdown-menu">
+                {{^demoMode}}
                     <li><a href="/users/logout">Logout</a></li>
                     <li><a href="/users/me">Account</a></li>
+                {{/demoMode}}   
                     <li><a href="/users/launches">My Launch History</a></li>
                     <li><a href="/users/content">My Apps</a></li>
                     <li><a href="/users/media">My Media</a></li>

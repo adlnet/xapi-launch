@@ -9,6 +9,7 @@ var ensureLoggedIn = require("./utils.js").ensureLoggedIn;
 var ensureNotLoggedIn = require("./utils.js").ensureNotLoggedIn;
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper;
 var config = require("./config.js").config;
+var blockInDemoMode = require("./utils.js").blockInDemoMode;
 requirejs.config(
 {
     nodeRequire: require
@@ -69,6 +70,24 @@ exports.setup = function(app, DAL)
         });
     });
 
+    if(config.demoMode)
+    {
+        app.use(function createMockUser(req, res, next)
+        {
+            DAL.getUser(config.demoModeUser,function(err,user)
+            {
+                if(!user)
+                {
+                    console.log("Could not find demo mode user");
+                    process.exit();
+                }
+                req.user = user;
+                next();
+            })
+        });
+    }
+
+
     app.use(function defaultToServerLRS(req, res, next)
     {
       if(!req.user)
@@ -99,13 +118,13 @@ exports.setup = function(app, DAL)
         //console.log(req.sessionID);
         res.status(200).send(req.cookies["connect.sid"]);
     });
-    app.get("/users/create", function(req, res, next)
+    app.get("/users/create", blockInDemoMode, function(req, res, next)
     {
         res.locals.pageTitle = "Create Account";
         res.render('createAccount',
         {})
     });
-    app.get("/users/login", function(req, res, next)
+    app.get("/users/login", blockInDemoMode, function(req, res, next)
     {
         res.locals.pageTitle = "Login";
         if (req.user) res.redirect("/");
@@ -113,7 +132,7 @@ exports.setup = function(app, DAL)
             res.render('login',
             {})
     });
-    app.get("/users/salt", function(req, res, next)
+    app.get("/users/salt", blockInDemoMode,  function(req, res, next)
     {
         DAL.getUser(req.query.email, function(err, user)
         {
@@ -129,7 +148,7 @@ exports.setup = function(app, DAL)
             }
         });
     });
-    app.post("/users/create", validateTypeWrapper(schemas.createAccountRequest, function(req, res, next)
+    app.post("/users/create",blockInDemoMode,  validateTypeWrapper(schemas.createAccountRequest, function(req, res, next)
     {
         DAL.createUser(req.body, function(err, user)
         {
@@ -140,13 +159,13 @@ exports.setup = function(app, DAL)
         });
     }));
 
-    app.get("/users/me", ensureLoggedIn(function(req, res, next)
+    app.get("/users/me",blockInDemoMode,  ensureLoggedIn(function(req, res, next)
     {
         res.render("editAccount",{
             user:req.user
         })
     }));
-    app.post("/users/edit", ensureLoggedIn(validateTypeWrapper(schemas.editAccountRequest, function(req, res, next)
+    app.post("/users/edit",blockInDemoMode,  ensureLoggedIn(validateTypeWrapper(schemas.editAccountRequest, function(req, res, next)
     {
         if(!req.user)
             return res.status(404).send("User not found");
@@ -157,7 +176,7 @@ exports.setup = function(app, DAL)
         })
     })));
 
-    app.get('/users/logout', ensureLoggedIn(function(req, res, next)
+    app.get('/users/logout',blockInDemoMode,  ensureLoggedIn(function(req, res, next)
     {
         req.logout();
         res.redirect("/");
@@ -304,7 +323,7 @@ exports.setup = function(app, DAL)
     }));
 
 
-    app.post('/users/login', function(req, res, next)
+    app.post('/users/login',blockInDemoMode,  function(req, res, next)
     {
         if (req.user)
         {

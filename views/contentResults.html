@@ -48,9 +48,11 @@
                         <li><a href="/content/{{virtuals.launchKey}}">View DB Record</a></li>
                         {{#resultLink}}<li><a href="{{resultLink}}">View Results</a></li>{{/resultLink}}
                         {{#virtuals.owned}}
+                        {{^demoMode}}
                         <li role="separator" class="divider"></li>
                         <li><a href="/content/{{virtuals.launchKey}}/delete">Remove</a></li>
                         <li><a href="/content/{{virtuals.launchKey}}/edit">Edit</a></li>
+                        {{/demoMode}}
                         {{/virtuals.owned}}
                     </ul>
                 </div>

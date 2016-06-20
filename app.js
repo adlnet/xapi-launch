@@ -38,10 +38,10 @@ async.series([
 					{
 						require("./server/config.js").config.LRS_Password = LRS_Password;
 						// TODO: Log the answer in a database
-						console.log('This information has been saved to config.json');
+						console.log('This information has been saved to config.json. Please start the server again.');
 						require('fs').writeFileSync("./config.json",JSON.stringify(require("./server/config.js").config));
 						rl.close();
-						cb();
+						process.exit();
 					});
 				});
 			});
@@ -51,6 +51,8 @@ async.series([
 ], function startServer()
 {
 	//serve static files
+	var config = require("./server/config.js").config;
+
 	app.use('/static', express.static('public'));
 	app.use(require("body-parser").json());
 	app.use(require("body-parser").urlencoded(
@@ -69,6 +71,14 @@ async.series([
 		scripts: 'scripts'
 	});
 	app.set('layout', 'layout');
+	
+	app.use(function(req,res,next)
+	{
+		if(!res.locals)
+			res.locals = {};
+		res.locals.demoMode = config.demoMode;
+		next();
+	})
 	//setup various routes
 	require('./server/users.js').setup(app, DB);
 	require('./server/xapi.js').setup(app, DB);

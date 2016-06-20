@@ -1,6 +1,7 @@
 "use strict";
 var validate = require('jsonschema').validate;
 var schemas = require("./schemas.js");
+var config = require("./config.js").config;
 
 function validateTypeWrapper(type, cb)
 {
@@ -63,7 +64,15 @@ function ensureOneCall(cb)
 	}
 }
 
+function blockInDemoMode(req,res,next)
+{
+    if(config.demoMode)
+        return res.status(401).send("Not available in Demo Mode");
+    else
+        next();
+}
 exports.ensureLoggedIn = ensureLoggedIn;
 exports.ensureNotLoggedIn = ensureNotLoggedIn;
 exports.validateTypeWrapper = validateTypeWrapper;
 exports.ensureOneCall = ensureOneCall;
+exports.blockInDemoMode = blockInDemoMode;

@@ -40,11 +40,13 @@
                         <li><a href="/media/{{virtuals.launchKey}}/xapi">View Associated Activity</a></li>
                         <li><a href="/media/{{virtuals.launchKey}}">View DB Record</a></li>
                        
+                        {{^demoMode}}
                         {{#virtuals.owned}}
                         <li role="separator" class="divider"></li>
                         <li><a href="/media/{{virtuals.launchKey}}/delete">Remove</a></li>
                         <li><a href="/media/{{virtuals.launchKey}}/edit">Edit</a></li>
                         {{/virtuals.owned}}
+                        {{/demoMode}}
                     </ul>
                 </div>
             </div>

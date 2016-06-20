@@ -4,7 +4,7 @@ var validateTypeWrapper = require("./utils.js").validateTypeWrapper
 var schemas = require("./schemas.js");
 var async = require('async');
 var config = require("./config.js").config;
-
+var blockInDemoMode = require("./utils.js").blockInDemoMode;
 exports.setup = function(app, DAL)
 {
     app.get("/media/browse", function(req, res, next)
@@ -47,7 +47,7 @@ exports.setup = function(app, DAL)
 
    
 
-    app.get("/media/register", ensureLoggedIn(function(req, res, next)
+    app.get("/media/register", blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
         DAL.getAllMediaTypes(function(err, types)
         {
@@ -59,7 +59,7 @@ exports.setup = function(app, DAL)
         })
 
     }));
-    app.post("/media/register", ensureLoggedIn(validateTypeWrapper(schemas.registerMediaRequest, function(req, res, next)
+    app.post("/media/register",blockInDemoMode, ensureLoggedIn(validateTypeWrapper(schemas.registerMediaRequest, function(req, res, next)
     {
         var media = req.body;
         media.owner = req.user.email;
@@ -95,7 +95,7 @@ exports.setup = function(app, DAL)
             }
         });
     })));
-    app.get("/media/:key/delete", ensureLoggedIn(function(req, res, next)
+    app.get("/media/:key/delete",blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMedia(req.params.key, function(err, media)
         {
@@ -112,7 +112,7 @@ exports.setup = function(app, DAL)
         })
 
     }));
-    app.get("/media/:key/edit", ensureLoggedIn(function(req, res, next)
+    app.get("/media/:key/edit",blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMedia(req.params.key, function(err, media)
         {
@@ -140,7 +140,7 @@ exports.setup = function(app, DAL)
         })
 
     }));
-    app.post("/media/:key/edit", validateTypeWrapper(schemas.registerMediaRequest, ensureLoggedIn(function(req, res, next)
+    app.post("/media/:key/edit",blockInDemoMode, validateTypeWrapper(schemas.registerMediaRequest, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMedia(req.params.key, function(err, media)
         {
@@ -301,7 +301,7 @@ exports.setup = function(app, DAL)
             }
         })
     });
-    app.post("/media/:key/star", ensureLoggedIn(function(req, res, next)
+    app.post("/media/:key/star",blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
             DAL.getMedia(req.params.key,function(err,content)
             {
@@ -315,7 +315,7 @@ exports.setup = function(app, DAL)
                     })
             });
     }));
-    app.post("/media/:key/unstar", ensureLoggedIn(function(req, res, next)
+    app.post("/media/:key/unstar",blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
             DAL.getMedia(req.params.key,function(err,content)
             {

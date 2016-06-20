@@ -4,15 +4,22 @@ var validateTypeWrapper = require("./utils.js").validateTypeWrapper
 var schemas = require("./schemas.js");
 var async = require('async');
 var config = require("./config.js").config;
+var blockInDemoMode = require("./utils.js").blockInDemoMode;
 exports.setup = function(app, DAL)
 {
+    if(!config.demoMode)
+    {
     app.get("/", function(res, req, next)
     {
         res.locals = {};
         res.locals.pageTitle = "Home";
         req.render('home', res.locals)
     });
-    app.get("/content/register", ensureLoggedIn(function(res, req, next)
+    }else
+    {
+        app.get("/",browseContent);
+    }
+    app.get("/content/register", blockInDemoMode, ensureLoggedIn(function(res, req, next)
     {
 
         DAL.getAllMediaTypes(function(err, types)
@@ -24,7 +31,7 @@ exports.setup = function(app, DAL)
         });
 
     }));
-    app.post("/content/register", ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
+    app.post("/content/register",  blockInDemoMode, ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
     {
         var content = req.body;
         content.owner = req.user.email;
@@ -67,7 +74,7 @@ exports.setup = function(app, DAL)
             }
         });
     })));
-    app.get("/content/:key/delete", ensureLoggedIn(function(req, res, next)
+    app.get("/content/:key/delete", blockInDemoMode,  ensureLoggedIn(function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
@@ -93,7 +100,7 @@ exports.setup = function(app, DAL)
     }));
 
 
-    app.get("/content/:key/edit", ensureLoggedIn(function(req, res, next)
+    app.get("/content/:key/edit",  blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
@@ -130,7 +137,7 @@ exports.setup = function(app, DAL)
             }
         })
     }));
-    app.post("/content/:key/edit", ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
+    app.post("/content/:key/edit",  blockInDemoMode, ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
@@ -174,7 +181,7 @@ exports.setup = function(app, DAL)
             }
         })
     })));
-    app.get("/content/browse", function(req, res, next)
+    function browseContent(req, res, next)
     {
         res.locals.pageTitle = "Browse All Apps";
         DAL.getAllMediaTypes(function(err, types)
@@ -203,7 +210,8 @@ exports.setup = function(app, DAL)
                 }
             })
         })
-    });
+    };
+    app.get("/content/browse", browseContent);
 
     app.get("/content/:key/xapi", function(req, res, next)
     {
@@ -223,7 +231,7 @@ exports.setup = function(app, DAL)
             }
         })
     });
-    app.post("/content/:key/star", ensureLoggedIn(function(req, res, next)
+    app.post("/content/:key/star",  blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
             DAL.getContentByKey(req.params.key,function(err,content)
             {
@@ -237,7 +245,7 @@ exports.setup = function(app, DAL)
                     })
             });
     }));
-    app.post("/content/:key/unstar", ensureLoggedIn(function(req, res, next)
+    app.post("/content/:key/unstar", blockInDemoMode,  ensureLoggedIn(function(req, res, next)
     {
             DAL.getContentByKey(req.params.key,function(err,content)
             {

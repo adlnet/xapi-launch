@@ -4,10 +4,10 @@ var validateTypeWrapper = require("./utils.js").validateTypeWrapper
 var schemas = require("./schemas.js");
 var async = require('async');
 var config = require("./config.js").config;
-
+var blockInDemoMode = require("./utils.js").blockInDemoMode;
 exports.setup = function(app, DAL)
 {
-    app.get("/mediaType/browse", function(req, res, next)
+    app.get("/mediaType/browse", blockInDemoMode, function(req, res, next)
     {
 
        //DAL.getMediaType("b5c7a376-b2b6-bb2c-a612-7b3afc9c54ee",function(err,type){type.delete(function(){})})
@@ -26,7 +26,7 @@ exports.setup = function(app, DAL)
             res.render('mediaTypes', res.locals);
         })
     });
-    app.get(["/mediaType/:key/media", "/mediaType//media"], function(req, res, next)
+    app.get(["/mediaType/:key/media", "/mediaType//media"],blockInDemoMode, function(req, res, next)
     {
         DAL.getMediaType(req.params.key || "", function(err, mediaType)
         {
@@ -59,14 +59,14 @@ exports.setup = function(app, DAL)
 
     });
 
-    app.get("/mediaType/register", ensureLoggedIn(function(req, res, next)
+    app.get("/mediaType/register",blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
 
         res.locals.pageTitle = "Register New MediaType";
         res.locals.user = req.user;
         res.render('registerMediaType', res.locals);
     }));
-    app.post("/mediaType/register", validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
+    app.post("/mediaType/register",blockInDemoMode, validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
     {
         DAL.createMediaType(req.body.name, req.body.description, req.body.iconURL, req.user.email, function(err, type)
         {
@@ -94,7 +94,7 @@ exports.setup = function(app, DAL)
         })
 
     });
-    app.get("/mediaType/:key/edit", ensureLoggedIn(function(req, res, next)
+    app.get("/mediaType/:key/edit",blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMediaType(req.params.key, function(err, type)
         {
@@ -113,7 +113,7 @@ exports.setup = function(app, DAL)
 
     }));
 
-    app.post("/mediaType/:key/edit", validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
+    app.post("/mediaType/:key/edit",blockInDemoMode, validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMediaType(req.params.key, function(err, type)
         {
@@ -137,7 +137,7 @@ exports.setup = function(app, DAL)
 
     })));
 
-    app.get("/mediaType/:key/delete", ensureLoggedIn(function(req, res, next)
+    app.get("/mediaType/:key/delete",blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMediaType(req.params.key, function(err, type)
         {

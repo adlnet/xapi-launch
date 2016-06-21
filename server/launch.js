@@ -463,7 +463,7 @@ exports.setup = function(app, DAL)
         var form = new FormData();
         var CRLF = "\r\n";
         var options = {
-            header: CRLF + '--' + form.getBoundary() + CRLF + 'content-type: application/json' + CRLF + "Content-Disposition: form-data; name=\"statement\"" + CRLF + CRLF
+            header: CRLF + '--' + form.getBoundary() + CRLF + 'Content-Type:application/json' + CRLF + "Content-Disposition: form-data; name=\"statement\"" + CRLF + CRLF
         };
         var sigs = [];
         for (var i = 0; i < postedStatement.length; i++)
@@ -477,10 +477,10 @@ exports.setup = function(app, DAL)
     //                'x5c': [(new Buffer(demoPublicKey)).toString('base64')]
     //            }
             });
-           
+            
             var hash = require("crypto").createHash('sha256')
                 .update(token).digest();
-            hash = hash.toString('base64');
+            hash = hash.toString('hex');
             if (!postedStatement[i].attachments)
                 postedStatement[i].attachments = [];
             var attachmentMetadata = {
@@ -498,13 +498,14 @@ exports.setup = function(app, DAL)
                 "sha2": hash,
             }
             postedStatement[i].attachments.push(attachmentMetadata);
+
             sigs.push(
             {
                 options:
                 {
-                    header: CRLF + '--' + form.getBoundary() + CRLF + 'x-experience-api-hash: ' + hash + CRLF + "content-type: application/octet-stream" + CRLF + "Content-Transfer-Encoding: binary" + CRLF + CRLF
+                    header: CRLF + '--' + form.getBoundary() + CRLF + 'X-Experience-API-Hash:' + hash + CRLF + "Content-Type:application/octet-stream" + CRLF + "Content-Transfer-Encoding: binary" + CRLF + CRLF
                 },
-                val: (new Buffer(token)).toString('base64')
+                val: token
             })
         }
         form.append('statement', JSON.stringify(postedStatement), options);
@@ -556,7 +557,7 @@ exports.setup = function(app, DAL)
                         });
                         postReq.on('end', function()
                         {
-                            console.log(data);
+                            console.log("data from LRS: " +  data);
                             if (r.statusCode == 301)
                             {
                                 post(r.headers.location);

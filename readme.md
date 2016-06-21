@@ -105,13 +105,13 @@ The learner may optionally move the Launch Token to the content manually. We ima
 The xAPI-Launch sample implementation includes a client side JavaScript library that you can use to make your content xAPI-Launch enabled. 
 
 1.  Make sure that your project already contains the [xAPIWrapper JavaScript file](https://github.com/adlnet/xAPIWrapper)
-2.  Include the [xAPI-launch-client.js](https://github.com/adlnet/xapi-launch/blob/master/public/xAPI-launch-client.js) file from this repository with a script tag.
-3.  Call the global function `xAPILaunch(callback, terminate_on_unload)`
+2.  Call the function `ADL.launch(callback, terminate_on_unload)`
     1.  `callback` should be a function with the form `function(err,launchdata,xAPIWrapper)`
-    2.  If the algorithm succeeds, launchdata will contain information about the user, and xAPIWrapper will be an instance of the xAPIWRapper tool configured to talk to the appropriate LRS endpoint
+    2.  If the algorithm succeeds, launchdata will contain information about the user, and xAPIWrapper will be an instance of the xAPIWrapper tool configured to talk to the appropriate LRS endpoint
     3.  Set `terminate_on_unload` to automatically terminate the launch session when the user leaves the page
-4.  If the algorithm fails (because of a misconfiguration or an invalid launch) you can still setup the xAPIWrapper manually, and use it as if Launch has never occured. (however you did it before.)
-5.  You can link together multiple static pages by including the `courselink="true"` attribute on HTML links. The library will edit the page to include the launch token and endpoint in the address of these links. If you are navigating the browser via JavaScript, and you want the next page in a set of static pages to be included in the launch, you will need to manually append the launch token and endpoint to the next address.
+    4.  The err value will be non-null in the case of an error or a failed launch. Check this value before continuing. You may choose to use an alternitive configuration in the case that err is not null.
+3.  If the algorithm fails (because of a misconfiguration or an invalid launch) you can still setup the xAPIWrapper manually, and use it as if Launch has never occured. (however you did it before.)
+4.  You can link together multiple static pages by including the `courselink="true"` attribute on HTML links. The library will edit the page to include the launch token and endpoint in the address of these links. If you are navigating the browser via JavaScript, and you want the next page in a set of static pages to be included in the launch, you will need to manually append the launch token and endpoint to the next address.
 
 ## Contributing to the project
 We welcome contributions to this project. Fork this repository,

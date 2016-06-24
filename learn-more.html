@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>xAPI Launch</title>
+
+  <link rel="icon" href="favicon.ico">
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+
+<body>
+<header>
+    <nav class="light-blue darken-2" role="navigation">
+        <div class="nav-wrapper container">
+            <a id="logo-container" href="index.html" class="brand-logo">ADL xAPI Launch</a>
+            <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+        </div>
+        <!-- github fork banner -->
+        <a href="https://github.com/adlnet/xapi-launch" class="hide-on-small-only github-corner"><svg width="63" height="63" viewBox="0 0 250 250" style="fill:#01579b; color:#0288d1; position: absolute; top: 0; border: 0; right: 0;"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+        <a href="https://github.com/adlnet/xapi-launch" class="hide-on-med-and-up github-corner"><svg width="56" height="56" viewBox="0 0 250 250" style="fill:#01579b; color:#0288d1; position: absolute; top: 0; border: 0; right: 0;"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+        <div style="height: .16em" class="s12 amber accent-4"></div>
+    </nav>
+</header>
+
+
+<main>
+    <div class="container">
+        <h1 class="header light-blue-text text-darken-2">Learn More</h1>
+        <div class="row">
+            <p class="col s12 grey-text text-darken-2">
+                xAPI Launch is an algorithm that can be implemented to launch and
+                initialize "xAPI Launch enabled" content.
+            </p>
+            <p class="col s12 grey-text text-darken-2">
+                 It ensures that statements which claim to be part of an experience
+                 really came from that experience. xAPI Launch differs from other
+                 launch algorithms in a few important ways.
+                 <ul class="collection">
+                     <li class="collection-item">
+                         It avoids placing personally indentifying information
+                         (PII) in a query string. This helps protect the learner's
+                         identity.
+                     </li>
+                     <li class="collection-item">
+                         It also avoids initiating the launch session from an HTTP
+                         POST request. The body of a post request is not visible when
+                         using a URL to launch a native application. </li>
+                     <li class="collection-item">
+                         In order to avoid both PII in the query string and an
+                         initial POST, it generates a one time use random token
+                         that can be exchanged for the name and LRS endpoints of
+                         the learner, but can be safely transfered as part of the URL.
+                     </li>
+                 </ul>
+            </p>
+        </div>
+
+        <div class="row">
+            <h5 class="header col s12 grey-text text-darken-2">Supported Uses</h5>
+            <ul class="collection">
+                <li class="collection-item">Static HTML resources</li>
+                <li class="collection-item">HTML content rendered by a server</li>
+                <li class="collection-item">Desktop applications through URL Protocol Handle</li>
+                <li class="collection-item">Mobile applications through URL Protocol Handler</li>
+                <li class="collection-item">Disconnected experiences by manually entering a code</li>
+            </ul>
+        </div>
+
+        <div class="row"></div>
+
+        <!-- callout box -->
+        <div class="row">
+            <div class="col s12 z-depth-2">
+                <div class="row" style="padding-top:1.3em">
+                    <div class="col s12 m5">
+                        <img class="materialboxed responsive-img" src="images/googleglass.jpeg">
+                    </div>
+                    <div class="col s12 m7">
+                        <h3 class="grey-text text-darken-2">The Algorithm</h3>
+                        <p class="light grey-text text-darken-2">See the algorithm behind xAPI Launch.</p>
+                        <br>
+                        <a class="waves-effect waves-light-blue light-blue darken-2 btn" href="algorithm.html">
+                            Algorithm
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -->
+
+        <!-- callout box -->
+        <div class="row">
+            <div class="col s12 z-depth-2">
+                <div class="row" style="padding-top:1.3em">
+                    <div class="col s12 m5">
+                        <img class="materialboxed responsive-img" src="images/googleglass.jpeg">
+                    </div>
+                    <div class="col s12 m7">
+                        <div class="row">
+                            <div class="col s12">
+                                <h3 class="grey-text text-darken-2">The Example</h3>
+                                <p class="light grey-text text-darken-2">See the example of xAPI Launch developed by ADL.</p>
+                                <br>
+                            </div>
+                            <div class="col s12 m6">
+                                <a class="waves-effect waves-light-blue light-blue darken-2 btn disabled" href="#whereisit?" target="_blank">
+                                    <i class="material-icons right">launch</i>
+                                    Live Demo
+                                </a>
+                            </div>
+                            <div class="col s12 hide-on-med-and-up">
+                                <br>
+                            </div>
+                            <div class="col s12 m6">
+                                <a class="waves-effect waves-light-blue light-blue darken-2 btn" href="https://github.com/adlnet/xapi-launch" target="_blank">
+                                    <i class="material-icons right">code</i>
+                                    Source
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -->
+
+        <!-- callout box -->
+        <div class="row">
+            <div class="col s12 z-depth-2">
+                <div class="row" style="padding-top:1.3em">
+                    <div class="col s12 m5">
+                        <img class="materialboxed responsive-img" src="images/googleglass.jpeg">
+                    </div>
+                    <div class="col s12 m7">
+                        <div class="row">
+                            <div class="col s12">
+                                <h3 class="grey-text text-darken-2">xAPIWrapper</h3>
+                                <p class="light grey-text text-darken-2">See the xAPI Launch enabled xAPIWrapper developed by ADL.</p>
+                                <br>
+                            </div>
+                            <div class="col s12 m6">
+                                <a class="waves-effect waves-light-blue light-blue darken-2 btn" href="https://github.com/adlnet/xAPIWrapper" target="_blank">
+                                    <i class="material-icons right">code</i>
+                                    Source
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -->
+    </div>
+</main>
+
+
+<footer class="page-footer light-blue darken-2">
+    <div class="footer-copyright light-blue darken-2">
+        <div class="container">
+            <a class="blue-grey-text text-lighten-3" href="http://adlnet.gov">
+                Advanced Distributed Learning</a>
+        </div>
+    </div>
+</footer>
+
+
+<!--  Scripts-->
+<script src="js/jquery/jquery.min.js"></script>
+<script src="js/materialize/materialize.min.js"></script>
+<script src="js/init.js"></script>
+
+</body>
+</html>

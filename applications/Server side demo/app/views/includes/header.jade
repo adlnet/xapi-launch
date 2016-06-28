@@ -1,0 +1,22 @@
+header
+  h2
+    a(href='/') XAPI Launch Server Demo
+  if user
+    h3 Welcome, #{user.name} 
+    if testing !== true    
+        a(href="/question/1") Take test
+        span  | 
+    a(href="/logout") Logout
+  else
+    p The server implements the XAPI Launch algorithm on the server side. This allows a content server to host interactive content and deliver it to the user, with out ever exposing the XAPI session information. 
+
+    p The server reads the URL that the visiting user sends, extracts the xAPI Launch information (the token and the endpoint), and contacts the Launch Service to initialize the session. The mechanism the server uses to interact with the user is not specified. This example uses plain old server forms, and a cookie to track the session. 
+
+    p To start this server, run 
+
+    code >node server.js
+
+    p The server will run on port 3030. The URL of the experience (where to send the user) is 
+
+    code http://localhost:3030/question/1
+      

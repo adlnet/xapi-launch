@@ -1,0 +1,13 @@
+extends ../layouts/default.jade
+
+block main
+  h3= `What is ${a} + ${b}?`
+
+block content
+
+  form(method="post", action="/question/answer")
+    input(type="hidden", name="a", value="#{a}")
+    input(type="hidden", name="b", value="#{b}")
+    input(type="hidden", name="number", value="#{number}")
+    input(type="number", placeholder="Enter answer here", name="answer", value="0")
+    input(type="submit", value="Submit")

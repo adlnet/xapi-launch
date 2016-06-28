@@ -54,7 +54,7 @@ The learner may optionally move the Launch Token to the content manually. We ima
 
 ## Running the static HTML Demo content
 1. Create a user account
-2. Find "Register New Content"
+2. Find "Register Apps"
 3. Use "http://localhost:3000/static/staticContentDemo/demo.html" as the URL
 4. Do not enter a private key.
 5. Browse all content
@@ -62,7 +62,7 @@ The learner may optionally move the Launch Token to the content manually. We ima
 
 ## Running the Server Side demo content
 1. Once you've completed the steps above, you can add the other demo content
-2. Register a new piece of content, using the URL `http://localhost3030/question/1` 
+2. Register a new app, using the URL `http://localhost:3030/question/1` 
 3. Start the server that serves this course by running `node server` in `./applications/Server side demo/`
 
 ## Running the native application demo

@@ -17,7 +17,7 @@
 <header>
     <nav class="light-blue darken-2" role="navigation">
         <div class="nav-wrapper container">
-            <a id="logo-container" href="index.html" class="brand-logo">ADL xAPI Launch</a>
+            <a id="logo-container" href="/" class="brand-logo">ADL xAPI Launch</a>
             <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
         </div>
         <!-- github fork banner -->
@@ -42,16 +42,15 @@
                  really came from that experience. xAPI Launch differs from other
                  launch algorithms in a few important ways.
                  <ul class="collection">
-                     <li class="collection-item">
+                     <li class="collection-item light">
                          It avoids placing personally indentifying information
                          (PII) in a query string. This helps protect the learner's
                          identity.
                      </li>
-                     <li class="collection-item">
+                     <li class="collection-item light">
                          It also avoids initiating the launch session from an HTTP
-                         POST request. The body of a post request is not visible when
-                         using a URL to launch a native application. </li>
-                     <li class="collection-item">
+                         POST request. </li>
+                     <li class="collection-item light">
                          In order to avoid both PII in the query string and an
                          initial POST, it generates a one time use random token
                          that can be exchanged for the name and LRS endpoints of
@@ -64,98 +63,99 @@
         <div class="row">
             <h5 class="header col s12 grey-text text-darken-2">Supported Uses</h5>
             <ul class="collection">
-                <li class="collection-item">Static HTML resources</li>
-                <li class="collection-item">HTML content rendered by a server</li>
-                <li class="collection-item">Desktop applications through URL Protocol Handle</li>
-                <li class="collection-item">Mobile applications through URL Protocol Handler</li>
-                <li class="collection-item">Disconnected experiences by manually entering a code</li>
+                <li class="collection-item light">Static HTML resources</li>
+                <li class="collection-item light">HTML content rendered by a server</li>
+                <li class="collection-item light">Desktop applications through a URL Protocol Handler</li>
+                <li class="collection-item light">Mobile applications through a URL Protocol Handler</li>
+                <li class="collection-item light">Disconnected experiences by manually entering a code</li>
             </ul>
         </div>
 
-        <div class="row"></div>
-
-        <!-- callout box -->
         <div class="row">
-            <div class="col s12 z-depth-2">
-                <div class="row" style="padding-top:1.3em">
-                    <div class="col s12 m5">
-                        <img class="materialboxed responsive-img" src="images/googleglass.jpeg">
-                    </div>
-                    <div class="col s12 m7">
-                        <h3 class="grey-text text-darken-2">The Algorithm</h3>
-                        <p class="light grey-text text-darken-2">See the algorithm behind xAPI Launch.</p>
-                        <br>
-                        <a class="waves-effect waves-light-blue light-blue darken-2 btn" href="algorithm.html">
-                            Algorithm
-                        </a>
-                    </div>
+            <div class="col s12">
+                <h3 class="grey-text text-darken-2">How it works</h3>
+                <div class="row">
+                    <h5 class="blue-text text-darken-4 light">An administrator configures launch information</h5>
+                    <p class="light">
+                        Instead of configuring the content, configuration is done at the server level.
+                    </p>
+
+                    <h5 class="blue-text text-darken-4 light">The user chooses to launch some content</h5>
+
+                    <h5 class="blue-text text-darken-4 light">The launch server generates a launch token</h5>
+                    <p class="light">
+                        unique id, "launch token", and returns it to the user
+                    </p>
+
+                    <h5 class="blue-text text-darken-4 light">Launch information is delivered to the content</h5>
+                    <p class="light">
+                        the user delivers the token, and launch service address, to the content (often as query string params http get request)
+                    </p>
+
+                    <h5 class="blue-text text-darken-4 light">The content attempts to exchange the launch token</h5>
+                    <p class="light">
+                        the content gets the token and launch service address and issues an http post request containing the launch token to the launch service address
+                    </p>
+
+                    <h5 class="blue-text text-darken-4 light">The launch server verifies the launch token</h5>
+                    <p class="light">
+                         a> token is valid, b> the session is in the unititialized state, c> the launch window has not timed out
+                     </p>
+
+                    <h5 class="blue-text text-darken-4 light">The launch server initializes the session and returns configuration details</h5>
+                    <p class="light">
+                         and responds from the post request with a> the actor, b> address to send the xapi statements, c> contextual information
+                         to be added to the statement about this launch. The launch server also sends a session cookie which must be included with
+                         all subsequent requests to the launch server about the session
+                    </p>
+
+                    <h5 class="blue-text text-darken-4 light">The launch server proxies content xAPI communication to the LRS</h5>
+                    <p class="light">
+                        The launch server recieves requests, adds context information to statements and sends them to the configured
+                        LRS, (does it proxy all other xapi requests to the lrs?)
+                    </p>
                 </div>
             </div>
         </div>
-        <!-- -->
 
-        <!-- callout box -->
         <div class="row">
-            <div class="col s12 z-depth-2">
-                <div class="row" style="padding-top:1.3em">
-                    <div class="col s12 m5">
-                        <img class="materialboxed responsive-img" src="images/googleglass.jpeg">
-                    </div>
-                    <div class="col s12 m7">
+            <div class="col s12">
+                <h3 class="grey-text text-darken-2">Resources</h3>
+                <div class="row">
+                    <div class="col s12">
                         <div class="row">
                             <div class="col s12">
-                                <h3 class="grey-text text-darken-2">The Example</h3>
-                                <p class="light grey-text text-darken-2">See the example of xAPI Launch developed by ADL.</p>
-                                <br>
+                                <p class="light grey-text text-darken-2">
+                                    See the algorithm behind xAPI Launch. [<a href="https://github.com/adlnet/xapi-launch#the-xapi-launch-algorithm" target="_blank">Algorithm</a>]
+                                </p>
                             </div>
-                            <div class="col s12 m6">
-                                <a class="waves-effect waves-light-blue light-blue darken-2 btn disabled" href="#whereisit?" target="_blank">
-                                    <i class="material-icons right">launch</i>
-                                    Live Demo
-                                </a>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <p class="light grey-text text-darken-2">
+                                    Read the API documentation. [<a href="https://github.com/adlnet/xapi-launch#api" target="_blank">xAPI Launch API</a>]
+                                </p>
                             </div>
-                            <div class="col s12 hide-on-med-and-up">
-                                <br>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <p class="light grey-text text-darken-2">
+                                    See the xAPI Launch Demo. [<a href="https://github.com/adlnet/xapi-launch#api" target="_blank">Source</a>]
+                                </p>
                             </div>
-                            <div class="col s12 m6">
-                                <a class="waves-effect waves-light-blue light-blue darken-2 btn" href="https://github.com/adlnet/xapi-launch" target="_blank">
-                                    <i class="material-icons right">code</i>
-                                    Source
-                                </a>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <p class="light grey-text text-darken-2">
+                                    Use the xAPI Launch enabled xAPIWrapper. [<a href="https://github.com/adlnet/xAPIWrapper#xapi-launch-support" target="_blank">Wrapper</a>]
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- -->
 
-        <!-- callout box -->
-        <div class="row">
-            <div class="col s12 z-depth-2">
-                <div class="row" style="padding-top:1.3em">
-                    <div class="col s12 m5">
-                        <img class="materialboxed responsive-img" src="images/googleglass.jpeg">
-                    </div>
-                    <div class="col s12 m7">
-                        <div class="row">
-                            <div class="col s12">
-                                <h3 class="grey-text text-darken-2">xAPIWrapper</h3>
-                                <p class="light grey-text text-darken-2">See the xAPI Launch enabled xAPIWrapper developed by ADL.</p>
-                                <br>
-                            </div>
-                            <div class="col s12 m6">
-                                <a class="waves-effect waves-light-blue light-blue darken-2 btn" href="https://github.com/adlnet/xAPIWrapper" target="_blank">
-                                    <i class="material-icons right">code</i>
-                                    Source
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- -->
     </div>
 </main>
 

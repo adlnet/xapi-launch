@@ -52,13 +52,40 @@ The learner may optionally move the Launch Token to the content manually. We ima
 3. `node app.js`
 4. enter LRS credentials
 
-## Running the demo content
+## Running the static HTML Demo content
 1. Create a user account
 2. Find "Register New Content"
 3. Use "http://localhost:3000/static/staticContentDemo/demo.html" as the URL
 4. Do not enter a private key.
 5. Browse all content
 6. Click "Launch"
+
+## Running the Server Side demo content
+1. Once you've completed the steps above, you can add the other demo content
+2. Register a new piece of content, using the URL `http://localhost3030/question/1` 
+3. Start the server that serves this course by running `node server` in `./applications/Server side demo/`
+
+## Running the native application demo
+1. You'll need to compile the application from sources - we use Microsoft Visual Studio Express 2012.
+2. When the application is compiled, find `xapiLaunch.exe`. Run the application.
+3. Enroll the applicaion in the Launch Server - use the URL `xAPILaunchDemo://demo.html`
+4. Set the Launch Type to "Manual"
+5. Verify the application can talk to the server
+   1. Launch the application exe file
+   2. Click the "Launch" on the Web interface to create a new session.
+   3. Copy and paste the Launch Server URL and the Launch Token into the form inside the native application
+   4. Click "start" inside the native app
+   5. In the web interface, find "My Launches" and verify that the status for native app is 1
+   6. Close the desktop application
+   7. If the status for the launch of hte native app is 1 or 2, then the application was able to connect to the server
+6. Install the protocol handler - this will cause the OS to open the application automatically
+   1. Start the native desktop app in Administator Mode. 
+   2. Find the "Setup" tab
+   3. Click "Install Handler"
+   4. Close the applicaiont"
+   5. Edit the app entry from step 3 in the web interface. 
+   6. Change the launch type to "redirect"
+7. Launch the app from the web interface - the native desktop applicaion should start, and should automatically initialize the launch session
 
 ## API
 

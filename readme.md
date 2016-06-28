@@ -63,6 +63,7 @@ The learner may optionally move the Launch Token to the content manually. We ima
 ## Running the Server Side demo content
 1. Once you've completed the steps above, you can add the other demo content
 2. Register a new app, using the URL `http://localhost:3030/question/1` 
+3. Set up the demo server by running `npm install` in `./applications/Server side demo/`.
 3. Start the server that serves this course by running `node server` in `./applications/Server side demo/`
 
 ## Running the native application demo
@@ -82,7 +83,7 @@ The learner may optionally move the Launch Token to the content manually. We ima
    1. Start the native desktop app in Administator Mode. 
    2. Find the "Setup" tab
    3. Click "Install Handler"
-   4. Close the applicaiont"
+   4. Close the application"
    5. Edit the app entry from step 3 in the web interface. 
    6. Change the launch type to "redirect"
 7. Launch the app from the web interface - the native desktop applicaion should start, and should automatically initialize the launch session

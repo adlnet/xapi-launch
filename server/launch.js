@@ -508,7 +508,7 @@ exports.setup = function(app, DAL)
                 val: token
             })
         }
-        form.append('statement', JSON.stringify(postedStatement[0]), options);
+        form.append('statement', JSON.stringify(postedStatement), options);
         for (var i in sigs)
             form.append('signature', sigs[i].val, sigs[i].options);
 

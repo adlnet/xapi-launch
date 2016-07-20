@@ -59,21 +59,12 @@ DAL.prototype.getAllMediaTypes = function(cb)
     {
         if (err)
             return cb(err);
-        var video = new types.mediaType();
-        video.uuid = "VIDEO-TEST-UUID";
-        video.name = "video";
-        video.owner = "System";
-        video.iconURL = "http://www.iconarchive.com/download/i89801/alecive/flatwoken/Apps-Player-Video.ico"
-        var html = new types.mediaType();
-        html.uuid = "HTML-TEST-UUID";
-        html.name = "HTML";
-        html.owner = "System";
-        html.iconURL = "http://extensions.siberiancms.com/wp-content/uploads/edd/2014/04/html-icon.png";
+       
         var none = new types.mediaType();
         none.uuid = "";
         none.name = "Supports No Media";
         none.owner = "System";
-        cb(null, [video, html, none].concat(results));
+        cb(null, [none].concat(results));
     })
 }
 DAL.prototype.getMedia = getGenerator("_id", schemas.media, "media", "media");
@@ -81,24 +72,7 @@ DAL.prototype.getMedia = getGenerator("_id", schemas.media, "media", "media");
 DAL.prototype._getMediaType = getGenerator("uuid", schemas.mediaType, "mediaType", "mediaType");
 DAL.prototype.getMediaType = function(type, cb)
     {
-        if (type == "VIDEO-TEST-UUID")
-        {
-            var video = new types.mediaType();
-            video.uuid = "VIDEO-TEST-UUID";
-            video.name = "video";
-            video.owner = "System";
-            video.iconURL = "http://www.iconarchive.com/download/i89801/alecive/flatwoken/Apps-Player-Video.ico"
-            return cb(null, video);
-        }
-        if (type == "HTML-TEST-UUID")
-        {
-            var html = new types.mediaType();
-            html.uuid = "HTML-TEST-UUID";
-            html.name = "HTML";
-            html.owner = "System";
-            html.iconURL = "http://extensions.siberiancms.com/wp-content/uploads/edd/2014/04/html-icon.png";
-            return cb(null, html);
-        }
+        
         if (type == "")
         {
             var none = new types.mediaType();

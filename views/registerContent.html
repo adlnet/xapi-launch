@@ -42,7 +42,7 @@
                     <label>Media Type</label>
                     <select id="mediaTypeKey" type="textarea" class='form-control' placeholder="MediaType">
                         {{#types}}
-                        <option name="{{name}}" value="{{uuid}}">{{name}}</option>
+                        <option name="{{name}}" {{#selected}}selected{{/selected}} value="{{uuid}}">{{name}}</option>
                         {{/types}}
                         
                     </select>

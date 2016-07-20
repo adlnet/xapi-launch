@@ -26,6 +26,8 @@ exports.setup = function(app, DAL)
         {
             res.locals = {};
             res.locals.pageTitle = "Register New App";
+            //select none type by default
+            types[0].virtuals.selected = true;
             res.locals.types = types;
             req.render('registerContent', res.locals)
         });

@@ -73,7 +73,7 @@ exports.setup = function(app, DAL)
                         var clientlaunch = launch.dbForm();
                         var clientContent = content.dbForm();
                         clientContent.publicKey = !!clientContent.publicKey; //be sure not to send the actual public key to the client
-                        res.locals.endpoint = "http://localhost:3000/"; //this should come from the config file
+                        res.locals.endpoint = config.host || "http://localhost:3000/"; 
                         //the the content has a public key, use it to encrypt the data. Note that the student has access to
                         //the launch uuid in plaintext... is this ok?
                         if (content.publicKey)

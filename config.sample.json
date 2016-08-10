@@ -2,7 +2,7 @@
 //settings should be saved in config.json, formatted as described here.
 
 {
-	"LRS_Url": "https://lrs.adlnet.gov/xAPI/",   //the LRS endpoint to which statements should be saved. Note: No trailing slash.  The user profile can override this
+	"LRS_Url": "https://lrs.adlnet.gov/xAPI/",   //the LRS endpoint to which statements should be saved. The user profile can override this
 	"LRS_Username": "",  //the username of the authority to use. The user profile can override this.
 	"LRS_Password": "", //the password to use. The user profile can override this
 	"host" :"http://localhost:3000/", //this information is used in the context activities. You should set this to the public facing URL of the launch server

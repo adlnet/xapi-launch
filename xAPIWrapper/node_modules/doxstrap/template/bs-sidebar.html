@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{title}}</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="static/prism.css">
+
+        <style type="text/css">
+            body {
+                position: relative;
+            }
+
+            .wrap {
+                display: -webkit-flex;
+                display: flex;
+                padding-top: 20px;
+            }
+
+            h1 {
+                position: fixed;
+                width: 100%;
+                z-index: 1000; 
+                color: #FFF;
+                background-color: #333;
+                margin: 0 0 0.3em 0;
+                padding: 5px;
+                font-size: 20px;
+            }
+
+            nav {
+                width: 200px;
+            }
+
+            .content {
+                -webkit-flex: 1;
+                flex: 1;
+                max-width: 1000px;
+            }
+
+            section > .block {
+                padding-left: 3em;
+            }
+
+            h3 {
+                font-size: 28px;
+                letter-spacing: 2px;
+            }
+
+            h3 em {
+                letter-spacing: 0;
+                color: #DDD;
+            }
+
+            pre code {
+                font-family: Courier, monospace !important;
+                font-weight: normal;
+                color: #222222 !important;
+            }
+
+            pre[class*="language-"] {
+                margin-top: 0;
+                /*padding-top: 0;*/
+            }
+
+            #navlist {
+                position: fixed;
+                top: 40px;
+            }
+
+            /* sidebar */
+            .bs-docs-sidebar {
+                padding-left: 20px;
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+
+            /* all links */
+            .bs-docs-sidebar .nav>li>a {
+                color: #999;
+                border-left: 2px solid transparent;
+                padding: 4px 20px;
+                font-size: 14px;
+                font-weight: 400;
+            }
+
+            /* nested links */
+            .bs-docs-sidebar .nav .nav>li>a {
+                padding-top: 1px;
+                padding-bottom: 1px;
+                padding-left: 30px;
+                font-size: 13px;
+            }
+
+            /* active & hover links */
+            .bs-docs-sidebar .nav>.active>a, 
+            .bs-docs-sidebar .nav>li>a:hover, 
+            .bs-docs-sidebar .nav>li>a:focus {
+                color: #337AB7;                 
+                text-decoration: none;          
+                background-color: transparent;  
+                border-left-color: #337AB7; 
+            }
+            /* all active links */
+            .bs-docs-sidebar .nav>.active>a, 
+            .bs-docs-sidebar .nav>.active:hover>a,
+            .bs-docs-sidebar .nav>.active:focus>a {
+                font-weight: 700;
+            }
+            /* nested active links */
+            .bs-docs-sidebar .nav .nav>.active>a, 
+            .bs-docs-sidebar .nav .nav>.active:hover>a,
+            .bs-docs-sidebar .nav .nav>.active:focus>a {
+                font-weight: 500;
+            }
+
+            /* hide inactive nested list */
+            .bs-docs-sidebar .nav ul.nav {
+                display: none;           
+            }
+            /* show active nested list */
+            .bs-docs-sidebar .nav>.active>ul.nav {
+                display: block;           
+            }
+
+            .nav-tabs {
+                margin-top: 1em;
+            }
+
+            .nav-tabs li a {
+                padding: 4px 15px;
+                font-weight: 700;
+            }
+
+            .nav-tabs li.active a {
+                border-color: #ccc;
+                border-bottom-color: transparent;
+                background-color: #f5f2f0;
+                color: #333;
+            }
+            .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+                background-color: #f5f2f0;
+            }
+
+            /*code,*/
+            pre {
+                /*background-color: #FFF !important;*/
+                border-top: none;
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+
+            .table {
+                border: none;
+                width: auto;
+            }
+            .table>tbody>tr>td,
+            .table>thead>tr>th {
+                border: none;
+            }
+            .table-condensed>thead>tr>th,
+            .table-condensed>tbody>tr>td {
+                padding: 3px 10px 3px 0;
+            }
+            section {
+                padding-top: 40px;
+                margin-top: -45px;
+                margin-bottom: 30px;
+            }
+        </style>
+
+    </head>
+
+    <body data-spy="scroll" data-target="#navlist">
+
+        <h1>{{title}}</h1>
+
+        <div class="wrap">
+
+            <nav class="bs-docs-sidebar">
+                <div id="navlist">
+                    <ul class="nav nav-stacked">
+                    {{#each docs}}
+                        <li>
+                            <a href="#{{name}}"><strong>{{title}}</strong></a>
+                            {{#if members}}
+                            <ul class="nav nav-stacked">
+                                {{#each members}}
+                                    <li><a href="#{{../name}}-{{id}}">{{name}}</a></li>
+                                {{/each}}
+                            </ul>
+                            {{/if}}
+                        </li>
+                    {{/each}}
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="content">
+
+                {{#each docs}}
+                    {{#if members}}
+                    <section id="{{name}}">
+
+                        <h2>{{title}}</h2>
+
+                        {{#each members}}
+
+                            {{#if name}}
+                            {{#notEmpty return params}}
+                            <section id="{{module}}-{{id}}">
+
+                            {{#with this}}
+
+                                <h4><a href="#{{module}}-{{id}}">{{name}}</a> <small> ({{#each cleanParams}}{{title}}{{#unless @last}}, {{/unless}}{{/each}})</small></h4>
+
+                                <div class="block">
+
+                                    {{{description.full}}}
+
+                                    {{#if params}}
+                                    <table class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="3">Arguments</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{#each params}}
+                                            <tr>
+                                                <td><em>{{title}}</em></td>
+                                                <td>{{#each types}}<span class="label label-primary">{{this}}</span>{{#unless @last}} or {{/unless}}{{/each}}</td>
+                                                <td>
+                                                    {{{description}}}
+                                                    {{#if optional}}<span class="label label-default">optional</span>{{/if}}
+                                                    {{#if default}}(default: <code>{{default}}</code>){{/if}}
+
+                                                </td>
+                                            </tr>
+                                            {{/each}}
+                                        </tbody>
+                                    </table>
+                                    {{/if}}
+
+                                    {{#if return}}
+                                    <p><strong>Returns</strong><br>
+                                        {{#with return}}
+                                        {{#each types}}<span class="label label-primary">{{this}}</span>{{#unless @last}} or {{/unless}}{{/each}}
+                                        &nbsp;
+                                        {{{description}}}
+                                        {{#if ../chainable}}<span class="label label-default">chainable</span>{{/if}}
+                                        <!--
+                                        &nbsp;
+
+                                        -->
+                                        {{/with}}
+                                    </p>
+                                    {{/if}}
+
+                                    <ul class="nav nav-tabs">
+                                        {{#each examples}}
+                                        <li {{#if @first}}class="active"{{/if}}><a href="#{{../id}}-example-{{@index}}" data-toggle="tab">Example</a></li>
+                                        {{/each}}
+                                        <li>
+                                            <a href="#{{../id}}-source" data-toggle="tab">Source</a>
+                                        </li>
+                                    </ul>
+
+                                    <div class="tab-content">
+                                        {{#each examples}}
+                                        <div class="{{#if @first}}active{{/if}} tab-pane" id="{{../id}}-example-{{@index}}">
+                                            <pre><code class="language-javascript">{{this}}</code></pre>
+                                        </div>
+                                        {{/each}}
+                                        <div class="tab-pane" id="{{../id}}-source">
+                                            <pre><code class="language-javascript">{{code}}</code></pre>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            {{/with}}
+                            </section>
+                            {{/notEmpty}}
+                            {{/if}}
+                        {{/each}}
+                    </section>
+                    {{/if}}
+                {{/each}}
+            </div>
+        </div>
+        <script>
+            $('.content').on('click', '.nav-tabs a', function(event) {
+
+                event.preventDefault();
+
+                var tabContainer = $(event.target).closest('.nav-tabs'),
+                        tabs = tabContainer.find('li'),
+                        tabsContent = tabContainer.parent().find('.tab-pane'),
+                        index = tabContainer.find('a').indexOf(event.target);
+
+                tabs.removeClass('active').eq(index).addClass('active');
+                tabsContent.removeClass('active').eq(index).addClass('active');
+
+            });
+        </script>
+        <script src="static/prism.js"></script>
+    </body>
+</html>

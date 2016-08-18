@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="icon" href="../stuff/pics/rocket.ico">
+  <title>YouTube-Demo</title>
+
+  <link rel="shortcut icon" href="../stuff/pics/rocketSmall.png">
+
+  <link rel="stylesheet" href="../stuff/css/fontRoboto.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="src/materialRed.css">
+  <link rel="stylesheet" href="../stuff/css/styles.css">
+  <style>
+  #view-source {
+    position: fixed;
+    display: block;
+    right: 0;
+    bottom: 0;
+    margin-right: 40px;
+    margin-bottom: 40px;
+    z-index: 900;
+  }
+  </style>
+</head>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+  <main class="mdl-layout__content">
+    <body class="mdl-ADL mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
+
+      <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
+        <div class="mdl-layout--large-screen-only mdl-layout__header-row">
+        </div>
+        <div class="mdl-layout--large-screen-only mdl-layout__header-row">
+          <h1>YouTube Demo</h1>
+        </div>
+        <div class="mdl-layout--small-screen-only mdl-layout__header-row">
+          <h4>YouTube Demo</h4>
+        </div>
+        <div class="mdl-layout--large-screen-only mdl-layout__header-row">
+        </div>
+      </header>
+
+      <section class="container">
+
+        <section class="section--center mdl-grid mdl-grid--no-spacing">
+
+          <div class="page-header">
+            <h1 class="text-primary"><i class="fa fa-youtube"></i> xAPI Youtube Video Tracking</h1>
+            <h3 class="text-muted">Automatically configured through xAPI launch</h3>
+          </div>
+
+          <div class="row">
+
+            <div class="form-group col-md-12">
+
+              <div id="player"></div>
+
+              <section class="section--center mdl-grid mdl-shadow--2dp">
+                  <div class="mdl-card__supporting-text">
+                    <div id="launchStuff"></div>
+                    <p>This example uses minimal javascript and the youtube <a href="https://developers.google.com/youtube/iframe_api_reference" style="color: #266585;" target="_blank">iframe API</a>.</p>
+                    <p>Statements are built with xapi-youtube-statements.js and dispatched to an LRS with xapiwrapper.min.js using a custom ADL.XAPIYoutubeStatements.onStateChangeCallback function.</p>
+                    <p>You can view statements <a href="http://10.100.21.46/#statementViewer" style="color: #266585;" >with the statement viewer</a>.</p>
+                  </div>
+              </section>
+
+<br>
+<br>
+<br>
+
+
+<div class="floatingContainer">
+  <a style="display:block" href="/">
+  	<div class="actionButton"><p class="floatingText" style="position: relative; top: calc(50% - 13px); right: calc(50% - 29px);">
+  		<span class="floatingTextBG"><i class="material-icons mdl-color-text--white">arrow_back</i></span></p>
+  	</div>
+  </a>
+  <p class="floatingText" style="position: relative; top: calc(50% - 25px); right: calc(50% - 27px); color: #266585;">Back</p>
+</div>
+
+
+            </div><!-- .col-md-12 -->
+
+          </div><!-- .row -->
+
+        </section><!-- .container -->
+
+        <footer id="footer" class="mdl-mini-footer">
+          <div class="mdl-mini-footer__left-section">
+            <div class="mdl-logo"><a style="text-decoration: none;" href="https://www.adlnet.gov/">Advanced Distributed Learning</a></div>
+            <ul class="mdl-mini-footer__link-list">
+              <li><a style="text-decoration: none;" href="https://github.com/adlnet/xapi-launch"><img src="../stuff/pics/gh-octo-32px.png"></a></li>
+            </ul>
+          </div>
+        </footer>
+      </section>
+
+<script type="text/javascript" src="../xAPIWrapper/lib/cryptojs_v3.1.2.js"></script>
+<script type="text/javascript" src="../xAPIWrapper/src/verbs.js"></script>
+<script type="text/javascript" src="../xAPIWrapper/src/xapi-launch.js"></script>
+<script type="text/javascript" src="../xAPIWrapper/src/xapistatement.js"></script>
+<script type="text/javascript" src="../xAPIWrapper/src/xapiwrapper.js"></script>
+<!-- <script type="text/javascript" src="../xapi-launch/xAPIWrapper/dist/xapiwrapper.min.js"></script> -->
+<script type="text/javascript" src="src/xapi-youtube-statements.js"></script>
+
+<script>
+
+  var video = "xIoRWIgzvbM"; // Change this to your video ID
+
+  // "global" variables read by ADL.XAPIYoutubeStatements
+  ADL.XAPIYoutubeStatements.changeConfig({
+    "actor":  {"mbox":"mailto:paul.jesukiewicz.jr.ctr@adlnet.gov", "name":"Paulie"},
+    "videoActivity": {"id":"https://www.youtube.com/watch?v=" + video, "definition":{"name": {"en-US":video}} }
+  });
+
+  function initYT() {
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  }
+
+  var player;
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      height: '390',
+      width: '640',
+      videoId: video,
+      playerVars: { 'autoplay': 0 },
+      events: {
+        'onReady': ADL.XAPIYoutubeStatements.onPlayerReady,
+        'onStateChange': ADL.XAPIYoutubeStatements.onStateChange
+      }
+    });
+  }
+
+  initYT();
+
+
+  /* look for ADL Launch */
+  ADL.launch(function(err, launchdata, xAPIWrapper) {
+      if (!err) {
+          ADL.XAPIWrapper = xAPIWrapper;
+          console.log("--- content launched via xAPI Launch ---\n", ADL.XAPIWrapper.lrs, "\n", launchdata);
+          document.getElementById('launchStuff').innerHTML = '<h4>This page was launched by an ADL xAPI Launch Server</h4><strong>Launch URL: </strong>' + (ADL.XAPIWrapper.lrs.endpoint).toString() + '<br/><br/>';
+      } else {
+          //wrapper = ADL.XAPIWrapper;
+          ADL.XAPIWrapper.changeConfig({
+              endpoint: "https://lrs.adlnet.gov/xapi/",
+              user: 'tom',
+              password: '1234'
+          });
+          console.log("--- content statically configured ---\n", ADL.XAPIWrapper.lrs);
+          document.getElementById('launchStuff').innerHTML = '<h4>This page was was not launched by ADL xAPI Launch</h4><strong>Launch URL: </strong>' + (ADL.XAPIWrapper.lrs.endpoint).toString() + '<br/><br/>';
+      }
+
+
+  }, true);
+
+
+
+  /*
+   * Custom Callbacks
+   */
+  ADL.XAPIYoutubeStatements.onPlayerReadyCallback = function(stmt) {
+    console.log("on ready callback");
+  }
+
+  // Dispatch Youtube statements with XAPIWrapper
+  ADL.XAPIYoutubeStatements.onStateChangeCallback = function(event, stmt) {
+    console.log(stmt);
+    if (stmt) {
+      stmt['timestamp'] = (new Date()).toISOString();
+      ADL.XAPIWrapper.sendStatement(stmt, function(){});
+    } else {
+      console.warn("no statement found in callback for event: " + event);
+    }
+  }
+
+</script>
+
+
+</body>
+</main>
+</div>
+</html>

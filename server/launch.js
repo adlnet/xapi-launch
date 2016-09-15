@@ -10,6 +10,7 @@ var ensureNotLoggedIn = require("./utils.js").ensureNotLoggedIn;
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper;
 var lockedKeys = {};
 var config = require("./config.js").config;
+var checkOwner = require("./users.js").checkOwner;
 exports.setup = function(app, DAL)
 {
     //need some input on actual xAPI data here.

@@ -68,7 +68,8 @@ async.series([
 	{
 		header: 'header',
 		footer: 'footer',
-		scripts: 'scripts'
+		scripts: 'scripts',
+		form:'forms/form'
 	});
 	app.set('layout', 'layout');
 	
@@ -87,6 +88,7 @@ async.series([
 	require('./server/media.js').setup(app, DB);
 	require('./server/mediaType.js').setup(app, DB);
 	require('./server/launch.js').setup(app, DB);
+	require('./server/files.js').setup(app, DB);
 	/*app.all("*",function(req,res,next)
 	{
 		res.redirect("/");

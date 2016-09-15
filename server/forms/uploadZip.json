@@ -1,0 +1,18 @@
+{
+	"title": "Upload a course package",
+	"submitText": "Upload",
+	"fields": [
+	{
+		"label": "Zip file",
+		"id": "zip",
+		"helptext": "Choose a Zip file (*.zip).",
+		"type":
+		{
+			"isFile": true
+			
+		},
+		"accept":"*.zip",
+		"maxsize":"2500000"
+	}
+]
+}

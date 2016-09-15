@@ -1,0 +1,22 @@
+
+{{#children.length}}
+	<details class='tree-item'>
+		<summary class='tree-item-check'>
+			<input type="checkbox" {{#selected}}checked="checked"{{/selected}} name="{{id}}" value="{{text}}" {{#multiple}}multiple=true{{/multiple}}>
+			{{text}}
+			{{^text}}
+				All Requirements
+			{{/text}}
+		</summary>
+		{{#children}}
+			{{> forms/checkboxTree}}
+		{{/children}}
+	</details>
+{{/children.length}}
+
+{{^children.length}}
+	<div class='tree-item'>
+		<input type="checkbox" name="{{id}}" value="{{text}}" {{#multiple}}multiple=true{{/multiple}}>
+		{{text}}
+	</div>
+{{/children.length}}

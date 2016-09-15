@@ -1,0 +1,554 @@
+{{#form}}
+<style type="text/css">
+    input[type=checkbox], input[type=radio] .inputcheck
+    {
+                display: inline-block;
+    width: auto;
+    vertical-align: text-bottom;
+    height: auto;
+    margin-top: 11px;
+
+    }
+    .group-span-filestyle label
+    {
+    margin-top: 0px;
+    }
+    label
+    {
+            display: inline-block;
+    width: 100%;
+    margin-bottom: 7.5px;
+    font-weight: 700;
+
+    text-align: right;
+    direction: rtl;
+    }
+    .helptext
+    {
+        color: gray;
+    font-style: italic;
+    }
+    .checkpreview
+    {
+            max-height: 10em;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    box-shadow: 1px 1px 10px rgba(0,0,0,.2) inset;
+    margin-top: 2em;
+    padding: 1.0em;
+    }
+    .labelText
+    {
+    font-weight: 700;
+    color: black;
+    margin-top: 6.5px;
+    margin-bottom: 0px;
+    }
+    .input-group
+    {
+        width: 100%;
+    }
+    .fuelux .checkbox-custom:before
+    {
+        padding:1px 2px 0px 1px !important;
+    }
+    .validtionFail
+    {
+        background: #E99
+    }
+
+	.tree-item > .tree-item
+	{
+		padding-left: 20px;
+	}
+
+	details.tree-item > .tree-item
+	{
+		border-left: dotted grey 1px;
+	}
+
+	.scrollbox {
+		max-height: 300px;
+		overflow: auto;
+	}
+
+</style>
+<script type="text/javascript">window.define = null</script>
+<link rel="stylesheet" href="/static/css/bootstrap-slider.min.css"></link>
+
+<script type="text/javascript" src="/static/scripts/bootstrap-slider.min.js"></script>
+
+<script type="text/javascript" src="/static/scripts/bootstrap-filestyle.min.js"> </script>
+<div class="container" style="margin-top:3em">
+    <!-- Example row of columns -->
+     <div class='row' >
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h2 class="text-center">{{title}}</h2>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+    <div class='row'>
+        <div class="col-md-2"></div>
+        <div class="col-md-8 formpanel" style="border:0px solid #ddd;border-radius:3px;margin:2em 0em;padding:2em 2em;background:white">
+            <form onsubmit="return false;" class="form-signin">
+
+                {{#fields}}
+
+                <div class="fuelux">
+
+                    {{#type.isText}}
+                    <div class = "row">
+                        <div class="form-group" for="{{id}}">
+                            <label for="{{id}}" class="col-md-2 control-label">{{label}}</label>
+                            <div class="col-md-10 ">
+                                <div class="input-group">
+                                    {{#prepend}}<span class="input-group-addon">{{prepend}}</span>{{/prepend}}
+                                    <input name="{{id}}" validation="{{validation}}" validationMessage="{{validationMessage}}" id="{{id}}" datakey ="{{datakey}}" type="{{type.type}}" {{#disabled}}disabled="true"{{/disabled}} class='form-control' placeholder="{{placeholder}}" value="{{default}}"></input>
+                                    {{#postpend}}<span class="input-group-addon">{{postpend}}</span>{{/postpend}}
+                                </div>
+                                <p class = "help-block ">{{helptext}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{/type.isText}}
+                    {{#type.isCheck}}
+                    <div class = "row">
+                        <div class="form-group">
+                            <label class = "col-md-2 control-label">{{label}}</label>
+                            <div class="col-md-10">
+                                <div class="checkbox" style="margin:0">
+                                  <label class="checkbox-custom" data-initialize="checkbox" id="checkboxes-0">
+                                    <input class="sr-only" name="{{id}}" {{#default}}checked{{/default}} type="checkbox">
+                                  </label>
+                                </div>
+                                <p class = "help-block ">{{helptext}}</p>
+                             </div>
+                        </div>
+                    </div>
+                    {{/type.isCheck}}
+                    {{#type.isMultiCheck}}
+                    <div class = "row">
+                        <div class="form-group">
+                            <label class = "col-md-2 control-label">{{label}}</label>
+                            <div class="col-md-10" {{#inline}}style="    margin-top: 5px;"{{/inline}}>
+                                {{#options}}
+                                <!--<input class= "inputcheck" name="{{id}}" id="{{id}}" datakey ="{{datakey}}" type="checkbox" class='form-control' placeholder="{{placeholder}}" {{#default}}checked{{/default}}></input>
+                                {{text}} {{^inline}}<br>{{/inline}} -->
+                                <div {{#inline}}style="width:auto;display:inline"{{/inline}} class="checkbox" style="margin:0">
+                                  <label {{#inline}}style="width:auto;display:inline"{{/inline}} class="checkbox-custom " data-initialize="checkbox" id="checkboxes-0">
+                                    <input class="sr-only" name="{{id}}" {{#default}}checked{{/default}} type="checkbox">
+                                     <div style="margin-right:.5em;text-align: left;{{#inline}}width:auto;display:inline{{/inline}}"> {{text}}</div>
+                                  </label>
+
+                                </div>
+                                {{/options}}
+                                <p class = "help-block ">{{helptext}}</p>
+                             </div>
+                        </div>
+                    </div>
+                    {{/type.isMultiCheck}}
+                    {{#type.isLabel}}
+                    <div class = "row">
+                        <div class="form-group">
+                        <label class = "col-md-2 control-label">{{label}}</label>
+                            <div class="col-md-10">
+                                <p class = "help-block ">{{helptext}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{/type.isLabel}}
+                    {{#type.isFile}}
+                    <div class = "row">
+                        <div class="form-group">
+                        <label class = "col-md-2 control-label">{{label}}</label>
+                            <div class="col-md-10">
+                                <input name="{{id}}" type="file" style="margin-top: 0px;" class="filestyle" accept="{{accept}}" maxsize="{{maxsize}}" />
+                                <p class = "help-block ">{{helptext}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{/type.isFile}}
+                    {{#type.isSelect}}
+                    <div class = "row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="{{id}}">{{label}}</label>
+                        <div class="col-md-10">
+                          <input type="text" class="hidden" />
+                          <select id="{{id}}" name="{{id}}" class="form-control" {{#multiple}}multiple=true{{/multiple}} >
+                            {{#options}}
+                            <option {{#default}}selected{{/default}} value="{{value}}">{{text}}</option>
+                            {{/options}}
+                          </select>
+                          <p class = "help-block ">{{helptext}}</p>
+                        </div>
+
+                    </div>
+                    </div>
+                    {{/type.isSelect}}
+                    {{#type.isTextArea}}
+                    <div class = "row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="{{id}}">{{label}}</label>
+                        <div class="col-md-10">
+                            <input type="text" class="hidden" />
+                            <textarea validation="{{validation}}" validationMessage="{{validationMessage}}" class="form-control" rows={{height}} id="{{id}}" value="{{default}}" name="{{id}}">{{default}}</textarea>
+                          <p class = "help-block ">{{helptext}}</p>
+                        </div>
+
+                    </div>
+                    </div>
+                    {{/type.isTextArea}}
+                    {{#type.isSpinner}}
+                    <div class = "row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="{{id}}">{{label}}</label>
+                        <div class="col-md-10">
+
+                            <div class="spinbox" data-initialize="spinbox" id="mySpinbox">
+                              <input type="text" name='{{id}}' value='{{default}}' class="form-control input-mini spinbox-input">
+                              <div class="spinbox-buttons btn-group btn-group-vertical">
+                                <button type="button" class="btn btn-default spinbox-up btn-xs">
+                                  <span class="glyphicon glyphicon-chevron-up"></span><span class="sr-only">Increase</span>
+                                </button>
+                                <button type="button" class="btn btn-default spinbox-down btn-xs">
+                                  <span class="glyphicon glyphicon-chevron-down"></span><span class="sr-only">Decrease</span>
+                                </button>
+                              </div>
+                            </div>
+
+                          <p class = "help-block ">{{helptext}}</p>
+                        </div>
+
+                    </div>
+                    </div>
+                    {{/type.isSpinner}}
+                    {{#type.isSlider}}
+                    <div class = "row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="{{id}}">{{label}}</label>
+                        <div class="col-md-10">
+                            <input id="{{id}}" name="{{id}}" data-slider-id='{{id}}ex1Slider' type="text" data-slider-min="{{min}}" data-slider-max="{{max}}" data-slider-step="{{step}}" data-slider-value="{{default}}"/>
+                            <script type="text/javascript">
+
+                                $('#{{id}}').slider({
+                                    formatter: function(value) {
+                                        return 'Current value: ' + value;
+                                    }
+                                });
+
+                            </script>
+                          <p class = "help-block ">{{helptext}}</p>
+                        </div>
+
+                    </div>
+                    </div>
+                    {{/type.isSlider}}
+                    {{#type.isRadio}}
+                    <div class = "row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="{{id}}">{{label}}</label>
+                        <div class="col-md-10" {{#inline}}style="    margin-top: 5px;"{{/inline}}>
+                            {{#options}}
+                                <div style="margin:0;{{#inline}}width:auto;display:inline{{/inline}}" class="radio">
+                                  <label style="{{#inline}}width:auto;display:inline{{/inline}}" class="radio-custom" data-initialize="radio" >
+                                    <input class="sr-only" name="{{id}}" type="radio" value="{{value}}">
+                                     <div style="margin-right:.5em;text-align: left;{{#inline}}width:auto;display:inline{{/inline}}"> {{text}}</div>
+                                  </label>
+                                </div>
+                            {{/options}}
+
+                          <p class = "help-block ">{{helptext}}</p>
+                        </div>
+                    </div>
+                    </div>
+                    {{/type.isRadio}}
+					{{#type.isCheckboxTree}}
+					<div class="row">
+					<div class="form-group">
+						<label class="col-md-2 control-label">{{label}}</label>
+						<div class="col-md-10" {{#inline}}style="margin-top: 5px;"{{/inline}}>
+							<div class="scrollbox">
+								{{#options}}
+									{{> forms/checkboxTree}}
+								{{/options}}
+							</div>
+                            <div class="checkpreview">
+                                
+                            </div>
+
+                            <script type="text/javascript">
+                                function updateVal()
+                                {
+                                    var inputs = $(".checkpreview").prev().find("input");
+                                    $(".checkpreview").empty();
+                                    var found = false;
+                                   //inputs.length = 10;
+                                    for(var i = 0; i <  inputs.length; i++)
+                                    {
+                                        if($(inputs[i]).is(":checked"))
+                                        {
+                                            $(".checkpreview").append("<div>" + $(inputs[i]).val() + "</div>");
+                                            found = true;
+                                        }
+                                    }
+                                    if(!found)
+                                    {
+                                            $(".checkpreview").append("<div>All Requirements</div>");
+                                    }
+                                }
+                                $(".checkpreview").prev().find("input").click(function(e)
+                                {
+                                    window.setTimeout(updateVal,10);
+                                    
+                                })
+                                window.setTimeout(updateVal,100);
+                            </script>
+							<p class="help-block">{{helptext}}</p>
+						</div>
+
+						<script type="text/javascript" src="/static/scripts/checkboxTree.js"></script>
+					</div>
+					</div>
+					{{/type.isCheckboxTree}}
+                    {{#type.isTags}}
+                    <div class = "row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="{{id}}">{{label}}</label>
+                        <div class="col-md-10" {{#inline}}style="    margin-top: 5px;"{{/inline}}>
+
+
+                        <div class="pillbox" id="gui_{{id}}" data-initialize="pillbox" id="myPillbox">
+                          <ul class="clearfix pill-group">
+
+                            <li class="pillbox-input-wrap btn-group">
+                              <a class="pillbox-more">and <span class="pillbox-more-count"></span> more...</a>
+                              <input type="text" name="{{id}}" id="value_{{id}}" class="sr-only">
+                              <input type="text"  class="form-control dropdown-toggle pillbox-add-item" placeholder="add item">
+                              <button type="button" class="dropdown-toggle sr-only">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+                              <ul class="suggest dropdown-menu" role="menu" data-toggle="dropdown" data-flip="auto"></ul>
+                            </li>
+                          </ul>
+                        </div>
+                        <script type="text/javascript">
+                                function updateVal()
+                                {
+                                var tags = $("#gui_{{id}}").pillbox("items");
+                                var val = "";
+                                for(var i in tags)
+                                {
+                                    val += tags[i].text + ",";
+                                }
+                                val = val.substring(0,val.length-1);
+                                $("#value_{{id}}").val(val);
+                                }
+                                var _default = "{{default}}";
+                                _default = _default.split(",")
+                                for(var i in _default)
+                                {
+                                    if(_default[i])
+                                        $("#gui_{{id}}").pillbox('addItems', -1, [{ text: _default[i], value: '', attr: {}, data: {} }]);
+                                }
+
+                                updateVal();
+
+                                $('#gui_{{id}}').on('added.fu.pillbox', updateVal);
+                                $('#gui_{{id}}').on('removed.fu.pillbox', updateVal);
+                                $('#gui_{{id}}').on('edited.fu.pillbox', updateVal);
+
+
+                        </script>
+                        <p class = "help-block ">{{helptext}}</p>
+                        </div>
+                    </div>
+                    </div>
+                    {{/type.isTags}}
+
+
+                    <!-- Select Basic -->
+
+
+
+                </div>
+                {{/fields}}
+
+            </form>
+            <button id = "submit" type='' class="btn btn-lg btn-raised btn-primary btn-block" href="#" role="button">{{form.submitText}}</button>
+            <a href="#"  onclick="history.back();" >&laquo;Cancel</a>
+            <div id="feedbackError" class="hidden alert alert-danger" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span> <span id="feedbackErrorMessage" role="message">Enter a valid email address</span>
+            </div>
+            <div id="feedbackSuccess" class="hidden alert alert-success" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Success:</span> <span id="feedbackSuccessMessage" role="message">Enter a valid email address</span>
+            </div>
+            
+        </div>
+        <div class="col-md-2">
+            
+        </div>
+    </div>
+    <div class="row">
+     <div class="col-md-2">
+            
+        </div>
+         <div class="col-md-8">
+            {{>footer}}
+        </div>
+         <div class="col-md-2">
+            
+        </div>
+        
+    </div>
+</div>
+
+<!-- /container -->
+<script type="text/javaScript">
+/**
+ * jQuery serializeObject
+ * @copyright 2014, macek <paulmacek@gmail.com>
+ * @link https://github.com/macek/jquery-serialize-object
+ * @license BSD
+ * @version 2.5.0
+ */
+ window.define = null;
+!function(e,i){if("function"==typeof define&&define.amd)define(["exports","jquery"],function(e,r){return i(e,r)});else if("undefined"!=typeof exports){var r=require("jquery");i(exports,r)}else i(e,e.jQuery||e.Zepto||e.ender||e.$)}(this,function(e,i){function r(e,r){function n(e,i,r){return e[i]=r,e}function a(e,i){for(var r,a=e.match(t.key);void 0!==(r=a.pop());)if(t.push.test(r)){var u=s(e.replace(/\[\]$/,""));i=n([],u,i)}else t.fixed.test(r)?i=n([],r,i):t.named.test(r)&&(i=n({},r,i));return i}function s(e){return void 0===h[e]&&(h[e]=0),h[e]++}function u(e){switch(i('[name="'+e.name+'"]',r).attr("type")){case"checkbox":return"on"===e.value?!0:e.value;default:return e.value}}function f(i){if(!t.validate.test(i.name))return this;var r=a(i.name,u(i));return l=e.extend(!0,l,r),this}function d(i){if(!e.isArray(i))throw new Error("formSerializer.addPairs expects an Array");for(var r=0,t=i.length;t>r;r++)this.addPair(i[r]);return this}function o(){return l}function c(){return JSON.stringify(o())}var l={},h={};this.addPair=f,this.addPairs=d,this.serialize=o,this.serializeJSON=c}var t={validate:/^[a-z_][a-z0-9_]*(?:\[(?:\d*|[a-z0-9_]+)\])*$/i,key:/[a-z0-9_]+|(?=\[\])/gi,push:/^$/,fixed:/^\d+$/,named:/^[a-z0-9_]+$/i};return r.patterns=t,r.serializeObject=function(){return new r(i,this).addPairs(this.serializeArray()).serialize()},r.serializeJSON=function(){return new r(i,this).addPairs(this.serializeArray()).serializeJSON()},"undefined"!=typeof i.fn&&(i.fn.serializeObject=r.serializeObject,i.fn.serializeJSON=r.serializeJSON),e.FormSerializer=r,r});
+
+ $("input").keypress(function(k)
+    {
+        if(k.keyCode == 13)
+        {
+           if(this == $("input").last()[0])
+           {
+                $("#submit").click();
+           }
+        }
+    })
+$("input,select,textarea").focus(function(e,i){
+    $(this).removeClass('validtionFail');
+    $("#feedbackSuccess").addClass("hidden");
+    $("#feedbackError").addClass("hidden");
+})
+$("input,select,textarea").first().focus();
+
+$("#submit").click(function(){
+
+    $("#submit").css('opacity',".5");
+    $("#submit").css('pointer-events',"none");
+
+
+
+    var data = $('form').serializeObject();
+    var formData = new FormData();
+    for(var i in data)
+    {
+        formData.append(i,data[i]);
+    }
+    try{
+    $('input[type=file]').each(function(e,i){
+
+        var name = $(i).attr('name');
+        var maxsize = $(i).attr('maxsize');
+        if(i.files[0].size < maxsize)
+            formData.append(name,i.files[0]);
+        else {
+            throw ("Selected File for " + name + " is too large");
+        }
+    })
+
+    $('select[multiple=true]').each(function(e,i){
+        var name = $(i).attr('name');
+        formData.set(name,JSON.stringify($(this).val()));
+    })
+
+    var textArray = new Array();
+
+    $('input[multiple=true]:checked').each(function(e,i){
+        var text = $(i).attr('value');
+        var name = $(i).attr('name');
+        textArray.push(text);
+        formData.set(name, JSON.stringify(textArray));
+    })
+
+    $('input,textarea').each(function(e,i){
+        var val = $(i).val();
+        var validation = $(i).attr('validation');
+        var validationMessage = $(i).attr('validationMessage');
+        if(validation && validation.length)
+        {
+            var validatior = new Function('val',"return (" + validation +");");
+            if(!validatior(val))
+            {
+                $(i).addClass('validtionFail');
+                throw(validationMessage);
+            }
+        }
+
+    });
+    }catch(e)
+    {
+        $("#feedbackError").removeClass("hidden");
+        $("#feedbackErrorMessage").html(e);
+        $("#submit").css('opacity',"");
+        $("#submit").css('pointer-events',"");
+        return;
+    }
+
+
+
+    $.ajax({
+        url:"./",
+        method:"POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(res,stats,xhr)
+        {
+            try{
+
+                $("#feedbackSuccess").removeClass("hidden");
+                $("#feedbackSuccessMessage").html(res.text);
+                if(res.redirect)
+                {
+                    window.setTimeout(function(){
+                        window.location = res.redirect;
+                    },500)
+                    return;
+                }
+
+                //the form templated in a whole new page, replace the current document
+                if(xhr.getResponseHeader("content-type") == "text/html; charset=utf-8")
+                {
+                    document.open();
+                    document.write(res);
+                    document.close();
+                }
+
+            }catch(e){
+                $("#feedbackSuccess").removeClass("hidden");
+                $("#feedbackSuccessMessage").html(res);
+            }
+
+        },
+        error:function (e,h,r)
+        {
+            $("#feedbackError").removeClass("hidden");
+            $("#feedbackErrorMessage").html(e.responseText);
+            $("#submit").css('opacity',"");
+            $("#submit").css('pointer-events',"");
+        }
+    })
+
+
+
+})
+
+</script>
+
+
+
+{{/form}}

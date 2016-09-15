@@ -57,6 +57,23 @@ exports.userAccount = function(email, username, salt, password)
     this.salt = salt;
     this.password = password;
     this.dataType = "userAccount";
+    this.roles = [];
+    this.addRole = function(role)
+    {
+        if(this.roles.indexOf(role) == -1)
+                this.roles.push(role);
+    }
+    this.removeRole = function(role)
+    {
+        var idx = this.roles.indexOf(role);
+        if(idx > -1)
+            this.roles.splice(idx,1);
+    }
+    this.hasRole = function(role)
+    {
+        var idx = this.roles.indexOf(role);
+        return (idx > -1)
+    }
 }
 exports.contentRecord = function(url, title, description, created, accessed, owner, key)
 {

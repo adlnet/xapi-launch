@@ -5,6 +5,7 @@ var schemas = require("./schemas.js");
 var async = require('async');
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
+var checkOwner = require("./users.js").checkOwner;
 exports.setup = function(app, DAL)
 {
     app.get("/mediaType/browse", blockInDemoMode, function(req, res, next)
@@ -18,7 +19,7 @@ exports.setup = function(app, DAL)
             res.locals.pageTitle = "All MediaTypes";
             for (var i in types)
             {
-                if (req.user && types[i].owner == req.user.email)
+                if (req.user && checkOwner(types[i],req.user))
                     types[i].virtuals.owned = true;
             }
 
@@ -46,7 +47,7 @@ exports.setup = function(app, DAL)
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i].key;
-                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
                         results[i].virtuals.mediaType = mediaType;
@@ -102,7 +103,7 @@ exports.setup = function(app, DAL)
                 return res.status(500).send(err)
             if (!type)
                 return res.status(401).send("unknown type")
-            if (type.owner !== req.user.email)
+            if (!checkOwner(type,req.user))
                 return res.status(401).send("You are not the owner of this type")
 
 
@@ -121,7 +122,7 @@ exports.setup = function(app, DAL)
                 return res.status(500).send(err)
             if (!type)
                 return res.status(401).send("unknown type")
-            if (type.owner !== req.user.email)
+            if (!checkOwner(type, req.user))
                 return res.status(401).send("You are not the owner of this type")
 
             type.description = req.body.description;
@@ -145,7 +146,7 @@ exports.setup = function(app, DAL)
                 return res.status(500).send(err)
             if (!type)
                 return res.status(401).send("unknown type")
-            if (type.owner !== req.user.email)
+            if (!checkOwner(type,req.user))
                 return res.status(401).send("You are not the owner of this type")
 
             type.delete(function(err)

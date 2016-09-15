@@ -5,6 +5,7 @@ var schemas = require("./schemas.js");
 var async = require('async');
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
+var checkOwner = require("./users.js").checkOwner;
 exports.setup = function(app, DAL)
 {
     app.get("/media/browse", function(req, res, next)
@@ -25,7 +26,7 @@ exports.setup = function(app, DAL)
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i].key;
-                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
                         for (var j in types)
@@ -101,7 +102,7 @@ exports.setup = function(app, DAL)
         {
             if (!media)
                 return res.status(500).send("invalid media key");
-            if (media.owner !== req.user.email)
+            if (!checkOwner(media,req.user))
             {
                 return res.status(500).send("you are not the owner of this media");
             }
@@ -118,7 +119,7 @@ exports.setup = function(app, DAL)
         {
             if (!media)
                 return res.status(500).send("invalid media key");
-            if (media.owner !== req.user.email)
+            if (!checkOwner(media,req.user))
             {
                 return res.status(500).send("you are not the owner of this media");
             }
@@ -147,7 +148,7 @@ exports.setup = function(app, DAL)
 
             if (!media)
                 return res.status(500).send("invalid media key");
-            if (media.owner !== req.user.email)
+            if (!checkOwner(media,req.user))
             {
                 return res.status(500).send("you are not the owner of this media");
             }
@@ -252,7 +253,7 @@ exports.setup = function(app, DAL)
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i]._id;
-                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.owned = !!req.user && checkOwner(results[i] , req.user);
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
                         for (var j in types)

@@ -5,6 +5,9 @@ var schemas = require("./schemas.js");
 var async = require('async');
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
+
+var checkOwner = require("./users.js").checkOwner;
+
 exports.setup = function(app, DAL)
 {
     if(!config.demoMode)
@@ -85,7 +88,7 @@ exports.setup = function(app, DAL)
             if (content)
             {
                 //console.log(content.owner, req.user.email);
-                if (content.owner == req.user.email)
+                if (checkOwner(content,req.user))
                 {
                     //console.log("user is the owner");
                     content.delete(function(err)
@@ -108,7 +111,7 @@ exports.setup = function(app, DAL)
         {
             if (content)
             {
-                if (content.owner == req.user.email)
+                if (checkOwner(content,req.user))
                 {
                     DAL.getAllMediaTypes(function(err, types)
                     {
@@ -157,7 +160,7 @@ exports.setup = function(app, DAL)
             }
             if (content)
             {
-                if (content.owner == req.user.email)
+                if (checkOwner(content,req.user))
                 {
                     content.url = req.body.url;
                     content.title = req.body.title;
@@ -201,7 +204,7 @@ exports.setup = function(app, DAL)
                     {
                         results[i].virtuals.launchKey = results[i].key;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
-                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user) ;
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         for (var j in types)
                             if (types[j].uuid == results[i].mediaTypeKey)
@@ -333,7 +336,7 @@ exports.setup = function(app, DAL)
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i]._id;
-                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
                          for (var j in types)
@@ -371,7 +374,7 @@ exports.setup = function(app, DAL)
         {
             DAL.getLaunchByGuid(req.params.key, function(err, launch)
             {
-                if (content && req.user.email !== content.owner)
+                if (content && !checkOwner(content,req.user))
                     return res.status(401).send("You are not the owner of this content.");
                 if (launch && launch.email !== req.user.email)
                     return res.status(401).send("You are not the owner of this launch.");

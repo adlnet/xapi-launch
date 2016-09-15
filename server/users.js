@@ -15,6 +15,41 @@ requirejs.config(
     nodeRequire: require
 });
 
+exports.checkOwner = function(obj,user)
+{
+    if(user == adminUser) return true;
+    if(!obj || !user ) return false;
+    if(obj.owner == user.email)
+        return true;
+    return false;
+}
+var checkOwner = require("./users.js").checkOwner;
+var adminUser = function()
+{
+    this.username = "Admin";
+    this.email = config.admin_email;
+    this.salt = "";
+    this.password = config.admin_pass;
+    this.dataType = "userAccount";
+    this.roles = [];
+    this.addRole = function(role)
+    {
+        
+    }
+    this.removeRole = function(role)
+    {
+      
+    }
+    this.hasRole = function(role)
+    {
+      return true;
+    }
+    this.save = function(cb)
+    {
+        process.nextTick(cb);
+    }
+    return this;
+}.apply({});
 
 exports.setup = function(app, DAL)
 {
@@ -29,29 +64,45 @@ exports.setup = function(app, DAL)
     passport.use(new LocalStrategy(
         function(username, password, done)
         {
-            DAL.getUser(username, function(err, user)
+            if (username == config.admin_email)
             {
-                if (err)
+                console.log("admin login");
+                console.log(password);
+                if (password == config.admin_pass)
                 {
-                    done(null, false);
-                    return;
-                }
-                if (user)
-                {
-                    if (user.password == password)
-                    {
-                        done(null, user);
-                    }
-                    else
-                    {
-                        done(null, false)
-                    }
+                    return done(null, adminUser);
                 }
                 else
                 {
-                    done(null, false);
+                    return done(null, false);
                 }
-            })
+            }
+            else
+            {
+                DAL.getUser(username, function(err, user)
+                {
+                    if (err)
+                    {
+                        done(null, false);
+                        return;
+                    }
+                    if (user)
+                    {
+                        if (user.password == password)
+                        {
+                            done(null, user);
+                        }
+                        else
+                        {
+                            done(null, false)
+                        }
+                    }
+                    else
+                    {
+                        done(null, false);
+                    }
+                })
+            }
         }
     ));
     app.use(passport.initialize());
@@ -64,6 +115,10 @@ exports.setup = function(app, DAL)
     });
     passport.deserializeUser(function(id, done)
     {
+        if(id == config.admin_email)
+        {
+            return done(null,adminUser);
+        }
         DAL.getUser(id, function(err, user)
         {
             done(err, user);
@@ -134,6 +189,11 @@ exports.setup = function(app, DAL)
     });
     app.get("/users/salt", blockInDemoMode,  function(req, res, next)
     {
+        if(req.query.email == config.admin_email)
+        {
+            res.status(200).send(adminUser.salt);
+            return;
+        }
         DAL.getUser(req.query.email, function(err, user)
         {
             if (user && !err)
@@ -275,7 +335,7 @@ exports.setup = function(app, DAL)
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i].key;
-                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         for (var j in types)
                             if (types[j].uuid == results[i].mediaTypeKey)
                                 results[i].virtuals.mediaType = types[j];
@@ -307,7 +367,7 @@ exports.setup = function(app, DAL)
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i].key;
-                        results[i].virtuals.owned = !!req.user && results[i].owner == req.user.email;
+                        results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         for (var j in types)
                         {

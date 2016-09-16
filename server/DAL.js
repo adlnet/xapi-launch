@@ -6,7 +6,7 @@ var getGenerator = require("./dalFunctionFactory.js").getGenerator;
 var getAllGenerator = require("./dalFunctionFactory.js").getAllGenerator;
 var createGenerator = require("./dalFunctionFactory.js").createGenerator;
 var searchGenerator = require("./dalFunctionFactory.js").searchGenerator;
-
+var searchComplexGenerator = require("./dalFunctionFactory.js").searchComplexGenerator;
 function DAL(DB)
 {
     this.DB = DB;
@@ -238,6 +238,9 @@ DAL.prototype.createMediaRecord = function(url, mediaTypeKey, title, description
         //console.log(e)
     }
 }
+
+DAL.prototype.findFile = searchComplexGenerator(schemas.file, "file", "file");
+DAL.prototype.findPackage = searchComplexGenerator(schemas.package, "package", "package");
 exports.setup = function(DB)
 {
     return new DAL(DB);

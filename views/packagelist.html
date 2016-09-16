@@ -1,0 +1,10 @@
+<!-- Main jumbotron for a primary marketing message or call to action -->
+{{>header}}
+<div class="container" style="margin-top:7em"></div>
+<div class="container">
+    <a href="upload"> upload </a>
+    {{#packages}}
+        <div><a href="../package/{{id}}"> {{name}} </a> <a href="{{id}}/delete"> delete </a> <a href="../package/{{id}}/"> view </a></div>
+    {{/packages}}
+</div>
+{{>footer}}

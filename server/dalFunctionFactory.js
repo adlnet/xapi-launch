@@ -205,6 +205,61 @@ exports.init = function(types)
         }
     }
 
+
+    function searchComplexGenerator(schema, typeConstructor, dataTypeName)
+    {
+        return function(query, skip, limit, sort, gotContent)
+        {
+            var self = this;
+            if (typeof skip == "function")
+            {
+                gotContent = skip;
+                skip = 0;
+                limit = 0;
+                sort = null;
+            }
+            if (typeof sort == "function")
+            {
+                gotContent = sort;
+                sort = null;
+            }
+            
+            query.dataType = dataTypeName
+
+            function searchComplete(err, results)
+            {
+                if (err)
+                    return gotContent(err);
+                var allcontent = [];
+                async.eachSeries(results, function(i, cb)
+                {
+                    var record = i;
+                    if (record.dataType == dataTypeName)
+                    {
+                        var content = new types[typeConstructor]();
+                        content.init(record._id, self.DB, self, record, function(err)
+                        {
+                            if (err) return cb(err);
+                            allcontent.push(content);
+                            cb();
+                        });
+                    }
+                }, function(err)
+                {
+                    gotContent(null, allcontent);
+                });
+            };
+            if (!skip && !limit && !sort)
+            {
+                self.DB.find(query).exec(searchComplete);
+            }
+            else
+            {
+                self.DB.find(query).skip(skip).limit(limit).sort(sort).exec(searchComplete);
+            }
+        }
+    }
+
     function searchGenerator(searchfields, schema, typeConstructor, dataTypeName)
     {
         return function(regex, skip, limit, sort, gotContent)
@@ -275,4 +330,5 @@ exports.init = function(types)
     exports.getAllGenerator = getAllGenerator;
     exports.createGenerator = createGenerator;
     exports.searchGenerator = searchGenerator;
+    exports.searchComplexGenerator = searchComplexGenerator;
 }

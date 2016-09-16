@@ -46,8 +46,70 @@ function pullGenerator(key,self)
     }
 }
 
+var mkdirp = require('mkdirp');
 
+exports.file = function(email, username, salt, password)
+{
+    this.package = null;
+    this.data = null;
+    this.path = null;
+    this.dataType = "file";
+    this.owner = null;
+    this.fromZipEntry = function(ze,cb)
+    {
+        console.log(ze.entryName);
+        this.path = ze.entryName;
+        ze.getDataAsync( function(buf)
+        {
+            var path = require("path").join(__dirname,"filedata",this.package,this.path);
+            mkdirp(require("path").dirname(path), function (err) {
+               
+                require("fs").writeFile(path,buf,function()
+                {
+                    this.save(cb);
+                }.bind(this))
 
+            }.bind(this));
+
+          
+            
+        }.bind(this));
+    }
+    this.getData = function(cb)
+    {
+        var path = require("path").join(__dirname,"filedata",this.package,this.path);
+        require("fs").readFile(path,function(err,d)
+        {
+            cb(err,d);
+        });
+    }
+    this.deleteAndRemove = function(cb)
+    {
+        var path = require("path").join(__dirname,"filedata",this.package,this.path);
+        require("fs").unlink(path,function(err,d)
+        {
+            this.delete(cb)
+        }.bind(this));
+    }
+    saveableType(this);
+}
+var rmdir = require('rimraf');
+exports.package = function()
+{
+    this.id = null;
+    this.dataType = "package";
+    this.owner = null;
+    this.name = null;
+    this.cleanAndDelete = function(cb)
+    {
+        var path = require("path").join(__dirname,"filedata",this.id);
+        rmdir(path,function(err,d)
+        {
+            this.delete(cb)
+        }.bind(this));
+    }
+    saveableType(this);
+}
 
 exports.userAccount = function(email, username, salt, password)
 {
@@ -96,7 +158,6 @@ exports.contentRecord = function(url, title, description, created, accessed, own
     this.stars = [];
     this.star = setGenerator("stars",this);
     this.unStar = pullGenerator("stars",this);
-
 
     this.xapiForm = function()
     {

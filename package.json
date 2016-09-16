@@ -9,6 +9,7 @@
   "author": "ADL",
   "license": "ISC",
   "dependencies": {
+    "adm-zip": "^0.4.7",
     "async": "^1.5.2",
     "body-parser": "^1.14.2",
     "concat-stream": "^1.5.1",
@@ -20,14 +21,17 @@
     "hogan-express": "^0.5.2",
     "jsonschema": "^1.0.3",
     "jsonwebtoken": "^5.7.0",
+    "mkdirp": "^0.5.1",
     "multiparty": "^4.1.2",
     "nedb": "^1.7.4",
     "node-rsa": "^0.3.2",
+    "node-uuid": "^1.4.7",
     "nstore": "^0.5.2",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pretty-error": "^2.0.0",
     "request": "^2.69.0",
-    "requirejs": "^2.1.22"
+    "requirejs": "^2.1.22",
+    "rimraf": "^2.5.4"
   }
 }

@@ -11,6 +11,20 @@ var validateTypeWrapper = require("./utils.js").validateTypeWrapper;
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
 var CryptoJS = require("../public/scripts/pbkdf2.js").CryptoJS;
+
+
+exports.userHasRole(role)
+{
+    return function(req, res, next)
+    {
+        console.log("asdf");
+        if (req.user.hasRole(role))
+            next();
+        else
+            res.status(401).send("not authorized");
+    }
+}
+
 requirejs.config(
 {
     nodeRequire: require

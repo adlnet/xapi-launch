@@ -22,7 +22,7 @@ exports.setup = function(app, DAL)
     {
         app.get("/",browseContent);
     }
-    app.get("/content/register", blockInDemoMode, ensureLoggedIn(function(res, req, next)
+    app.get("/content/register", blockInDemoMode, userHasRole("creator"), ensureLoggedIn(function(res, req, next)
     {
 
         DAL.getAllMediaTypes(function(err, types)
@@ -36,7 +36,7 @@ exports.setup = function(app, DAL)
         });
 
     }));
-    app.post("/content/register",  blockInDemoMode, ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
+    app.post("/content/register",  blockInDemoMode, userHasRole("creator"), ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
     {
         var content = req.body;
         content.owner = req.user.email;

@@ -17,8 +17,10 @@
                 <ul class="dropdown-menu">
                     <li><a href="/content/search">Search</a></li>
                     <li><a href="/content/browse">Browse</a></li>
+                    {{#user.isCreator}}
                     {{^demoMode}}<li><a href="/content/register">Register Online App</a></li>{{/demoMode}}
                     {{^demoMode}}<li><a href="/packages/upload">Upload App</a></li>{{/demoMode}}
+                    {{/user.isCreator}}
                 </ul>
             </li>
             <li class="dropdown">
@@ -26,16 +28,21 @@
                 <ul class="dropdown-menu">
                     <li><a href="/media/search">Search</a></li>
                     <li><a href="/media/browse">Browse</a></li>
+                    {{#user.isCreator}}
                     {{^demoMode}}<li><a href="/media/register">Register Media</a></li>{{/demoMode}}
+                    {{/user.isCreator}}
                      
                 </ul>
             </li>
             {{^demoMode}}
+
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Media Types <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/mediaType/browse">Browse</a></li>
+                    {{#user.isCreator}}
                     <li><a href="/mediaType/register">Register Media Type</a></li>
+                    {{/user.isCreator}}
 
                 </ul>
             </li>

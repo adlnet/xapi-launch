@@ -6,6 +6,7 @@ var async = require('async');
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
 var checkOwner = require("./users.js").checkOwner;
+var userHasRole = require("./users.js").userHasRole;
 exports.setup = function(app, DAL)
 {
     app.get("/media/browse", function(req, res, next)
@@ -48,7 +49,7 @@ exports.setup = function(app, DAL)
 
    
 
-    app.get("/media/register", blockInDemoMode, ensureLoggedIn(function(req, res, next)
+    app.get("/media/register", blockInDemoMode, userHasRole("creator"), ensureLoggedIn(function(req, res, next)
     {
         DAL.getAllMediaTypes(function(err, types)
         {
@@ -60,7 +61,7 @@ exports.setup = function(app, DAL)
         })
 
     }));
-    app.post("/media/register",blockInDemoMode, ensureLoggedIn(validateTypeWrapper(schemas.registerMediaRequest, function(req, res, next)
+    app.post("/media/register",blockInDemoMode, userHasRole("creator"), ensureLoggedIn(validateTypeWrapper(schemas.registerMediaRequest, function(req, res, next)
     {
         var media = req.body;
         media.owner = req.user.email;

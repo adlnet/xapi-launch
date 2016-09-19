@@ -12,21 +12,12 @@ var ensureLoggedIn = utils.ensureLoggedIn(function(req, res, next)
 var File = require("./types.js").file;
 var Package = require("./types.js").package;
 
-function userHasRole(role)
-{
-	return function(req, res, next)
-	{
-		console.log("asdf");
-		if (req.user.hasRole(role))
-			next();
-		else
-			res.status(401).send("not authorized");
-	}
-}
+var userHasRole = require("./users.js").userHasRole;
+
 exports.setup = function(app, DAL)
 {
-	app.get("/packages/upload/", ensureLoggedIn, form("./server/forms/uploadZip.json"));
-	app.post("/packages/upload/", ensureLoggedIn, form("./server/forms/uploadZip.json"), function(req, res, next)
+	app.get("/packages/upload/", ensureLoggedIn, userHasRole("creator"), form("./server/forms/uploadZip.json"));
+	app.post("/packages/upload/", ensureLoggedIn,userHasRole("creator"), form("./server/forms/uploadZip.json"), function(req, res, next)
 	{
 		var package = require("node-uuid").v4();
 		var file = req.files.zip;

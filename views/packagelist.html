@@ -4,9 +4,10 @@
 <div class="container">
 
 
-
+{{#user.isCreator}}
     <a class="button" href="upload"><button> upload</button> </a>
-    
+{{/user.isCreator}}
+
    <table class="table table-striped table-bordered">
     	{{#packages}}
     	<tr>

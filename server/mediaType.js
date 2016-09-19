@@ -6,6 +6,7 @@ var async = require('async');
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
 var checkOwner = require("./users.js").checkOwner;
+var userHasRole = require("./users.js").userHasRole;
 exports.setup = function(app, DAL)
 {
     app.get("/mediaType/browse", blockInDemoMode, function(req, res, next)
@@ -60,14 +61,14 @@ exports.setup = function(app, DAL)
 
     });
 
-    app.get("/mediaType/register",blockInDemoMode, ensureLoggedIn(function(req, res, next)
+    app.get("/mediaType/register",blockInDemoMode,userHasRole("creator"), ensureLoggedIn(function(req, res, next)
     {
 
         res.locals.pageTitle = "Register New MediaType";
         res.locals.user = req.user;
         res.render('registerMediaType', res.locals);
     }));
-    app.post("/mediaType/register",blockInDemoMode, validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
+    app.post("/mediaType/register",blockInDemoMode, userHasRole("creator"),validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
     {
         DAL.createMediaType(req.body.name, req.body.description, req.body.iconURL, req.user.email, function(err, type)
         {

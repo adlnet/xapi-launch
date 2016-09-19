@@ -100,6 +100,7 @@ exports.package = function()
     this.dataType = "package";
     this.owner = null;
     this.name = null;
+    this.associatedContent = null;
     this.cleanAndDelete = function(cb)
     {
         var path = require("path").join(__dirname,"filedata",this.id);
@@ -158,7 +159,7 @@ exports.contentRecord = function(url, title, description, created, accessed, own
     this.stars = [];
     this.star = setGenerator("stars",this);
     this.unStar = pullGenerator("stars",this);
-
+    this.packageLink = null;
     this.xapiForm = function()
     {
         var def = {};

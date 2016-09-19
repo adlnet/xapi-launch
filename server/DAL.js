@@ -118,6 +118,8 @@ DAL.prototype.registerContent = function(request, contentRegistered)
             record.sessionLength = request.sessionLength;
             record.mediaTypeKey = request.mediaTypeKey;
             record.launchType = request.launchType;
+            record.packageLink = request.packageLink;
+            record.iconURL = request.iconURL;
             self.DB.save(null, record.dbForm(), function(err, key)
             {
                 record.init(key, self.DB, self, null, function()
@@ -241,6 +243,7 @@ DAL.prototype.createMediaRecord = function(url, mediaTypeKey, title, description
 
 DAL.prototype.findFile = searchComplexGenerator(schemas.file, "file", "file");
 DAL.prototype.findPackage = searchComplexGenerator(schemas.package, "package", "package");
+DAL.prototype.getPackageByContentLink = getGenerator("contentLink", schemas.package, "package", "package");
 exports.setup = function(DB)
 {
     return new DAL(DB);

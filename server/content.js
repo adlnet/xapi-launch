@@ -93,7 +93,15 @@ exports.setup = function(app, DAL)
                     //console.log("user is the owner");
                     content.delete(function(err)
                     {
-                        res.redirect("/content/browse")
+                        if(content.packageLink)
+                        {
+                            require("./files.js").deletePackage(content.packageLink,function()
+                            {
+                                res.redirect("/content/browse")    
+                            })
+                        }
+                        else
+                            res.redirect("/content/browse")
                     })
                 }
             }

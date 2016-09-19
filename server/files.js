@@ -4,6 +4,7 @@ var utils = require("./utils.js");
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
 var AdmZip = require('adm-zip');
 var async = require('async');
+var config = require("./config.js").config;
 var ensureLoggedIn = utils.ensureLoggedIn(function(req, res, next)
 {
 	next();
@@ -49,12 +50,61 @@ exports.setup = function(app, DAL)
 			_p.id = package;
 			_p.name = file.originalFilename;
 			_p.owner = req.user.email;
-			_p.save(function()
+			var contentRequest = {};
+			contentRequest.url = (config.host || "http://localhost:3000/") + "package/" + _p.id + "/index.html";
+			contentRequest.title = _p.name;
+			contentRequest.description = "Generated from uploaded zip file.";
+			contentRequest.owner = req.user.email;
+			contentRequest.packageLink = _p.id;
+			contentRequest.iconURL = "/static/img/zip.png";
+			DAL.registerContent(contentRequest, function(err, content)
 			{
-				res.redirect("/packages/");
+				_p.contentLink = content.key;
+				_p.save(function()
+				{
+					res.redirect("/content/" + content.key +"/edit");
+				})
 			})
 		});
 	});
+
+	function deletePackage(id, cb)
+	{
+		DAL.findPackage(
+		{
+			id: id,
+		}, function(err, packages)
+		{
+			DAL.findFile(
+			{
+				package: id,
+			}, function(err, files)
+			{
+				async.eachSeries(files, function(i, next)
+				{
+					i.deleteAndRemove(next)
+				}, function()
+				{
+					packages[0].cleanAndDelete(function()
+					{
+						DAL.getContentByKey(packages[0].contentLink, function(err, content)
+						{
+							if (content)
+							{
+								content.delete(function()
+								{
+									cb(null)
+								})
+							}
+							else
+								cb(null);
+						})
+					})
+				})
+			})
+		})
+	}
+
 	app.get("/packages/:id/delete", ensureLoggedIn, function(req, res, next)
 	{
 		DAL.findPackage(
@@ -70,23 +120,12 @@ exports.setup = function(app, DAL)
 			{
 				return res.status(401).send("Not authorized")
 			}
-			DAL.findFile(
+
+			deletePackage(req.params.id,function(err)
 			{
-				package: req.params.id,
-			}, function(err, files)
-			{
-				async.eachSeries(files, function(i, next)
-				{
-					i.deleteAndRemove(next)
-				}, function()
-				{
-					packages[0].cleanAndDelete(function()
-					{
-						res.redirect("/packages/")
-					})
-				})
-			})
-		})
+				res.redirect("/packages/");
+			});
+		});
 	});
 	app.get("/package/:id/*", function(req, res, next)
 	{
@@ -100,7 +139,7 @@ exports.setup = function(app, DAL)
 			{
 				files[0].getData(function(err, d)
 				{
-					res.contentType(require("path").extname(req.params[0]|| "index.html")).send(d);;
+					res.contentType(require("path").extname(req.params[0] || "index.html")).send(d);;
 				})
 			}
 			else
@@ -116,7 +155,6 @@ exports.setup = function(app, DAL)
 		};
 		DAL.findFile(query, function(err, files)
 		{
-			
 			res.render("dirlist",
 			{
 				files: files,
@@ -138,4 +176,5 @@ exports.setup = function(app, DAL)
 			})
 		})
 	});
+	exports.deletePackage = deletePackage;
 }

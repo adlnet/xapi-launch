@@ -4,3 +4,4 @@ config.json
 applications/.Net Demo/xAPILaunch/packages/*
 applications/.Net Demo/xAPILaunch/xAPILaunch/bin/*
 applications/.Net Demo/xAPILaunch/xAPILaunch/obj/*
+filedata/*

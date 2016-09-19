@@ -10,6 +10,7 @@ var ensureNotLoggedIn = require("./utils.js").ensureNotLoggedIn;
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper;
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
+var CryptoJS = require("../public/scripts/pbkdf2.js").CryptoJS;
 requirejs.config(
 {
     nodeRequire: require
@@ -24,14 +25,40 @@ exports.checkOwner = function(obj,user)
     return false;
 }
 var checkOwner = require("./users.js").checkOwner;
+
+function hash(pass,salt)
+{
+     var key = CryptoJS.PBKDF2(pass, salt,
+                        {
+                            keySize: 512 / 32,
+                            iterations: 100
+                        });
+     return key.toString();
+}
+
+try{
 var adminUser = function()
 {
     this.username = "Admin";
     this.email = config.admin_email;
     this.salt = "";
-    this.password = config.admin_pass;
+    this.password = hash(config.admin_pass,"");
     this.dataType = "userAccount";
-    this.roles = [];
+    this.roles = ["admin","creator"];
+
+    Object.defineProperty(this,"isAdmin",{
+        get:function()
+        {
+            return this.roles.indexOf("admin") !== -1
+        }
+    })
+    Object.defineProperty(this,"isCreator",{
+        get:function()
+        {
+            return this.roles.indexOf("creator") !== -1
+        }
+    })
+
     this.addRole = function(role)
     {
         
@@ -50,7 +77,13 @@ var adminUser = function()
     }
     return this;
 }.apply({});
+} catch(e)
+{
+    console.log("error creating admin user. does the config file include admin_pass and admin_email?")
+}
 
+console.log(adminUser);
+exports.adminUser = adminUser;
 exports.setup = function(app, DAL)
 {
     app.use(session(
@@ -68,7 +101,7 @@ exports.setup = function(app, DAL)
             {
                 console.log("admin login");
                 console.log(password);
-                if (password == config.admin_pass)
+                if (password == adminUser.password)
                 {
                     return done(null, adminUser);
                 }

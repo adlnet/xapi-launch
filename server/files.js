@@ -62,7 +62,7 @@ exports.setup = function(app, DAL)
 				_p.contentLink = content.key;
 				_p.save(function()
 				{
-					res.redirect("/content/" + content.key +"/edit");
+					res.redirect("/content/" + content.key + "/edit");
 				})
 			})
 		});
@@ -104,7 +104,6 @@ exports.setup = function(app, DAL)
 			})
 		})
 	}
-
 	app.get("/packages/:id/delete", ensureLoggedIn, function(req, res, next)
 	{
 		DAL.findPackage(
@@ -120,8 +119,7 @@ exports.setup = function(app, DAL)
 			{
 				return res.status(401).send("Not authorized")
 			}
-
-			deletePackage(req.params.id,function(err)
+			deletePackage(req.params.id, function(err)
 			{
 				res.redirect("/packages/");
 			});
@@ -155,12 +153,16 @@ exports.setup = function(app, DAL)
 		};
 		DAL.findFile(query, function(err, files)
 		{
-			res.render("dirlist",
+			DAL.findPackage({id:req.params.id}, function(err, package)
 			{
-				files: files,
-				id: req.params.id
+				res.render("dirlist",
+				{
+					files: files,
+					package : package[0],
+					id: req.params.id
+				})
 			})
-		})
+		});
 	});
 	app.get("/packages", ensureLoggedIn, function(req, res, next)
 	{

@@ -137,6 +137,18 @@ exports.userAccount = function(email, username, salt, password)
         var idx = this.roles.indexOf(role);
         return (idx > -1)
     }
+     Object.defineProperty(this,"isAdmin",{
+        get:function()
+        {
+            return this.roles.indexOf("admin") !== -1
+        }
+    })
+    Object.defineProperty(this,"isCreator",{
+        get:function()
+        {
+            return this.roles.indexOf("creator") !== -1
+        }
+    })
 }
 exports.contentRecord = function(url, title, description, created, accessed, owner, key)
 {

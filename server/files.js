@@ -13,17 +13,18 @@ var File = require("./types.js").file;
 var Package = require("./types.js").package;
 
 var userHasRole = require("./users.js").userHasRole;
-
+var parseXml = require('xml2js').parseString;
 exports.setup = function(app, DAL)
 {
 	app.get("/packages/upload/", ensureLoggedIn, userHasRole("creator"), form("./server/forms/uploadZip.json"));
-	app.post("/packages/upload/", ensureLoggedIn,userHasRole("creator"), form("./server/forms/uploadZip.json"), function(req, res, next)
+	app.post("/packages/upload/", ensureLoggedIn, userHasRole("creator"), form("./server/forms/uploadZip.json"), function(req, res, next)
 	{
 		var package = require("node-uuid").v4();
 		var file = req.files.zip;
 		var zip = new AdmZip(file.buffer);
 		var entries = zip.getEntries();
 		var files = [];
+		var manifest = null;
 		async.eachSeries(entries, function(entry, nextEntry)
 		{
 			if (entry.isDirectory)
@@ -33,29 +34,78 @@ exports.setup = function(app, DAL)
 			files.push(_f);
 			_f.package = package;
 			_f.owner = req.user.email;
+			if (entry.entryName && require('path').parse(entry.entryName).base == 'cmi5.xml')
+			{
+				manifest = _f;
+			}
 			_f.fromZipEntry(entry, nextEntry)
 		}, function(err)
 		{
-			var _p = new Package()
-			_p.DB = DAL.DB;
-			_p.id = package;
-			_p.name = file.originalFilename;
-			_p.owner = req.user.email;
-			var contentRequest = {};
-			contentRequest.url = (config.host || "http://localhost:3000/") + "package/" + _p.id + "/index.html";
-			contentRequest.title = _p.name;
-			contentRequest.description = "Generated from uploaded zip file.";
-			contentRequest.owner = req.user.email;
-			contentRequest.packageLink = _p.id;
-			contentRequest.iconURL = "/static/img/zip.png";
-			DAL.registerContent(contentRequest, function(err, content)
+			var defaultManifest = {
+				title: file.originalFilename,
+				description: "Generated from uploaded zip file.",
+				url: "./index.html"
+			}
+
+			function postManifest(manifest)
 			{
-				_p.contentLink = content.key;
-				_p.save(function()
+				console.log(manifest);
+				var _p = new Package()
+				_p.DB = DAL.DB;
+				_p.id = package;
+				_p.name = file.originalFilename;
+				_p.owner = req.user.email;
+				var contentRequest = {};
+				contentRequest.url = (config.host || "http://localhost:3000/") + "package/" + _p.id + "/" + manifest.url;
+				contentRequest.title = manifest.title
+				contentRequest.description = manifest.description;
+				contentRequest.owner = req.user.email;
+				contentRequest.packageLink = _p.id;
+				contentRequest.iconURL = "/static/img/zip.png";
+				DAL.registerContent(contentRequest, function(err, content)
 				{
-					res.redirect("/content/" + content.key + "/edit");
+					_p.contentLink = content.key;
+					_p.save(function()
+					{
+						if(manifest == defaultManifest )
+							res.redirect("/content/" + content.key + "/edit");
+						else
+							res.redirect("/content/search/" + content.key + "/");
+					})
 				})
-			})
+			}
+
+
+			if (!manifest)
+				postManifest(defaultManifest)
+			else
+			{
+				manifest.getData(function(err, xml)
+				{
+					parseXml(xml.toString("utf8"), function(err, result)
+					{
+						if (err)
+							return postManifest(defaultManifest);
+						try
+						{
+
+							var au = result.courseStructure.au[0];
+							
+							postManifest(
+							{
+								title: au.title[0].langstring[0]._,
+								description: au.description[0].langstring[0]._,
+								url: au.url[0]
+							});
+						}
+						catch (e)
+						{
+							console.log(e);
+							return postManifest(defaultManifest);
+						}
+					});
+				})
+			}
 		});
 	});
 
@@ -144,12 +194,15 @@ exports.setup = function(app, DAL)
 		};
 		DAL.findFile(query, function(err, files)
 		{
-			DAL.findPackage({id:req.params.id}, function(err, package)
+			DAL.findPackage(
+			{
+				id: req.params.id
+			}, function(err, package)
 			{
 				res.render("dirlist",
 				{
 					files: files,
-					package : package[0],
+					package: package[0],
 					id: req.params.id
 				})
 			})

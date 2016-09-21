@@ -12,8 +12,7 @@ var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
 var CryptoJS = require("../public/scripts/pbkdf2.js").CryptoJS;
 
-
-exports.userHasRole(role)
+function userHasRole (role)
 {
     return function(req, res, next)
     {
@@ -24,6 +23,8 @@ exports.userHasRole(role)
             res.status(401).send("not authorized");
     }
 }
+
+exports.userHasRole = userHasRole
 
 requirejs.config(
 {

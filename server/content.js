@@ -7,7 +7,7 @@ var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
 
 var checkOwner = require("./users.js").checkOwner;
-
+var userHasRole = require("./users.js").userHasRole;
 exports.setup = function(app, DAL)
 {
     if(!config.demoMode)

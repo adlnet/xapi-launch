@@ -33,6 +33,7 @@ exports.setup = function(app, DAL)
                     launchData.contextActivities = {};
                     launchData.contextActivities.parent = content.xapiForm();
                     launchData.contextActivities.grouping = launch.xapiForm();
+                    launchData.customData = launch.customData;
                     launchData.sessionLength = content.sessionLength;
                     launchData.initializationCode = reinit ? 1 : 0;
                     //console.log("Sending launch data");
@@ -60,10 +61,12 @@ exports.setup = function(app, DAL)
         {
             if (content)
             {
+                console.log("query is", req.query);
                 DAL.createLaunchRecord(
                 {
                     email: req.user.email,
-                    contentKey: req.params.key
+                    contentKey: req.params.key,
+                    customData:req.query.launchData
                 }, function(err, launch)
                 {
                     if (err)

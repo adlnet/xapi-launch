@@ -17,10 +17,10 @@
 			    ADL.launch(function(err,apiData,xAPI){
 			    	if(err)
 			    	{
-
+			    		$('#apiData').text(JSON.stringify(err,null,4))
 			    	}else
 			    	{	
-			    		
+			    		$('#apiData').text(JSON.stringify(apiData,null,4))
 			    		var t = new ADL.XAPIStatement(apiData.actor,"http://adlnet.gov/expapi/verbs/launched",window.location+"/test");
 			    		xAPI.sendStatement(t);
 					}
@@ -29,5 +29,6 @@
 		</script>
 		<p><a href="http://localhost:3002/static/staticContentDemo/demo2.html" courseLink='true' >This is a link to another page on another domain. Since the attribute "courseLink" is set to "true" the launch library will transport your launch token to this content. Note that since the page you are on now has already exchanged the token for a session cookie from the client, the next page in the course must also use client side tracking.</a><p>
 
+		<pre id="apiData"></div>	
 	</body>
 </html>

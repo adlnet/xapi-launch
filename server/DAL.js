@@ -179,6 +179,7 @@ DAL.prototype.createLaunchRecord = function(request, requestCreated)
     {
         var launch = new types.launchRecord(request.email, request.contentKey, require("guid").raw());
         launch.mediaKey = request.mediaKey;
+        launch.customData = request.customData;
         self.DB.save(null, launch.dbForm(), function(err, key)
         {
             launch.init(key, self.DB, self, null, function()

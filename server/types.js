@@ -206,6 +206,7 @@ exports.launchRecord = function(email, key, uuid)
     this.termination = null;
     this.userguid = null;
     this.passguid = null;
+    this.customData = null;
     this.xapiForm = function()
     {
         var def = {};

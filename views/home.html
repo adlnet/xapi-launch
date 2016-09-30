@@ -35,6 +35,11 @@
             <p>Add new content to the database. This content should use the XAPI launch mechanism to initialize learner tracking.</p>
             <p><a class="btn btn-default" href="/content/register" role="button">Register &raquo;</a></p>
         </div>
+        <script type="text/javascript">
+        navigator.registerProtocolHandler("web+xapi",
+                                          "{{host}}" +"handler?uri=%s",
+                                          "XAPI Launch Handler");
+        </script>
         {{/user}}
     </div>
     <hr>

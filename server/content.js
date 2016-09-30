@@ -16,6 +16,7 @@ exports.setup = function(app, DAL)
     {
         res.locals = {};
         res.locals.pageTitle = "Home";
+        res.locals.host = config.host || "http://localhost:3000/";
         req.render('home', res.locals)
     });
     }else

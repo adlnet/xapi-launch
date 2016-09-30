@@ -89,6 +89,7 @@ async.series([
 	require('./server/mediaType.js').setup(app, DB);
 	require('./server/launch.js').setup(app, DB);
 	require('./server/files.js').setup(app, DB);
+	require('./server/protocol.js').setup(app, DB);
 	/*app.all("*",function(req,res,next)
 	{
 		res.redirect("/");

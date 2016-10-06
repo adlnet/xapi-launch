@@ -19,13 +19,15 @@ exports.setup = function(app, DAL)
 		var content = URL.parse(contentURL, true);
 		console.log(content);
 		var launchData = content.query.launchData;
+		var courseContext = content.query.courseContext;
 		delete content.query.launchData;
+		delete content.query.courseContext;
 		delete content.search;
 		contentURL = URL.format(content);
 		DAL.getContent(contentURL, function(err, content)
 		{
 			if (content)
-				return res.redirect("/launch/" + content._id + "?launchData=" + launchData)
+				return res.redirect("/launch/" + content._id + "?launchData=" + launchData + (courseContext ? ("&courseContext=" + courseContext) : ""))
 			else // create new content
 			{
 				var request = {};
@@ -46,7 +48,10 @@ exports.setup = function(app, DAL)
 					{
 						return res.status(500).send(err);
 					}
-					return  res.redirect("/launch/" + newcontent._id + "?launchData=" + launchData)
+					newcontent.save(function()
+					{
+						return  res.redirect("/launch/" + newcontent._id + "?launchData=" + launchData)	
+					});
 				});
 				
 			}

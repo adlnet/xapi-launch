@@ -13,6 +13,22 @@ var config = require("./config.js").config;
 var checkOwner = require("./users.js").checkOwner;
 exports.setup = function(app, DAL)
 {
+
+    function courseGUIDToActivity(guid)
+    {
+
+        var def = {};
+        def.id = require("./config.js").config.host + "/courseContext/"+guid;
+        def.definition = {};
+        def.definition.name = {
+            "en-US": "Course Context"
+        };
+        def.definition.description = {
+            "en-US": "A grouping context for launches that are part of a course"
+        };
+        def.definition.type=  require("./config.js").config.host + "/courseContext/";
+        return def;
+    }
     //need some input on actual xAPI data here.
     function sendLaunchData(launch, req, res, reinit)
     {
@@ -28,7 +44,7 @@ exports.setup = function(app, DAL)
                         name: user.username,
                         mbox: "mailto:" + user.email
                     };
-                    var localServer = config.host || "http://localhost:3000/"; 
+                    var localServer = (config.host || "http://localhost:3000") +"/"; 
                     launchData.endpoint = localServer + "launch/" + launch.uuid + "/xAPI/";
                     launchData.contextActivities = {};
                     launchData.contextActivities.parent = content.xapiForm();
@@ -66,7 +82,8 @@ exports.setup = function(app, DAL)
                 {
                     email: req.user.email,
                     contentKey: req.params.key,
-                    customData:req.query.launchData
+                    customData:req.query.launchData,
+                    courseContext:req.query.courseContext
                 }, function(err, launch)
                 {
                     if (err)
@@ -77,7 +94,7 @@ exports.setup = function(app, DAL)
                         var clientlaunch = launch.dbForm();
                         var clientContent = content.dbForm();
                         clientContent.publicKey = !!clientContent.publicKey; //be sure not to send the actual public key to the client
-                        res.locals.endpoint = config.host || "http://localhost:3000/"; 
+                        res.locals.endpoint = (config.host || "http://localhost:3000") +"/"; 
                         //the the content has a public key, use it to encrypt the data. Note that the student has access to
                         //the launch uuid in plaintext... is this ok?
                         if (content.publicKey)
@@ -134,7 +151,7 @@ exports.setup = function(app, DAL)
                             var clientlaunch = launch.dbForm();
                             var clientContent = content.dbForm();
                             clientContent.publicKey = !!clientContent.publicKey; //be sure not to send the actual public key to the client
-                            res.locals.endpoint = "http://localhost:3000/"; //this should come from the config file
+                            res.locals.endpoint = config.host + "/"; 
                             //the the content has a public key, use it to encrypt the data. Note that the student has access to
                             //the launch uuid in plaintext... is this ok?
                             if (content.publicKey)
@@ -369,11 +386,21 @@ exports.setup = function(app, DAL)
                 postedStatement[i].context = {};
             }
             var contextActivities = postedStatement[i].context.contextActivities;
+            console.log(" req.launch.courseContext",  req.launch.courseContext )
             if (!contextActivities)
+            {
                 contextActivities = postedStatement[i].context.contextActivities = {
                     parent: req.launch.xapiForm(),
                     grouping: req.content.xapiForm()
                 };
+
+
+                if(req.launch.courseContext)
+                {
+                    console.log("Add course context");
+                    contextActivities.grouping = [ contextActivities.grouping, courseGUIDToActivity(req.launch.courseContext)]
+                }
+            }
             else
             {
                 //if the parent is exists
@@ -425,6 +452,10 @@ exports.setup = function(app, DAL)
                         {
                             contextActivities.grouping.push(req.content.xapiForm());
                         }
+                        if(req.launch.courseContext)
+                        {
+                            contextActivities.grouping.push(courseGUIDToActivity(req.launch.courseContext))
+                        }
                         if (req.media)
                         {
                             var included = false;
@@ -448,6 +479,10 @@ exports.setup = function(app, DAL)
                         if (req.media)
                         {
                             contextActivities.grouping.push(req.media.xapiForm());
+                        }
+                        if(req.launch.courseContext)
+                        {
+                            contextActivities.grouping.push(courseGUIDToActivity(req.launch.courseContext))
                         }
                     }
                 }

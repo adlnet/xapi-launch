@@ -177,7 +177,7 @@ exports.contentRecord = function(url, title, description, created, accessed, own
     this.xapiForm = function()
     {
         var def = {};
-        def.id = "http://localhost:3000/content/"+this.key;
+        def.id = require("./config.js").config.host + "/content/"+this.key;
         def.definition = {};
         def.definition.name = {
             "en-US": this.title
@@ -185,7 +185,7 @@ exports.contentRecord = function(url, title, description, created, accessed, own
         def.definition.description = {
             "en-US": this.description
         };
-        def.definition.type= "http://localhost:3000/content/";
+        def.definition.type=  require("./config.js").config.host + "/content/";
         return def;
     }
     Object.preventExtensions(this);
@@ -207,10 +207,11 @@ exports.launchRecord = function(email, key, uuid)
     this.userguid = null;
     this.passguid = null;
     this.customData = null;
+    this.courseContext = null;
     this.xapiForm = function()
     {
         var def = {};
-        def.id = "http://localhost:3000/launches/" + this.uuid;
+        def.id =  require("./config.js").config.host + "/launches/" + this.uuid;
         def.definition = {};
         def.definition.name = {
             "en-US": "Launch Record"
@@ -218,8 +219,8 @@ exports.launchRecord = function(email, key, uuid)
         def.definition.description = {
             "en-US": "The user launched xAPI enabled content."
         };
-        def.definition.type= "http://localhost:3000/launch/";
-        def.definition.moreInfo = "http://localhost:3000/content/"+this.contentKey;
+        def.definition.type=  require("./config.js").config.host + "/launch/";
+        def.definition.moreInfo =  require("./config.js").config.host + "/content/"+this.contentKey;
         
         return def;
     }
@@ -260,7 +261,7 @@ exports.media= function()
 	this.xapiForm = function()
     {
         var def = {};
-        def.id = "http://localhost:3000/media/"+this.key;
+        def.id =  require("./config.js").config.host + "/media/"+this.key;
         def.definition = {};
         def.definition.name = {
             "en-US": this.title
@@ -268,7 +269,7 @@ exports.media= function()
         def.definition.description = {
             "en-US": this.description
         };
-        def.definition.type= "http://localhost:3000/media/";
+        def.definition.type=  require("./config.js").config.host + "/media/";
         return def;
     }
     Object.preventExtensions(this);

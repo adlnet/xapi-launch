@@ -180,6 +180,7 @@ exports.setup = function(app, DAL)
                     content.sessionLength = req.body.sessionLength;
                     content.mediaTypeKey = req.body.mediaTypeKey;
                     content.launchType = req.body.launchType;
+                    content.customData = req.body.customData;
                     content.save(function(err)
                     {
                         if (err)

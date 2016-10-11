@@ -17,6 +17,10 @@
 			"minLength": 3,
   			"maxLength": 500
 		},
+		"customData":
+        {
+            "type": "string"
+        },
 		"owner": {
 			"type": "string",
 			"format":"email"

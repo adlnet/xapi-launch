@@ -47,9 +47,16 @@ exports.setup = function(app, DAL)
                     var localServer = (config.host || "http://localhost:3000") +"/"; 
                     launchData.endpoint = localServer + "launch/" + launch.uuid + "/xAPI/";
                     launchData.contextActivities = {};
-                    launchData.contextActivities.parent = content.xapiForm();
-                    launchData.contextActivities.grouping = launch.xapiForm();
-                    launchData.customData = launch.customData;
+                    launchData.contextActivities.parent = launch.xapiForm();
+                    if(launch.courseContext)
+                    {
+                        launchData.contextActivities.grouping = [content.xapiForm(), courseGUIDToActivity(launch.courseContext)]
+                    }
+                    else launchData.contextActivities.grouping = content.xapiForm();
+                    launchData.customData = {
+                        launch:launch.customData,
+                        content:content.customData
+                    }
                     launchData.sessionLength = content.sessionLength;
                     launchData.initializationCode = reinit ? 1 : 0;
                     //console.log("Sending launch data");
@@ -489,9 +496,23 @@ exports.setup = function(app, DAL)
                 else
                 {
                     if (!req.media)
-                        contextActivities.grouping = req.content.xapiForm();
+                    {
+                        if(req.launch.courseContext)
+                        {
+                            contextActivities.grouping = [req.content.xapiForm(),courseGUIDToActivity(req.launch.courseContext)];
+                        }
+                        else
+                            contextActivities.grouping = req.content.xapiForm();
+                    }
                     else
-                        contextActivities.grouping = [req.content.xapiForm(), req.media.xapiForm()];
+                    {
+                        if(req.launch.courseContext)
+                        {
+                            contextActivities.grouping = [req.content.xapiForm(),courseGUIDToActivity(req.launch.courseContext),req.media.xapiForm()];
+                        }
+                        else
+                            contextActivities.grouping = [req.content.xapiForm(), req.media.xapiForm()];
+                    }
                 }
             }
         }

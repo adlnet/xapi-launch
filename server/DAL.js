@@ -120,6 +120,7 @@ DAL.prototype.registerContent = function(request, contentRegistered)
             record.launchType = request.launchType;
             record.packageLink = request.packageLink;
             record.iconURL = request.iconURL;
+            record.customData = request.customData;
             self.DB.save(null, record.dbForm(), function(err, key)
             {
                 record.init(key, self.DB, self, null, function()

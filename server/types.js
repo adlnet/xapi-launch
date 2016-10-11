@@ -174,6 +174,7 @@ exports.contentRecord = function(url, title, description, created, accessed, own
     this.star = setGenerator("stars",this);
     this.unStar = pullGenerator("stars",this);
     this.packageLink = null;
+    this.customData = null;
     this.xapiForm = function()
     {
         var def = {};

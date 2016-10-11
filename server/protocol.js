@@ -18,8 +18,8 @@ exports.setup = function(app, DAL)
 		//
 		var content = URL.parse(contentURL, true);
 		console.log(content);
-		var launchData = content.query.launchData;
-		var courseContext = content.query.courseContext;
+		var launchData = req.query.launchData;
+		var courseContext = req.query.courseContext;
 		delete content.query.launchData;
 		delete content.query.courseContext;
 		delete content.search;
@@ -50,7 +50,7 @@ exports.setup = function(app, DAL)
 					}
 					newcontent.save(function()
 					{
-						return  res.redirect("/launch/" + newcontent._id + "?launchData=" + launchData)	
+						return  res.redirect("/launch/" + newcontent._id + "?launchData=" + launchData + (courseContext ? ("&courseContext=" + courseContext) : ""))
 					});
 				});
 				

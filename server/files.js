@@ -62,6 +62,7 @@ exports.setup = function(app, DAL)
 				contentRequest.owner = req.user.email;
 				contentRequest.packageLink = _p.id;
 				contentRequest.iconURL = "/static/img/zip.png";
+				contentRequest.launchType = "redirect";
 				DAL.registerContent(contentRequest, function(err, content)
 				{
 					_p.contentLink = content.key;

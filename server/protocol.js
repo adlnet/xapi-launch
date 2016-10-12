@@ -31,8 +31,8 @@ exports.setup = function(app, DAL)
 			else // create new content
 			{
 				var request = {};
-				request.url = contentURL;
-				request.title = contentURL
+				request.url = contentURL.replace("web+xapi://","");
+				request.title = contentURL.replace("web+xapi://","");
 				request.description = ""
 				request.owner = config.admin_email;
 				request.publicKey = null
@@ -48,10 +48,10 @@ exports.setup = function(app, DAL)
 					{
 						return res.status(500).send(err);
 					}
-					newcontent.save(function()
-					{
-						return  res.redirect("/launch/" + newcontent._id + "?launchData=" + launchData + (courseContext ? ("&courseContext=" + courseContext) : ""))
-					});
+					return newcontent.save(function(){
+						 res.redirect("/launch/" + newcontent._id + "?launchData=" + launchData)	
+					},1000) //this seems odd. Is the data should be saved to the DB by the callback, but it seems a delay is needed
+					
 				});
 				
 			}

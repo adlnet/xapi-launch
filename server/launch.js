@@ -34,6 +34,10 @@ exports.setup = function(app, DAL)
     {
         DAL.getUser(launch.email, function(err, user)
         {
+            if(!user || err)
+            {
+                return res.status(500).send("No User. Are you the admin? That wont work")
+            }
             DAL.getContentByKey(launch.contentKey, function(err, content)
             {
                 DAL.getMedia(launch.mediaKey, function(err, media)

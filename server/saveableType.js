@@ -78,6 +78,7 @@ function saveableType(self)
                     self.DB.save(null, self.dbForm(), function(err, key)
                     {
                         self.key = key;
+                        self._id = key;
                         cb(err, self);
                     })
                 }

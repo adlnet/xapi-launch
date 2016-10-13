@@ -48,9 +48,13 @@ exports.setup = function(app, DAL)
 					{
 						return res.status(500).send(err);
 					}
+					console.log(newcontent);
 					return newcontent.save(function(){
-						 res.redirect("/launch/" + newcontent._id + "?launchData=" + launchData)	
-					},1000) //this seems odd. Is the data should be saved to the DB by the callback, but it seems a delay is needed
+						setTimeout(function(){
+							res.redirect("/launch/" + newcontent._id + "?launchData=" + launchData + (courseContext ? ("&courseContext=" + courseContext) : ""))	
+						},500)
+						 
+					}) //this seems odd. Is the data should be saved to the DB by the callback, but it seems a delay is needed
 					
 				});
 				

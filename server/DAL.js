@@ -125,6 +125,8 @@ DAL.prototype.registerContent = function(request, contentRegistered)
             {
                 record.init(key, self.DB, self, null, function()
                 {
+                    record.key = key;
+                    record._id = key;
                     contentRegistered(err, record);
                 });
             })

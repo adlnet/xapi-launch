@@ -9,7 +9,8 @@ var blockInDemoMode = require("./utils.js").blockInDemoMode;
 var checkOwner = require("./users.js").checkOwner;
 var userHasRole = require("./users.js").userHasRole;
 exports.setup = function(app, DAL)
-{
+{   
+    if(!config) return; // the config file was not found
     if(!config.demoMode)
     {
     app.get("/", function(res, req, next)

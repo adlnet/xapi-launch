@@ -6,17 +6,7 @@ var DB = null;
 var hoganExpress = require('hogan-express');
 require('pretty-error').start();
 async.series([
-	function loadDB(cb)
-	{
-		DB = new Datastore(
-		{
-			filename: './data.db',
-			autoload: true
-		})
-		DB = require("./server/DAL.js").setup(DB);
-		
-		cb();
-	},
+	
 	function loadConfig(cb)
 	{
 		if (require("./server/config.js").config === null)
@@ -27,7 +17,7 @@ async.series([
 				input: process.stdin,
 				output: process.stdout
 			});
-			rl.question('Please enter the LRS URL: ', function(LRS_Url)
+			rl.question('Please enter the LRS URL (ending with a slash): ', function(LRS_Url)
 			{
 				require("./server/config.js").config = {};
 				require("./server/config.js").config.LRS_Url = LRS_Url; 
@@ -37,16 +27,40 @@ async.series([
 					rl.question('Please enter the LRS Password: ', function(LRS_Password) 
 					{
 						require("./server/config.js").config.LRS_Password = LRS_Password;
-						// TODO: Log the answer in a database
-						console.log('This information has been saved to config.json. Please start the server again.');
-						require('fs').writeFileSync("./config.json",JSON.stringify(require("./server/config.js").config));
-						rl.close();
-						process.exit();
+						rl.question('Please enter the host (not ending in slash - eg. http://localhost:3000): ', function(host) 
+						{
+							require("./server/config.js").config.host = host;
+							rl.question('Enter the email for the administrator login: ', function(admin_email) 
+							{
+								require("./server/config.js").config.admin_email = admin_email;
+								// TODO: Log the answer in a database
+								rl.question('Enter the password for the administrator login: ', function(admin_pass) 
+								{
+									require("./server/config.js").config.admin_pass = admin_pass;
+									// TODO: Log the answer in a database
+									console.log('This information has been saved to config.json. Please start the server again.');
+									require('fs').writeFileSync("./config.json",JSON.stringify(require("./server/config.js").config));
+									rl.close();
+									process.exit();
+								});
+							});
+						});
 					});
 				});
 			});
 		}
 		else return cb();
+	},
+	function loadDB(cb)
+	{
+		DB = new Datastore(
+		{
+			filename: './data.db',
+			autoload: true
+		})
+		DB = require("./server/DAL.js").setup(DB);
+		
+		cb();
 	}
 ], function startServer()
 {

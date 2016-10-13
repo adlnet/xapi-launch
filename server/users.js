@@ -97,7 +97,7 @@ var adminUser = function()
     console.log("error creating admin user. does the config file include admin_pass and admin_email?")
 }
 
-console.log(adminUser);
+
 exports.adminUser = adminUser;
 exports.setup = function(app, DAL)
 {
@@ -173,7 +173,7 @@ exports.setup = function(app, DAL)
         });
     });
 
-    if(config.demoMode)
+    if(config && config.demoMode)
     {
         app.use(function createMockUser(req, res, next)
         {

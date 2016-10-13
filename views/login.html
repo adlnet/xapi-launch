@@ -79,7 +79,7 @@ function getQueryVariable(variable) {
                 {
                      var req = $.ajax("/users/salt",
                             {
-                                data: {email:email},
+                                data: {email:email.toLowerCase()},
                                 type:"GET",
                                 async:false
                             });
@@ -89,7 +89,7 @@ function getQueryVariable(variable) {
                     {
                         
                         var loginRequest = {
-                            username: $('input[type=email]').val(),
+                            username: $('input[type=email]').val().toLowerCase(),
                             password: $('input[type=password]').val(),
                         }
                         var salt = getSalt(loginRequest.username);

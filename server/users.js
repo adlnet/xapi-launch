@@ -127,7 +127,7 @@ exports.setup = function(app, DAL)
             }
             else
             {
-                DAL.getUser(username, function(err, user)
+                DAL.getUser(username.toLowerCase(), function(err, user)
                 {
                     if (err)
                     {

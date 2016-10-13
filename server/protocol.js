@@ -14,7 +14,7 @@ exports.setup = function(app, DAL)
 {
 	app.get("/handler", ensureLoggedIn(function(req, res, next)
 	{
-		var contentURL = req.query.uri.replace("web+xapi://", "");
+		var contentURL = req.query.uri.replace("web+xapi2://", "");
 		//
 		var content = URL.parse(contentURL, true);
 		console.log(content);
@@ -31,8 +31,8 @@ exports.setup = function(app, DAL)
 			else // create new content
 			{
 				var request = {};
-				request.url = contentURL.replace("web+xapi://","");
-				request.title = contentURL.replace("web+xapi://","");
+				request.url = contentURL.replace("web+xapi2://","");
+				request.title = contentURL.replace("web+xapi2://","");
 				request.description = ""
 				request.owner = config.admin_email;
 				request.publicKey = null

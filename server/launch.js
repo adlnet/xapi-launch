@@ -645,8 +645,10 @@ exports.setup = function(app, DAL)
     app.all("/launch/:key/xAPI/*", validateLaunchSession(function(req, res, next)
     {
         //passthrough all other XAPI statements
-        var proxyAddress = config.LRS_Url + req.params[0];
-        req.pipe(require('request')(proxyAddress)).pipe(res);
+
+            var proxyAddress = req.lrsConfig.endpoint + req.params[0];
+            req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username,req.lrsConfig.password,true)).pipe(res);
+        
     }));
     app.get("/launches/:key", function(req, res, next)
     {

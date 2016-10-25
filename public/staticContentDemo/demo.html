@@ -23,6 +23,7 @@
 			    		$('#apiData').text(JSON.stringify(apiData,null,4))
 			    		var t = new ADL.XAPIStatement(apiData.actor,"http://adlnet.gov/expapi/verbs/launched",window.location+"/test");
 			    		xAPI.sendStatement(t);
+			    		ADL.xAPIWrapper = xAPI;
 					}
 				},false)
 			})

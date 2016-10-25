@@ -381,6 +381,7 @@ exports.setup = function(app, DAL)
             });
         }
     }
+
     app.post("/launch/:key/xAPI/statements", validateLaunchSession(function(req, res, next)
     {
         //here, we need to validate the activity and append the context data
@@ -641,6 +642,59 @@ exports.setup = function(app, DAL)
                 })(req.lrsConfig.endpoint + "statements");
             }));
         })
+    }));
+    function dealWithMore(body,res,key)
+    {
+       
+        try{
+            if(body.more)
+                body.more = "/launch/"+key+"/xAPI/more" + body.more;
+            res.send(body);   
+        }catch(E)
+        {
+            res.send(body);
+        }
+    }
+    app.get("/launch/:key/xAPI/more*", validateLaunchSession(function(req, res, next)
+    {
+        var endpoint = require('url').parse(req.lrsConfig.endpoint);
+        endpoint.pathname = null;
+        endpoint = require('url').format(endpoint);
+        var proxyAddress = endpoint + req.params[0];
+       
+        req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username, req.lrsConfig.password, true)).on('response', function( lrsRes)
+        {
+                lrsRes.__proto__ = require('express').request;
+          
+                require("body-parser").json({limit:"500kb",verify:function(req, res, buf, encoding){
+
+                        console.log(req, res, buf, encoding);
+
+                }})(lrsRes, res, function(err) {
+                    if(err)
+                        console.log(err);
+                    dealWithMore(lrsRes.body, res, req.params.key)
+                });
+        })
+    }));
+    app.get("/launch/:key/xAPI/statements*", validateLaunchSession(function(req, res, next)
+    {
+        var proxyAddress = req.lrsConfig.endpoint + "statements" + req.params[0];
+        req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username, req.lrsConfig.password, true).on('response', function(lrsRes)
+        {
+                lrsRes.__proto__ = require('express').request;
+          
+                require("body-parser").json({limit:"500kb",verify:function(req, res, buf, encoding){
+
+                        console.log(req, res, buf, encoding);
+
+                }})(lrsRes, res, function(err) {
+                    if(err)
+                        console.log(err);
+                    dealWithMore(lrsRes.body, res, req.params.key)
+                });
+           
+        }));
     }));
     app.all("/launch/:key/xAPI/*", validateLaunchSession(function(req, res, next)
     {

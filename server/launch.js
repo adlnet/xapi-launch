@@ -43,11 +43,17 @@ exports.setup = function(app, DAL)
                 DAL.getMedia(launch.mediaKey, function(err, media)
                 {
                     var launchData = {};
+
                     launchData.actor = {
                         objectType: "Agent",
                         name: user.username,
-                        mbox: "mailto:" + user.email
-                    };
+                        account:
+                        {
+                            "homePage": (config.host || "http://localhost:3000") +"/",
+                            "name": user.key
+                        }
+                    }
+                    
                     var localServer = (config.host || "http://localhost:3000") +"/"; 
                     launchData.endpoint = localServer + "launch/" + launch.uuid + "/xAPI/";
                     launchData.contextActivities = {};

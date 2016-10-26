@@ -40,6 +40,7 @@ DAL.prototype.getAllContentByOwner = getAllGenerator("owner", schemas.content, "
 DAL.prototype.getAllMediaByOwner = getAllGenerator("owner", schemas.media, "media", "media");
 DAL.prototype.getAllContent = getAllGenerator(null, schemas.content, "contentRecord", "contentRecord");
 DAL.prototype.getUser = getGenerator("email", schemas.account, "userAccount", "userAccount");
+DAL.prototype.getUserByName = getGenerator("username", schemas.account, "userAccount", "userAccount");
 DAL.prototype.getUserByKey = getGenerator("_id", schemas.account, "userAccount", "userAccount");
 DAL.prototype.getAllUsers = getAllGenerator(null, schemas.account, "userAccount", "userAccount");
 DAL.prototype.getAllUsersLaunch = getAllGenerator("email", schemas.launch, "launchRecord", "launchRecord");
@@ -137,7 +138,7 @@ DAL.prototype.createUser = function(request, userCreatedCB)
 {
     var self = this;
     async.series([
-        function checkExisting(cb)
+        function checkExistingEmail(cb)
         {
             self.getUser(request.email, function(err, user)
             {
@@ -147,7 +148,25 @@ DAL.prototype.createUser = function(request, userCreatedCB)
                 }
                 else if (user)
                 {
-                    cb("User already exists");
+                    cb("User Email already exists");
+                }
+                else
+                {
+                    cb();
+                }
+            });
+        },
+        function checkExistingName(cb)
+        {
+            self.getUserByName(request.username, function(err, user)
+            {
+                if (err) //there should be an error - the user record should not exist
+                {
+                    cb(err);
+                }
+                else if (user)
+                {
+                    cb("User Username already exists");
                 }
                 else
                 {

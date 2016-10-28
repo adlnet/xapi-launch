@@ -68,13 +68,13 @@
                 title: $('#title').val(),
                 mediaTypeKey: $('#mediaTypeKey').val()
             }
-            $.ajax("/media/{{media.key}}/edit",
+            $.ajax("/media/{{media._id}}/edit",
             {
                 data: JSON.stringify(createRequest),
                 type: "POST",
                 success: function(res)
                 {
-                    window.location.pathname = "/media/search/{{media.key}}";
+                    window.location.pathname = "/media/search/{{media._id}}";
                 },
                 contentType: 'application/json'
             }).fail(function(xhr)

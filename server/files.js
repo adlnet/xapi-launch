@@ -133,7 +133,7 @@ exports.setup = function(app, DAL)
 						{
 							if (content)
 							{
-								content.delete(function()
+								content.remove(function()
 								{
 									cb(null)
 								})

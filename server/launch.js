@@ -50,7 +50,7 @@ exports.setup = function(app, DAL)
                         account:
                         {
                             "homePage": (config.host || "http://localhost:3000") +"/",
-                            "name": user.key
+                            "name": user._id
                         }
                     }
                     
@@ -155,7 +155,7 @@ exports.setup = function(app, DAL)
                     DAL.createLaunchRecord(
                     {
                         email: req.user.email,
-                        contentKey: content.key,
+                        contentKey: content._id,
                         mediaKey: req.params.key
                     }, function(err, launch)
                     {

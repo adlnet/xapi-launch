@@ -22,6 +22,7 @@
     "jsonschema": "^1.0.3",
     "jsonwebtoken": "^5.7.0",
     "mkdirp": "^0.5.1",
+    "mongoose": "^4.6.5",
     "multiparty": "^4.1.2",
     "nedb": "^1.7.4",
     "node-rsa": "^0.3.2",

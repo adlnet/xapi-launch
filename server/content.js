@@ -32,6 +32,7 @@ exports.setup = function(app, DAL)
             res.locals = {};
             res.locals.pageTitle = "Register New App";
             //select none type by default
+            console.log(types);
             types[0].virtuals.selected = true;
             res.locals.types = types;
             req.render('registerContent', res.locals)
@@ -93,7 +94,7 @@ exports.setup = function(app, DAL)
                 if (checkOwner(content,req.user))
                 {
                     //console.log("user is the owner");
-                    content.delete(function(err)
+                    content.remove(function(err)
                     {
                         if(content.packageLink)
                         {
@@ -213,7 +214,7 @@ exports.setup = function(app, DAL)
                 {
                     for (var i in results)
                     {
-                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.launchKey = results[i]._id;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
                         results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user) ;
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
@@ -340,10 +341,46 @@ exports.setup = function(app, DAL)
                 if (err)
                 {
                     res.locals.error = err;
-                    res.render('error', res.locals);
+                    console.log(err);
+                    res.send(err);
                 }
                 else
                 {
+                    for (var i in results)
+                    {
+                        results[i].virtuals.launchKey = results[i]._id;
+                        results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                        results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
+                         for (var j in types)
+                            if (types[j].uuid == results[i].mediaTypeKey)
+                                results[i].virtuals.mediaType = types[j];
+                    }
+                    res.locals.results = results;
+                    res.render('contentResults', res.locals);
+                   
+                }
+            })
+        })
+    });
+    app.get("/content/searchid/:search", function(req, res, next)
+    {
+        res.locals.pageTitle = "Search All Apps";
+        var search = decodeURIComponent(req.params.search);
+        var reg = (search);
+        DAL.getAllMediaTypes(function(err, types)
+        {
+            DAL.getContentByKey(reg, function(err, result)
+            {
+                if (err || !result)
+                {
+                    res.locals.error = err;
+                    console.log(err);
+                    res.send(err);
+                }
+                else
+                {
+                    var results = [result];
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i]._id;

@@ -296,7 +296,7 @@ exports.setup = function(app, DAL)
             if (launch && launch.email == req.user.email)
             {
 
-                launch.delete(function(err)
+                launch.remove(function(err)
                 {
                     res.redirect("/users/launches");
                 })
@@ -382,7 +382,7 @@ exports.setup = function(app, DAL)
                     //console.log(results);
                     for (var i in results)
                     {
-                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.launchKey = results[i]._id;
                         results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         for (var j in types)
                             if (types[j].uuid == results[i].mediaTypeKey)
@@ -414,7 +414,7 @@ exports.setup = function(app, DAL)
                 {
                     for (var i in results)
                     {
-                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.launchKey = results[i]._id;
                         results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         for (var j in types)

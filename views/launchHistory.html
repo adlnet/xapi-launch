@@ -26,7 +26,7 @@
             </tr>
             {{#results}}
             <tr>
-                <td><a href = "/content/search/{{contentKey}}">{{contentTitle}}</a></td>
+                <td><a href = "/content/searchid/{{contentKey}}">{{contentTitle}}</a></td>
                 <td class='visible-lg '>{{contentURL}}</td>
                 <td>{{email}}</td>
                 <td class='visible-lg '>{{uuid}}</td>
@@ -40,7 +40,7 @@
                         <span class="sr-only">Toggle Dropdown</span>...
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{launchKey}}">
-                        <li><a href = "/content/search/{{contentKey}}">View App Record</a></li>
+                        <li><a href = "/content/searchid/{{contentKey}}">View App Record</a></li>
                         <li><a href = "/content/{{contentKey}}/xapi">View Context Activity</a></li>
                         {{#owned}}
                         <li role="separator" class="divider"></li>

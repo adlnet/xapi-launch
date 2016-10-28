@@ -12,7 +12,7 @@ exports.setup = function(app, DAL)
     app.get("/mediaType/browse", blockInDemoMode, function(req, res, next)
     {
 
-       //DAL.getMediaType("b5c7a376-b2b6-bb2c-a612-7b3afc9c54ee",function(err,type){type.delete(function(){})})
+       //DAL.getMediaType("b5c7a376-b2b6-bb2c-a612-7b3afc9c54ee",function(err,type){type.remove(function(){})})
 
         DAL.getAllMediaTypes(function(err, types)
         {
@@ -47,7 +47,7 @@ exports.setup = function(app, DAL)
                 {
                     for (var i in results)
                     {
-                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.launchKey = results[i]._id;
                         results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
@@ -150,7 +150,7 @@ exports.setup = function(app, DAL)
             if (!checkOwner(type,req.user))
                 return res.status(401).send("You are not the owner of this type")
 
-            type.delete(function(err)
+            type.remove(function(err)
             {
                 if (err)
                     return res.status(500).send(err);

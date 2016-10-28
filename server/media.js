@@ -26,7 +26,7 @@ exports.setup = function(app, DAL)
                 {
                     for (var i in results)
                     {
-                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.launchKey = results[i]._id;
                         results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
@@ -66,7 +66,7 @@ exports.setup = function(app, DAL)
         var media = req.body;
         media.owner = req.user.email;
 
-        DAL.getMedia(media.url, function(err, record)
+        DAL.getMediaByURL(media.url, function(err, record)
         {
 
             if (err)
@@ -87,6 +87,7 @@ exports.setup = function(app, DAL)
                         {
                             if (err)
                             {
+                                console.log(err);
                                 return res.status(500).send(err);
                             }
                             else return res.status(200).send("200 OK");
@@ -107,7 +108,7 @@ exports.setup = function(app, DAL)
             {
                 return res.status(500).send("you are not the owner of this media");
             }
-            media.delete(function(err)
+            media.remove(function(err)
             {
                 res.redirect("/media/browse");
             })

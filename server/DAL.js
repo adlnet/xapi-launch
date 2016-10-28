@@ -1,38 +1,13 @@
 var schemas = require("./schemas.js");
 var types = require("./types.js");
 var async = require("async");
-require("./dalFunctionFactory.js").init(types);
 var getGenerator = require("./dalFunctionFactory.js").getGenerator;
 var getAllGenerator = require("./dalFunctionFactory.js").getAllGenerator;
-var createGenerator = require("./dalFunctionFactory.js").createGenerator;
 var searchGenerator = require("./dalFunctionFactory.js").searchGenerator;
 var searchComplexGenerator = require("./dalFunctionFactory.js").searchComplexGenerator;
-function DAL(DB)
-{
-    this.DB = DB;
-    this.DB.get = function(key, cb)
-    {
-        DB.findOne(
-        {
-            _id: key
-        }, function(err, doc)
-        {
-            cb(err, doc)
-        });
-    }
-    this.DB.save = function(key, value, cb)
-    {
-        if (key)
-            value._id = key;
-        DB.insert(value, function(err, doc)
-        {
-            if (err)
-                cb(err)
-            else
-                cb(err, doc._id)
-        });
-    }
-}
+
+function DAL()
+{}
 //AWWWW SO META!
 DAL.prototype.getContent = getGenerator("url", schemas.content, "contentRecord", "contentRecord");
 DAL.prototype.getContentByKey = getGenerator("_id", schemas.content, "contentRecord", "contentRecord");
@@ -51,8 +26,8 @@ DAL.prototype.getAllMedia = getAllGenerator(null, schemas.media, "media", "media
 DAL.prototype.getAllMediaByType = getAllGenerator("mediaTypeKey", schemas.media, "media", "media");
 DAL.prototype.getAllContentByMediaType = getAllGenerator("mediaTypeKey", schemas.content, "contentRecord", "contentRecord");
 DAL.prototype._getAllMediaTypes = getAllGenerator(null, schemas.mediaType, "mediaType", "mediaType");
-DAL.prototype.findContent = searchGenerator(["url", "description", "title", "owner", "_id"], schemas.content, "contentRecord", "contentRecord");
-DAL.prototype.findMedia = searchGenerator(["url", "description", "title", "mediaType", "_id"], schemas.media, "media", "media");
+DAL.prototype.findContent = searchGenerator(["url", "description", "title", "owner"], schemas.content, "contentRecord", "contentRecord");
+DAL.prototype.findMedia = searchGenerator(["url", "description", "title", "mediaType"], schemas.media, "media", "media");
 //hard coded test for now
 DAL.prototype.getAllMediaTypes = function(cb)
 {
@@ -60,20 +35,20 @@ DAL.prototype.getAllMediaTypes = function(cb)
     {
         if (err)
             return cb(err);
-       
         var none = new types.mediaType();
         none.uuid = "";
         none.name = "Supports No Media";
         none.owner = "System";
+        none.virtuals = {};
         cb(null, [none].concat(results));
     })
 }
 DAL.prototype.getMedia = getGenerator("_id", schemas.media, "media", "media");
+DAL.prototype.getMediaByURL = getGenerator("url", schemas.media, "media", "media");
 //hard coded test
 DAL.prototype._getMediaType = getGenerator("uuid", schemas.mediaType, "mediaType", "mediaType");
 DAL.prototype.getMediaType = function(type, cb)
     {
-        
         if (type == "")
         {
             var none = new types.mediaType();
@@ -114,7 +89,14 @@ DAL.prototype.registerContent = function(request, contentRegistered)
         }
         else
         {
-            var record = new types.contentRecord(request.url, request.title, request.description, Date.now(), Date.now(), request.owner, request.publicKey)
+            var record = new types.contentRecord()
+            record.url = request.url;
+            record.title = request.title;
+            record.description = request.description;
+            record.created = Date.now();
+            record.accessed = Date.now();
+            record.owner = request.owner;
+            record.publicKey = request.publicKey;
             record.timeToConsume = request.timeToConsume;
             record.sessionLength = request.sessionLength;
             record.mediaTypeKey = request.mediaTypeKey;
@@ -122,14 +104,11 @@ DAL.prototype.registerContent = function(request, contentRegistered)
             record.packageLink = request.packageLink;
             record.iconURL = request.iconURL;
             record.customData = request.customData;
-            self.DB.save(null, record.dbForm(), function(err, key)
+            record.save(function(err)
             {
-                record.init(key, self.DB, self, null, function()
-                {
-                    record.key = key;
-                    record._id = key;
-                    contentRegistered(err, record);
-                });
+                record.key = record._id;
+                record._id = record._id;
+                contentRegistered(err, record);
             })
         }
     })
@@ -182,14 +161,16 @@ DAL.prototype.createUser = function(request, userCreatedCB)
         }
         else
         {
-            var account = new types.userAccount(request.email.toLowerCase(), request.username, request.salt, request.password);
+            var account = new types.userAccount();
+            account.username = request.username;
+            account.email = request.email.toLowerCase();
+            account.salt = request.salt;
+            account.password = request.password;
+            account.roles = [];
             account.lrsConfig = request.lrsConfig;
-            self.DB.save(null, account.dbForm(), function(err, key)
+            account.save(function(err, key)
             {
-                account.init(key, self.DB, self, null, function()
-                {
-                    userCreatedCB(err, account);
-                })
+                userCreatedCB(err, account);
             })
         }
     })
@@ -199,17 +180,17 @@ DAL.prototype.createLaunchRecord = function(request, requestCreated)
     var self = this;
     try
     {
-        var launch = new types.launchRecord(request.email, request.contentKey, require("guid").raw());
+        var launch = new types.launchRecord();
+        launch.state = 0;
+        launch.email = request.email;
+        launch.contentKey = request.contentKey;
+        launch.uuid = require("guid").raw();
         launch.mediaKey = request.mediaKey;
         launch.customData = request.customData;
         launch.courseContext = request.courseContext;
-      
-        self.DB.save(null, launch.dbForm(), function(err, key)
+        launch.save(function(err)
         {
-            launch.init(key, self.DB, self, null, function()
-            {
-                requestCreated(err, launch);
-            });
+            requestCreated(err, launch);
         })
     }
     catch (e)
@@ -228,12 +209,9 @@ DAL.prototype.createMediaType = function(name, description, iconURL, owner, medi
         mediaType.iconURL = iconURL;
         mediaType.owner = owner;
         mediaType.uuid = require("guid").raw();
-        self.DB.save(null, mediaType.dbForm(), function(err, key)
+        mediaType.save(function(err)
         {
-            mediaType.init(key, self.DB, self, null, function()
-            {
-                mediaCreated(err, mediaType);
-            });
+            mediaCreated(err, mediaType);
         })
     }
     catch (e)
@@ -252,12 +230,9 @@ DAL.prototype.createMediaRecord = function(url, mediaTypeKey, title, description
         media.title = title;
         media.description = description;
         media.owner = owner;
-        self.DB.save(null, media.dbForm(), function(err, key)
+        media.save(function(err)
         {
-            media.init(key, self.DB, self, null, function()
-            {
-                mediaCreated(err, media);
-            });
+            mediaCreated(err, media);
         })
     }
     catch (e)
@@ -265,11 +240,7 @@ DAL.prototype.createMediaRecord = function(url, mediaTypeKey, title, description
         //console.log(e)
     }
 }
-
 DAL.prototype.findFile = searchComplexGenerator(schemas.file, "file", "file");
 DAL.prototype.findPackage = searchComplexGenerator(schemas.package, "package", "package");
 DAL.prototype.getPackageByContentLink = getGenerator("contentLink", schemas.package, "package", "package");
-exports.setup = function(DB)
-{
-    return new DAL(DB);
-}
+exports.DAL = DAL;

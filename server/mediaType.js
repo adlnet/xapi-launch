@@ -7,6 +7,7 @@ var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
 var checkOwner = require("./users.js").checkOwner;
 var userHasRole = require("./users.js").userHasRole;
+var form = require("./form.js").form;
 exports.setup = function(app, DAL)
 {
     app.get("/mediaType/browse", blockInDemoMode, function(req, res, next)
@@ -61,20 +62,18 @@ exports.setup = function(app, DAL)
 
     });
 
-    app.get("/mediaType/register",blockInDemoMode,userHasRole("creator"), ensureLoggedIn(function(req, res, next)
+    app.get("/mediaType/register/",blockInDemoMode,userHasRole("creator"), ensureLoggedIn(function(req, res, next)
     {
-
-        res.locals.pageTitle = "Register New MediaType";
-        res.locals.user = req.user;
-        res.render('registerMediaType', res.locals);
-    }));
-    app.post("/mediaType/register",blockInDemoMode, userHasRole("creator"),validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
+        next();
+     
+    }),form("./server/forms/mediaType.json"));
+    app.post("/mediaType/register/",blockInDemoMode, userHasRole("creator"),form("./server/forms/mediaType.json"),validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
     {
         DAL.createMediaType(req.body.name, req.body.description, req.body.iconURL, req.user.email, function(err, type)
         {
             if (err)
                 return res.status(500).send(err)
-            return res.status(200).send(type.dbForm());
+            return res.status(200).redirect("/mediaType/browse");
         })
 
     })));
@@ -96,7 +95,7 @@ exports.setup = function(app, DAL)
         })
 
     });
-    app.get("/mediaType/:key/edit",blockInDemoMode, ensureLoggedIn(function(req, res, next)
+    app.get("/mediaType/:key/edit/",blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMediaType(req.params.key, function(err, type)
         {
@@ -110,12 +109,13 @@ exports.setup = function(app, DAL)
 
             res.locals.type = type;
             res.locals.pageTitle = "Edit MediaType";
-            res.render('editMediaType', res.locals);
+            req.defaults = type;
+            next();
         })
 
-    }));
+    }),form("./server/forms/mediaType.json"));
 
-    app.post("/mediaType/:key/edit",blockInDemoMode, validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
+    app.post("/mediaType/:key/edit/",blockInDemoMode, form("./server/forms/mediaType.json"),validateTypeWrapper(schemas.registerMediaTypeRequest, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMediaType(req.params.key, function(err, type)
         {

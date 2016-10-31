@@ -16,7 +16,7 @@ function userHasRole (role)
 {
     return function(req, res, next)
     {
-        console.log("asdf");
+        if(!req.user) return res.status(401).send("not authorized");
         if (req.user.hasRole(role))
             next();
         else

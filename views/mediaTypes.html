@@ -5,7 +5,7 @@
     <!-- Example row of columns -->
     
     <div class="row">
-        <table class="table table-striped table-bordered">
+        <table class="table table-bordered">
             <tr style ="font-weight: bolder;">
                 <td class='visible-lg ' style="max-width:200px">ID</td>
                 <td>Name</td>
@@ -15,7 +15,7 @@
                 <td>Actions</td>
             </tr>
             {{#results}}
-            <tr>
+            <tr class = "card" style="display: table-row;">
                 <td class='visible-lg ' style="max-width:200px;overflow:hidden" >{{uuid}}</td>
                 <td>{{name}}</td>
                 <td class='visible-lg '>{{description}}</td>

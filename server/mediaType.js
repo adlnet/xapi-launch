@@ -106,7 +106,9 @@ exports.setup = function(app, DAL)
             if (!checkOwner(type,req.user))
                 return res.status(401).send("You are not the owner of this type")
 
-
+            req.formSchema = JSON.parse(require('fs').readFileSync("./server/forms/mediaType.json").toString());
+            req.formSchema.title = "Edit " + type.name;
+            req.formSchema.submitText = "Edit";
             res.locals.type = type;
             res.locals.pageTitle = "Edit MediaType";
             req.defaults = type;

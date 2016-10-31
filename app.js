@@ -96,6 +96,7 @@ async.series([
 		if(!res.locals)
 			res.locals = {};
 		res.locals.demoMode = config.demoMode;
+		res.locals.user = req.user;
 		next();
 	})
 	//setup various routes

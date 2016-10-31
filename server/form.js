@@ -110,7 +110,8 @@ function form(schema)
 			{
 				form: schemaCopy,
 				pageTitle: schemaCopy.title,
-				submitText: "Update Email"
+				submitText: "Update Email",
+				user:req.user
 			})
 		}
 		console.log("Schema is ", req.formSchema)

@@ -1,0 +1,114 @@
+{
+	"title": "Form Test",
+	"submitText": "test form submit",
+	"fields": [
+	{
+		"label": "App launch URL",
+		"id": "url",
+		"helptext": "The full URL where this application can be accessed.",
+		"type":
+		{
+			"isText": true,
+			"type": "text"
+		}
+	},
+	{
+		"label": "Title",
+		"id": "title",
+		"helptext": "A title that will be displayed to the user",
+		"type":
+		{
+			"isText": true,
+			"type": "text"
+		}
+	},
+	{
+		"label": "Description",
+		"id": "description",
+		"helptext": "A description that will be displayed to the user",
+		"type":
+		{
+			"isTextArea": true
+		}
+	},
+	{
+		"label": "Public Key",
+		"id": "publicKey",
+		"helptext": "An optional public key with with which to encrypt the launch data",
+		"type":
+		{
+			"isTextArea": true
+		}
+	},
+	{
+		"label": "Max Session Length (s)",
+		"id": "sessionLength",
+		"helptext": "The maximum number of seconds the session can last. 0 means indefinite.",
+		"type":
+		{
+			"isSlider": true
+		},
+		"default": 0,
+		"min":0,
+		"max":100,
+		"step":1
+	},
+	{
+		"label": "Launch Timeout (s)",
+		"id": "timeToConsume",
+		"helptext": "The maximum number of seconds that can pass before the session begins. 0 means indefinite.",
+		"type":
+		{
+			"isSlider": true
+		},
+		"default": 0,
+		"min":0,
+		"max":100,
+		"step":1
+	},
+	{
+		"label": "Custom Launch Data",
+		"id": "customData",
+		"helptext": "Additional data that you can pass to the content.",
+		"type":
+		{
+			"isTextArea": true
+		}
+	},
+	{
+		"label": "Media Type",
+		"id": "mediaTypeKey",
+		"helptext": "Inform the launch server that this app is a player for given media type.",
+		"type":
+		{
+			"isSelect": true
+		},
+		"options": []
+	},
+	{
+		"label": "Launch Type",
+		"id": "launchType",
+		"helptext": "How will the app URL be displayed to the user?",
+		"type":
+		{
+			"isSelect": true
+		},
+		"options": [
+		{
+			"text": "Popup",
+			"value": "popup"
+		},
+		{
+			"text": "Redirect",
+			"value": "redirect"
+		},
+		{
+			"text": "Frame",
+			"value": "frame"
+		},
+		{
+			"text": "Manual",
+			"value": "manual"
+		}]
+	}]
+}

@@ -5,9 +5,19 @@ var schemas = require("./schemas.js");
 var async = require('async');
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
-
+var form = require("./form.js").form;
 var checkOwner = require("./users.js").checkOwner;
 var userHasRole = require("./users.js").userHasRole;
+
+function mustLogIn(req,res,next)
+{
+    if(req.user)
+           next();
+        else
+        {
+            res.redirect("/users/login?r="+encodeURIComponent(req.originalUrl));
+        }
+}
 exports.setup = function(app, DAL)
 {   
     if(!config) return; // the config file was not found
@@ -24,22 +34,37 @@ exports.setup = function(app, DAL)
     {
         app.get("/",browseContent);
     }
-    app.get("/content/register", blockInDemoMode, userHasRole("creator"), ensureLoggedIn(function(res, req, next)
+    app.get("/content/register", blockInDemoMode, userHasRole("creator"),mustLogIn,function(req, res, next)
     {
 
+        
         DAL.getAllMediaTypes(function(err, types)
         {
-            res.locals = {};
+            req.formSchema = JSON.parse(require('fs').readFileSync("./server/forms/app.json").toString());
+            req.defaults = {};
+            req.defaults.fields = {};
+            
+            res.locals = {};    
             res.locals.pageTitle = "Register New App";
             //select none type by default
-            console.log(types);
+            
             types[0].virtuals.selected = true;
-            res.locals.types = types;
-            req.render('registerContent', res.locals)
+            for(var i in types)
+            {
+                req.formSchema.fields[req.formSchema.fields.length-2].options.push({
+                    text : types[i].name,
+                    value : types[i]._id.toString()
+                })
+            }
+            
+           // req.render('registerContent', res.locals)
+           
+           
+            form()(req,res,next);
         });
 
-    }));
-    app.post("/content/register",  blockInDemoMode, userHasRole("creator"), ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
+    });
+    app.post("/content/register/",  blockInDemoMode, userHasRole("creator"), mustLogIn,form("./server/forms/app.json"),(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
     {
         var content = req.body;
         content.owner = req.user.email;

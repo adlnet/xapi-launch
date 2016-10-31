@@ -12,7 +12,7 @@ package.methods.cleanAndDelete = function(cb)
     var path = require("path").join(__dirname, "filedata", this.id);
     rmdir(path, function(err, d)
     {
-        this.delete(cb)
+        this.remove(cb)
     }.bind(this));
 }
 package.methods.dbForm = function()

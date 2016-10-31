@@ -37,7 +37,7 @@ file.methods.deleteAndRemove = function(cb)
     var path = require("path").join(__dirname, "filedata", this.package, this.path);
     require("fs").unlink(path, function(err, d)
     {
-        this.delete(cb)
+        this.remove(cb)
     }.bind(this));
 }
 file.methods.dbForm = function()

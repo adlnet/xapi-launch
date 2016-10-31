@@ -1,6 +1,6 @@
 {
-	"title": "Form Test",
-	"submitText": "test form submit",
+	"title": "Create New App",
+	"submitText": "Create",
 	"fields": [
 	{
 		"label": "App launch URL",

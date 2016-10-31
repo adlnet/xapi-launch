@@ -53,7 +53,7 @@ exports.setup = function(app, DAL)
             {
                 req.formSchema.fields[req.formSchema.fields.length-2].options.push({
                     text : types[i].name,
-                    value : types[i]._id.toString()
+                    value : types[i].uuid
                 })
             }
             
@@ -101,7 +101,7 @@ exports.setup = function(app, DAL)
                         {
                             return res.status(500).send(err);
                         }
-                        else return res.status(200).send("200 OK");
+                        else return res.status(200).redirect("/content/browse");
                     });
                 }
             }
@@ -141,7 +141,7 @@ exports.setup = function(app, DAL)
     }));
 
 
-    app.get("/content/:key/edit",  blockInDemoMode, ensureLoggedIn(function(req, res, next)
+    app.get("/content/:key/edit/",  blockInDemoMode, mustLogIn, (function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
@@ -151,24 +151,28 @@ exports.setup = function(app, DAL)
                 {
                     DAL.getAllMediaTypes(function(err, types)
                     {
-                        if (!res.locals)
-                            res.locals = {};
-                        res.locals.content = content;
-                        res.locals.pageTitle = "Edit App";
-                        res.locals.types = types;
-                        for (var i in types)
+                        req.formSchema = JSON.parse(require('fs').readFileSync("./server/forms/app.json").toString());
+                        req.formSchema.title = "Edit " + content.title;
+                        req.formSchema.submitText = "Edit";
+                        req.defaults = content;
+                        
+                        res.locals = {};    
+                        res.locals.pageTitle = "Register New App";
+                        //select none type by default
+                        
+                        
+                        for(var i in types)
                         {
-                            if (content.mediaTypeKey == types[i].uuid)
-                            {
-                                types[i].virtuals.selected = true;;
-                            }
+                            req.formSchema.fields[req.formSchema.fields.length-2].options.push({
+                                text : types[i].name,
+                                value : types[i].uuid
+                            })
                         }
-
-                        res.locals.launchIsPopup = content.launchType == "popup";
-                        res.locals.launchIsRedirect = content.launchType == "redirect";
-                        res.locals.launchIsFrame = content.launchType == "frame";
-                        res.locals.launchIsManuel = content.launchType == "popup";
-                        res.render("editContent", res.locals);
+                        
+                       // req.render('registerContent', res.locals)
+                       
+                       
+                        form()(req,res,next);
                     });
                 }
             }
@@ -178,7 +182,7 @@ exports.setup = function(app, DAL)
             }
         })
     }));
-    app.post("/content/:key/edit",  blockInDemoMode, ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
+    app.post("/content/:key/edit/",  blockInDemoMode, form("./server/forms/app.json"), mustLogIn, (validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
@@ -213,7 +217,7 @@ exports.setup = function(app, DAL)
                         if (err)
                             res.status(500).send(err);
                         else
-                            res.status(200).send("OK");
+                            res.status(200).redirect("/content/browse");
                     })
                 }
             }

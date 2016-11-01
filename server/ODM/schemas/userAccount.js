@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var CryptoJS = require("../../utils/pbkdf2.js").CryptoJS;
+var CryptoJS = require("../../../public/scripts/pbkdf2.js").CryptoJS;
 var userSchema = mongoose.Schema(
 {
     username: String,

@@ -105,7 +105,7 @@ exports.setup = function(app, DAL)
                                 console.log(err);
                                 return res.status(500).send(err);
                             }
-                            else return res.status(200).send("200 OK");
+                            else return res.status(200).redirect("/media/browse");
                         });
                     })
 

@@ -1,6 +1,5 @@
 var mongoose = require('mongoose');
 
-
 var pullGenerator = require("../utils.js").pullGenerator;
 var setGenerator = require("../utils.js").setGenerator;
 var incGenerator = require("../utils.js").incGenerator;

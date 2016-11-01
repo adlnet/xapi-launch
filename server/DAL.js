@@ -168,6 +168,7 @@ DAL.prototype.createUser = function(request, userCreatedCB)
             account.password = request.password;
             account.roles = [];
             account.lrsConfig = request.lrsConfig;
+            account.verifiedEmail = true;
             account.save(function(err, key)
             {
                 userCreatedCB(err, account);

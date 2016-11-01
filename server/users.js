@@ -5,8 +5,8 @@ var LocalStrategy = require("passport-local");
 var requirejs = require('requirejs');
 var session = require('express-session')
 var async = require("async");
-var ensureLoggedIn = require("./utils.js").ensureLoggedIn;
-var ensureNotLoggedIn = require("./utils.js").ensureNotLoggedIn;
+
+
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper;
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
@@ -30,6 +30,22 @@ requirejs.config(
 {
     nodeRequire: require
 });
+
+
+var ensureLoggedIn = function(req, res, next) {
+    if (!req.user) {
+        res.redirect("/users/login?r=" + encodeURIComponent(req.url))
+    } else
+        next();
+}
+
+var ensureNotLoggedIn = function(req, res, next) {
+    if (req.user) {
+        res.redirect("/")
+    } else
+        next();
+}
+
 
 exports.checkOwner = function(obj,user)
 {
@@ -267,13 +283,13 @@ exports.setup = function(app, DAL)
         });
     }));
 
-    app.get("/users/me",blockInDemoMode,  ensureLoggedIn(function(req, res, next)
+    app.get("/users/me",blockInDemoMode,  ensureLoggedIn , function(req, res, next)
     {
         res.render("editAccount",{
             user:req.user
         })
-    }));
-    app.post("/users/edit",blockInDemoMode,  ensureLoggedIn(validateTypeWrapper(schemas.editAccountRequest, function(req, res, next)
+    });
+    app.post("/users/edit",blockInDemoMode,  ensureLoggedIn, validateTypeWrapper(schemas.editAccountRequest, function(req, res, next)
     {
         if(!req.user)
             return res.status(404).send("User not found");
@@ -282,14 +298,14 @@ exports.setup = function(app, DAL)
         {
             res.status(200).send("200 - OK");
         })
-    })));
+    }));
 
-    app.get('/users/logout',blockInDemoMode,  ensureLoggedIn(function(req, res, next)
+    app.get('/users/logout',blockInDemoMode,  ensureLoggedIn, function(req, res, next)
     {
         req.logout();
         res.redirect("/");
-    }));
-    app.get("/users/launches/:guid/delete", ensureLoggedIn(function(req, res, next)
+    });
+    app.get("/users/launches/:guid/delete", ensureLoggedIn, function(req, res, next)
     {
         DAL.getLaunchByGuid(req.params.guid, function(err, launch)
         {
@@ -306,8 +322,8 @@ exports.setup = function(app, DAL)
                 res.redirect("/users/launches");
             }
         })
-    }))
-    app.get('/users/launches', ensureLoggedIn(function(req, res, next)
+    })
+    app.get('/users/launches', ensureLoggedIn, function(req, res, next)
     {
 
         DAL.getAllUsersLaunch(req.user.email, function(err, results)
@@ -363,8 +379,8 @@ exports.setup = function(app, DAL)
             })
 
         })
-    }));
-    app.get("/users/content", ensureLoggedIn(function(req, res, next)
+    });
+    app.get("/users/content", ensureLoggedIn ,function(req, res, next)
     {
         DAL.getAllMediaTypes(function(err, types)
         {
@@ -393,10 +409,10 @@ exports.setup = function(app, DAL)
                 }
             })
         })
-    }));
+    });
 
 
-    app.get("/users/media", ensureLoggedIn(function(req, res, next)
+    app.get("/users/media", ensureLoggedIn,function(req, res, next)
     {
 
 
@@ -428,7 +444,7 @@ exports.setup = function(app, DAL)
                 }
             })
         });
-    }));
+    });
 
 
     app.post('/users/login',blockInDemoMode,  function(req, res, next)
@@ -461,4 +477,119 @@ exports.setup = function(app, DAL)
             });
         })(req, res, next);
     });
+
+
+    var validateEmail = function(req, res, next)
+    {
+        //Get user by verify code
+        user.findOne(
+        {
+            verifyCode: req.params[0]
+        }, function(err, user)
+        {
+            if (!err && user && !user.verifiedEmail)
+            {
+                //mark them as verified, save, and go ahead and log them in
+                user.verifiedEmail = true;
+                return user.save(function()
+                {
+                    req.login(user, function(err)
+                    {
+                        res.redirect("/");
+                    });
+                })
+            }
+            else if (user && user.verifiedEmail)
+            {
+                res.status(400).send(strings.already_verified);
+            }
+            else
+            {
+                res.status(400).send(strings.verified_code_error);
+            }
+        });
+    }
+
+    var resendValidation = function(req, res, next)
+    {
+        res.status(200).send(strings.validation_sent);
+        user.findOne(
+        {
+            email: req.body.email
+        }, function(err, user)
+        {
+            if (!err && user)
+            {
+                //Don't bother for verified accounts
+                if (!user.verifiedEmail)
+                    email.sendEmailValidateEmail(user)
+            }
+        });
+    }
+
+    var resetPassword = function(req, res, next)
+    {
+        if(req.user.checkPassword(req.body.oldpassword) ||  req.user.checkResetKey(req.body.oldpassword))
+        {
+            req.user.resetPassword(req.body.password);
+            delete req.session.mustResetPassword;
+            res.status(200).send("Password reset");
+        }else
+        {
+            res.status(500).send("Your original password was not correct");
+        }
+        
+    }
+    var forgotPassword = function(req, res, next)
+    {
+        user.findOne(
+        {
+            email: req.body.email
+        }, function(err, user)
+        {
+            if (!err && user)
+            {
+                //Can't reset the password for the account until the email is verified. Prompt the user to revalidate the email.
+                if (!user.verifiedEmail)
+                {
+                    return res.status(400).send(strings.login_unvalidated)
+                }
+                else
+                {
+                    //Generate a new temp credential
+                    user.forgotPassword();
+                    email.sendForgotPasswordEmail(user);
+                    return res.status(400).send(strings.password_reset_sent)
+                }
+            }
+            else
+            {
+                //don't let the output allow fishing to detect existance of account. Send this if account not found.
+                res.status(400).send(strings.password_reset_sent)
+            }
+        });
+    }
+    function renderPage(title, file)
+    {
+        return function(req, res, next)
+        {
+            res.locals.pageTitle = title;
+            res.render(file,{})
+        }
+    }
+    app.get("/users/forgotPassword", ensureNotLoggedIn, renderPage("Reset Password","forgotPassword"));
+    //app.get("/users/deleteAccount", utils.ensureLoggedIn,admin.cannotBeAdmin, renderPage("Delete Account","deleteAccount"));
+    app.get("/users/resetPassword", ensureLoggedIn, renderPage("Reset Password","resetPassword"));
+    app.get("/users/validateEmail", ensureNotLoggedIn,renderPage("Enter Validataion Code","manualValidationCodeEntry"));
+    app.get('/users/validateEmail/*', ensureNotLoggedIn, validateEmail);
+
+    //Resend the validation email. NOTE: don't reset the validation key here
+    app.post('/users/resendValidation', ensureNotLoggedIn, resendValidation);
+    //Update the users password. Takes the new password in plaintext in the body. Also generates a new salt
+    app.post('/users/resetPassword', ensureLoggedIn, resetPassword)
+    //Delete the account.
+    //app.post('/users/deleteAccount', ensureLoggedIn, deleteAccount)
+   // //Allow the user to say they forgot their password. Take the email address as post data.
+    app.post('/users/forgotPassword', ensureNotLoggedIn, forgotPassword)
+
 }

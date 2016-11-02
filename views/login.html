@@ -28,7 +28,9 @@
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 <span class="sr-only">Error:</span> <span role="message">Enter a valid email address</span>
             </div>
-           
+            <a href="/users/forgotPassword">Forgot your password?</a><Br>
+            <a href="/users/validateEmail">Enter validation code</a><Br>
+            <a href="/users/resendValidation">Resend validation code</a>
         </div>
         <div class="col-md-4"></div>
     </div>
@@ -99,6 +101,7 @@ function getQueryVariable(variable) {
                             keySize: 512 / 32,
                             iterations: 100
                         });
+                        console.log(loginRequest.password,salt)
                         loginRequest.password = key.toString();
                         
                         $.ajax("/users/login",

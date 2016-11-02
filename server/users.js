@@ -5,13 +5,15 @@ var LocalStrategy = require("passport-local");
 var requirejs = require('requirejs');
 var session = require('express-session')
 var async = require("async");
+var strings  = require("./strings.js");
 
-
+var user = require('./ODM/schemas/userAccount.js');
 var validateTypeWrapper = require("./utils.js").validateTypeWrapper;
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
 var CryptoJS = require("../public/scripts/pbkdf2.js").CryptoJS;
 
+var email = require("./email.js");
 function userHasRole (role)
 {
     return function(req, res, next)
@@ -152,13 +154,25 @@ exports.setup = function(app, DAL)
                     }
                     if (user)
                     {
+                        console.log("got user")
                         if (user.password == password)
                         {
                             done(null, user);
                         }
                         else
-                        {
-                            done(null, false)
+                        {   
+                            console.log("not password")
+                            console.log(user.passwordResetKey,password);
+                            if (user.passwordResetKey == password)
+                            {
+                                console.log("is reset key");
+                                done(null, user,
+                                    {
+                                        resetLogin: true
+                                    }) //pass along the info that the user used the temp credentials
+                            }
+                            else
+                                done(null, false)
                         }
                     }
                     else
@@ -464,6 +478,11 @@ exports.setup = function(app, DAL)
             {
                 return res.status(400).send("login failed");
             }
+            //Login fails if the user gave the right password, but email is not yet verified
+            if (!user.verifiedEmail)
+            {
+                return res.status(400).send("Account is not verified");
+            }
             //console.log("login");
             req.login(user, function(err)
             {
@@ -473,6 +492,18 @@ exports.setup = function(app, DAL)
                     return next(err);
                 }
                 req.user = user;
+
+                if (info && info.resetLogin)
+                {
+                    req.session.mustResetPassword = true;
+                }
+                else
+                {
+                    //if the user logged in with their normal password, then clear the reset key
+                    user.passwordResetKey = null;
+                    user.save();
+                }
+
                 return res.status(200).send("login ok");
             });
         })(req, res, next);
@@ -552,20 +583,20 @@ exports.setup = function(app, DAL)
                 //Can't reset the password for the account until the email is verified. Prompt the user to revalidate the email.
                 if (!user.verifiedEmail)
                 {
-                    return res.status(400).send(strings.login_unvalidated)
+                    return res.status(200).send(strings.login_unvalidated)
                 }
                 else
                 {
                     //Generate a new temp credential
-                    user.forgotPassword();
-                    email.sendForgotPasswordEmail(user);
-                    return res.status(400).send(strings.password_reset_sent)
+                    var plaintext = user.forgotPassword();
+                    email.sendForgotPasswordEmail(user,plaintext);
+                    return res.status(200).send(strings.password_reset_sent)
                 }
             }
             else
             {
                 //don't let the output allow fishing to detect existance of account. Send this if account not found.
-                res.status(400).send(strings.password_reset_sent)
+                res.status(200).send(strings.password_reset_sent)
             }
         });
     }
@@ -582,7 +613,7 @@ exports.setup = function(app, DAL)
     app.get("/users/resetPassword", ensureLoggedIn, renderPage("Reset Password","resetPassword"));
     app.get("/users/validateEmail", ensureNotLoggedIn,renderPage("Enter Validataion Code","manualValidationCodeEntry"));
     app.get('/users/validateEmail/*', ensureNotLoggedIn, validateEmail);
-
+    app.get("/users/resendValidation", ensureNotLoggedIn, renderPage("Resend Validation Code","resendValidation"));
     //Resend the validation email. NOTE: don't reset the validation key here
     app.post('/users/resendValidation', ensureNotLoggedIn, resendValidation);
     //Update the users password. Takes the new password in plaintext in the body. Also generates a new salt

@@ -5,6 +5,7 @@ var getGenerator = require("./dalFunctionFactory.js").getGenerator;
 var getAllGenerator = require("./dalFunctionFactory.js").getAllGenerator;
 var searchGenerator = require("./dalFunctionFactory.js").searchGenerator;
 var searchComplexGenerator = require("./dalFunctionFactory.js").searchComplexGenerator;
+var email = require("./email.js");
 
 function DAL()
 {}
@@ -168,7 +169,11 @@ DAL.prototype.createUser = function(request, userCreatedCB)
             account.password = request.password;
             account.roles = [];
             account.lrsConfig = request.lrsConfig;
-            account.verifiedEmail = true;
+            account.verifiedEmail = false;
+
+            account.verifyCode = require("crypto").randomBytes(16).toString('hex');
+            email.sendEmailValidateEmail(account);
+            
             account.save(function(err, key)
             {
                 userCreatedCB(err, account);

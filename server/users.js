@@ -78,7 +78,7 @@ var adminUser = function()
     this.password = hash(config.admin_pass,"");
     this.dataType = "userAccount";
     this.roles = ["admin","creator"];
-
+    this.verifiedEmail = true;
     Object.defineProperty(this,"isAdmin",{
         get:function()
         {
@@ -106,7 +106,8 @@ var adminUser = function()
     }
     this.save = function(cb)
     {
-        process.nextTick(cb);
+        if(cb)
+            process.nextTick(cb);
     }
     return this;
 }.apply({});

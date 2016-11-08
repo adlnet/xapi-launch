@@ -1,0 +1,63 @@
+{
+	"title": "New User",
+	"submitText": "Create New User",
+	"fields": [
+	{
+		"label": "",
+		"id": "disclaimer",
+		"helptext": "Validation emails are not sent from the admin interface.",
+		"type":
+		{
+			"isLabel": true,
+			"type": "text"
+		}
+	},
+	{
+		"label": "User Name",
+		"id": "username",
+		"helptext": "A name for display purposes",
+		"validation":"val !== undefined && val !== ''",
+		"validationMessage" :"Enter a User Name",
+		
+		"type":
+		{
+			"isText": true,
+			"type": "text"
+		}
+	},
+	{
+		"label": "Email",
+		"id": "email",
+		"helptext": "The user's email. We don't send the verify email from the admin interface.",
+		"validation":"val !== undefined && val !== ''",
+		"validationMessage" :"Enter an email",
+		
+		"type":
+		{
+			"isText": true,
+			"type": "email"
+		}
+	},
+	{
+		"label": "Password",
+		"id": "password",
+		
+		"type":
+		{
+			"isText": true,
+			"type": "password"
+		}
+	},
+	{
+		"label": "Password Again",
+		"id": "passwordMatch",
+		"validation":"val == $('#password').val()",
+		"validationMessage":"Passwords must match",
+		"type":
+		{
+			"isText": true,
+			"type": "password"
+		}
+	}
+	]
+}

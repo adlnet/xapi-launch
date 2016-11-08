@@ -5,9 +5,19 @@ var schemas = require("./schemas.js");
 var async = require('async');
 var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
-
+var form = require("./form.js").form;
 var checkOwner = require("./users.js").checkOwner;
 var userHasRole = require("./users.js").userHasRole;
+
+function mustLogIn(req,res,next)
+{
+    if(req.user)
+           next();
+        else
+        {
+            res.redirect("/users/login?r="+encodeURIComponent(req.originalUrl));
+        }
+}
 exports.setup = function(app, DAL)
 {   
     if(!config) return; // the config file was not found
@@ -24,21 +34,37 @@ exports.setup = function(app, DAL)
     {
         app.get("/",browseContent);
     }
-    app.get("/content/register", blockInDemoMode, userHasRole("creator"), ensureLoggedIn(function(res, req, next)
+    app.get("/content/register", blockInDemoMode, userHasRole("creator"),mustLogIn,function(req, res, next)
     {
 
+        
         DAL.getAllMediaTypes(function(err, types)
         {
-            res.locals = {};
+            req.formSchema = JSON.parse(require('fs').readFileSync("./server/forms/app.json").toString());
+            req.defaults = {};
+            req.defaults.fields = {};
+            
+            res.locals = {};    
             res.locals.pageTitle = "Register New App";
             //select none type by default
+            
             types[0].virtuals.selected = true;
-            res.locals.types = types;
-            req.render('registerContent', res.locals)
+            for(var i in types)
+            {
+                req.formSchema.fields[req.formSchema.fields.length-2].options.push({
+                    text : types[i].name,
+                    value : types[i].uuid
+                })
+            }
+            
+           // req.render('registerContent', res.locals)
+           
+           
+            form()(req,res,next);
         });
 
-    }));
-    app.post("/content/register",  blockInDemoMode, userHasRole("creator"), ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
+    });
+    app.post("/content/register/",  blockInDemoMode, userHasRole("creator"), mustLogIn,form("./server/forms/app.json"),(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
     {
         var content = req.body;
         content.owner = req.user.email;
@@ -75,7 +101,7 @@ exports.setup = function(app, DAL)
                         {
                             return res.status(500).send(err);
                         }
-                        else return res.status(200).send("200 OK");
+                        else return res.status(200).redirect("/content/browse");
                     });
                 }
             }
@@ -93,7 +119,7 @@ exports.setup = function(app, DAL)
                 if (checkOwner(content,req.user))
                 {
                     //console.log("user is the owner");
-                    content.delete(function(err)
+                    content.remove(function(err)
                     {
                         if(content.packageLink)
                         {
@@ -115,7 +141,7 @@ exports.setup = function(app, DAL)
     }));
 
 
-    app.get("/content/:key/edit",  blockInDemoMode, ensureLoggedIn(function(req, res, next)
+    app.get("/content/:key/edit/",  blockInDemoMode, mustLogIn, (function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
@@ -125,24 +151,28 @@ exports.setup = function(app, DAL)
                 {
                     DAL.getAllMediaTypes(function(err, types)
                     {
-                        if (!res.locals)
-                            res.locals = {};
-                        res.locals.content = content;
-                        res.locals.pageTitle = "Edit App";
-                        res.locals.types = types;
-                        for (var i in types)
+                        req.formSchema = JSON.parse(require('fs').readFileSync("./server/forms/app.json").toString());
+                        req.formSchema.title = "Edit " + content.title;
+                        req.formSchema.submitText = "Edit";
+                        req.defaults = content;
+                        
+                        res.locals = {};    
+                        res.locals.pageTitle = "Register New App";
+                        //select none type by default
+                        
+                        
+                        for(var i in types)
                         {
-                            if (content.mediaTypeKey == types[i].uuid)
-                            {
-                                types[i].virtuals.selected = true;;
-                            }
+                            req.formSchema.fields[req.formSchema.fields.length-2].options.push({
+                                text : types[i].name,
+                                value : types[i].uuid
+                            })
                         }
-
-                        res.locals.launchIsPopup = content.launchType == "popup";
-                        res.locals.launchIsRedirect = content.launchType == "redirect";
-                        res.locals.launchIsFrame = content.launchType == "frame";
-                        res.locals.launchIsManuel = content.launchType == "popup";
-                        res.render("editContent", res.locals);
+                        
+                       // req.render('registerContent', res.locals)
+                       
+                       
+                        form()(req,res,next);
                     });
                 }
             }
@@ -152,7 +182,7 @@ exports.setup = function(app, DAL)
             }
         })
     }));
-    app.post("/content/:key/edit",  blockInDemoMode, ensureLoggedIn(validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
+    app.post("/content/:key/edit/",  blockInDemoMode, form("./server/forms/app.json"), mustLogIn, (validateTypeWrapper(schemas.registerContentRequest, function(req, res, next)
     {
         DAL.getContentByKey(req.params.key, function(err, content)
         {
@@ -187,7 +217,7 @@ exports.setup = function(app, DAL)
                         if (err)
                             res.status(500).send(err);
                         else
-                            res.status(200).send("OK");
+                            res.status(200).redirect("/content/browse");
                     })
                 }
             }
@@ -213,7 +243,7 @@ exports.setup = function(app, DAL)
                 {
                     for (var i in results)
                     {
-                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.launchKey = results[i]._id;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
                         results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user) ;
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
@@ -340,10 +370,46 @@ exports.setup = function(app, DAL)
                 if (err)
                 {
                     res.locals.error = err;
-                    res.render('error', res.locals);
+                    console.log(err);
+                    res.send(err);
                 }
                 else
                 {
+                    for (var i in results)
+                    {
+                        results[i].virtuals.launchKey = results[i]._id;
+                        results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
+                        results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
+                        results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
+                         for (var j in types)
+                            if (types[j].uuid == results[i].mediaTypeKey)
+                                results[i].virtuals.mediaType = types[j];
+                    }
+                    res.locals.results = results;
+                    res.render('contentResults', res.locals);
+                   
+                }
+            })
+        })
+    });
+    app.get("/content/searchid/:search", function(req, res, next)
+    {
+        res.locals.pageTitle = "Search All Apps";
+        var search = decodeURIComponent(req.params.search);
+        var reg = (search);
+        DAL.getAllMediaTypes(function(err, types)
+        {
+            DAL.getContentByKey(reg, function(err, result)
+            {
+                if (err || !result)
+                {
+                    res.locals.error = err;
+                    console.log(err);
+                    res.send(err);
+                }
+                else
+                {
+                    var results = [result];
                     for (var i in results)
                     {
                         results[i].virtuals.launchKey = results[i]._id;

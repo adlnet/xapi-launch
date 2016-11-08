@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		
+	</title>
+</head>
+<body>
+	Hi {{username}}, 
+	<br>
+	You are receiving this email because someone signed up for the LRS Test service with this address. If you did not sign up for LRS Test, you can ignore this email. 
+	<br>
+	Thank you for siging up for the LRS Test service. You account is suspended until you verify that you own this email address. You can verify your address by clicking the link below:
+	<br>
+	<br>	
+	<a href='{{verify_url}}'> Verify your account </a>
+	<br>
+	<br>	
+	If your email program cannot display links, you can also enter the code manually. Open the address below.
+
+	<br><br>
+	{{verify_url_base}}
+	<br><br>
+	And when prompted, enter the code
+	<br><br>
+	{{verify_code}}
+	<br><br>
+	That's it! Once you verify your email address, you can start running the test suite against your LRS.
+</body>
+</html>
+

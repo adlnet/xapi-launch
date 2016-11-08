@@ -5,6 +5,8 @@ var Datastore = require('nedb');
 var DB = null;
 var hoganExpress = require('hogan-express');
 require('pretty-error').start();
+var mongoose = require('mongoose');
+var DAL = require("./server/DAL.js").DAL;
 async.series([
 	
 	function loadConfig(cb)
@@ -53,14 +55,16 @@ async.series([
 	},
 	function loadDB(cb)
 	{
-		DB = new Datastore(
-		{
-			filename: './data.db',
-			autoload: true
-		})
-		DB = require("./server/DAL.js").setup(DB);
 		
-		cb();
+		mongoose.connect('mongodb://localhost/xapi-launch');
+		var db = mongoose.connection;
+		db.once('open', function(err)
+		{
+			
+			DB = new DAL();
+			cb(err);
+		});
+		
 	}
 ], function startServer()
 {
@@ -92,6 +96,7 @@ async.series([
 		if(!res.locals)
 			res.locals = {};
 		res.locals.demoMode = config.demoMode;
+		res.locals.user = req.user;
 		next();
 	})
 	//setup various routes

@@ -1,0 +1,156 @@
+{{>header}}
+<style type="text/css">
+.row {
+    font-size: 2em;
+}
+
+.header {
+    width: 7em;
+    display: inline-block;
+}
+
+.data {
+    white-space: nowrap;
+    overflow: hidden;
+    width: 30em;
+    display: inline-block;
+    text-overflow: ellipsis;
+    vertical-align: bottom
+}
+</style>
+
+<style type="text/css">
+	.product
+	{
+		border: 1px solid #E4E4E4;
+	    margin: 1em 0em;
+	    border-radius: 5px;
+	    padding: 1em;
+	    box-shadow: 3px 5px 10px #EAEAEA;
+	}
+	.product a img {
+	    margin: auto;
+	    display: block;
+	    object-fit: contain;
+	}
+	h3
+	{
+		    text-transform: capitalize;
+	}
+	h5
+	{
+		    margin-bottom: 0px;
+	}
+  .caps
+  {
+    text-transform: capitalize;
+  }
+  .not
+  {
+    background: red;
+  }
+  .oldVersion
+  {
+    background: #855;
+  }
+  .oldTest
+  {
+    background: #DD4;
+  }
+  .good
+  {
+    background: #DFD;
+  }
+	.productMajor
+	{
+		position: fixed;
+	    height: 500px;
+	    width: 800px;
+	    background: white;
+	    top: calc(50% - 250px);
+	    left: calc(50% - 400px);
+	    box-shadow: 10px 10px 10px #999;
+	    border: 1px solid #DDD;
+	    border-radius: 4px;
+	    padding:50px;
+	}
+	.popupback
+	{
+		background: rgba(0,0,0,.15);
+	    position: fixed;
+	    top: 0px;
+	    left: 0px;
+	    width: 100%;
+	    height: 100%;
+          z-index: 100;
+	}
+	.modal-close
+	{
+		    position: absolute;
+		    top: 0px;
+		    right: 5px;
+		    z-index: 1055;
+		    font-weight: 900;
+		    cursor: pointer;
+	}
+	.datahidden
+	{
+		display: none;
+	}
+	.modal-content
+	{
+		box-shadow: 10px 10px 10px rgba(0, 0, 0, .2);
+	}
+</style>
+
+
+<div class='container'>
+    <br>
+    <br>
+    {{#cert}}
+    <div class="modal-content">
+        <div class="modal-body">
+            <div class="">
+                <div class="row">
+                    <div class="col-md-5">
+                        <img id="splash" style="     object-fit: contain;  height: 250px;max-width: 250px;" src="/products/{{product.uuid}}/logo">
+                    </div>
+                    <div class="col-md-7">
+                        <div style="margin-left:20px">
+                            <h2 id="productName">{{product.productName}} {{product.productVersion}}</h2>
+                            <h5 class="caps" id="companyName">by {{product.companyName}}</h5>
+                            <hr>
+                            <h5> Homepage: <a id="website" target = "_blank" href="{{product.website}}">{{product.website}}</a> </h5>
+                            <h5> Contact Name: <span id="contactName">{{product.contactName}}</span> </h5>
+                            <h5> Contact Email: <a  target = "_blank" id="contactEmail" href="mailto:{{product.contactEmail}}">{{product.contactEmail}}</a> </h5>
+                            <h5> Contact Phone: <span id="contactPhone">{{product.contactPhone}}</span> </h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                <br>
+                    <div class="col-md-12 {{conformance.status}}" id="conformancesection">
+                        <span id="conformance">{{conformance.string}}</span>
+                        <br>
+                        {{#publiclog}}<a href="/tests/{{uuid}}/status"> View the full log </a>{{/publiclog}}
+                        {{#productUpdated}}<a href="/tests/{{uuid}}/status"> This product has been modified since the certificate was issued. </a>{{/productUpdated}}
+                    </div>
+                </div>
+            </div>
+            {{#message}}
+            <div class="alert alert-danger">{{message}}</div>
+            {{/message}}
+        </div>
+    </div>
+    {{/cert}} 
+    {{^cert}}
+    <div class='container'>
+        <div class='row'>
+            This certificate is not valid
+        </div>
+    </div>
+    {{/cert}} 
+    <br>
+    <br>
+    {{>footer}}
+</div>

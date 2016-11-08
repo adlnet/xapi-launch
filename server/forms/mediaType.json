@@ -1,0 +1,34 @@
+{
+	"title": "Create New MediaType",
+	"submitText": "Create",
+	"fields": [
+	{
+		"label": "Name",
+		"id": "name",
+		"helptext": "The name of this type",
+		"type":
+		{
+			"isText": true,
+			"type": "text"
+		}
+	},
+	{
+		"label": "Description",
+		"id": "description",
+		"helptext": "A description that will be displayed to the user",
+		"type":
+		{
+			"isText": true,
+			"type": "text"
+		}
+	},
+	{
+		"label": "Icon URL",
+		"id": "iconURL",
+		"helptext": "the URL to an icon file",
+		"type":
+		{
+			"isTextArea": true
+		}
+	}]
+}

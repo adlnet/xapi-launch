@@ -9,5 +9,10 @@
 	"publicSigningKey" : "", // a full RSA public key. Should include the -----BEGIN PUBLIC KEY----- header and footer. Be sure that you include \n chars for newlines
 	"privateSigningKey" : "", //the associated privte key. Also includes header and footer and newlines.
 	"demoModeUser":"rchadwic@gmail.com", //the user email of the account that is always logged in during demo mode
-	"demoMode":true //enable or disable demo mode
+	"demoMode":true, //enable or disable demo mode
+	"email_user":null, //the username of the outgoing email server
+	"email_server":null, //the address of the outgoing email server
+	"email_pass":null, //the password on the outgoing email server
+	"connectionString":null //override the default localhost database connnection
+
 }

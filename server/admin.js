@@ -11,7 +11,7 @@ exports.setup = function(app, DAL)
 	function mustBeAdmin(req, res, next)
 	{
 		if (req.user !== require("./users.js").adminUser)
-			return res.status(401).send("must be admin");
+			return res.status(401).message("must be admin");
 		else
 			next();
 	}
@@ -26,7 +26,7 @@ exports.setup = function(app, DAL)
 				multi: true
 			}, function(err, numRemoved)
 			{
-				res.status(200).send("DB clear");
+				res.status(200).message("DB clear");
 			});
 		});
 	})
@@ -45,7 +45,7 @@ exports.setup = function(app, DAL)
 		var user = req.user;
 		if (user && user.email == config.admin_email)
 		{
-			return res.send(strings.not_admin);
+			return res.message(strings.not_admin);
 		}
 		next();
 	}
@@ -64,7 +64,7 @@ exports.setup = function(app, DAL)
 			}
 			else
 			{
-				res.send("User not found");
+				res.message("User not found");
 			}
 		})
 	}

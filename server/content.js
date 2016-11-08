@@ -326,7 +326,7 @@ exports.setup = function(app, DAL)
                 {
                     if (!content)
                     {
-                        return res.status(500).send("bad content key");
+                        return res.status(500).message("bad content key");
                     }
                     i.contentURL = content.url;
                     i.contentTitle = content.title;
@@ -452,11 +452,11 @@ exports.setup = function(app, DAL)
             DAL.getLaunchByGuid(req.params.key, function(err, launch)
             {
                 if (content && !checkOwner(content,req.user))
-                    return res.status(401).send("You are not the owner of this content.");
+                    return res.status(401).message("You are not the owner of this content.");
                 if (launch && launch.email !== req.user.email)
-                    return res.status(401).send("You are not the owner of this launch.");
+                    return res.status(401).message("You are not the owner of this launch.");
                 if (!content && !launch)
-                    return res.status(400).send("Unknown Identifier.");
+                    return res.status(400).message("Unknown Identifier.");
                 var content_or_launch = content || launch;
                 console.log(req.lrsConfig.endpoint);
                 var resultLink = req.lrsConfig.endpoint + "statements?format=exact&activity=" + encodeURIComponent(content_or_launch.xapiForm().id) + "&related_activities=true&limit=1000";

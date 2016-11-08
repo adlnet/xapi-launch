@@ -34,7 +34,7 @@ exports.setup = function(app, DAL)
         DAL.getMediaType(req.params.key || "", function(err, mediaType)
         {
             if (!mediaType)
-                return res.status(401).send("unknown media type");
+                return res.status(401).message("unknown media type");
 
             res.locals.pageTitle = "Browse All " + mediaType.name + " Media";
             DAL.getAllMediaByType(req.params.key, function(err, results)
@@ -86,7 +86,7 @@ exports.setup = function(app, DAL)
             if (err)
                 return res.status(500).send(err)
             if (!type)
-                return res.status(401).send("unknown type")
+                return res.status(401).message("unknown type")
            
 
 
@@ -102,9 +102,9 @@ exports.setup = function(app, DAL)
             if (err)
                 return res.status(500).send(err)
             if (!type)
-                return res.status(401).send("unknown type")
+                return res.status(401).message("unknown type")
             if (!checkOwner(type,req.user))
-                return res.status(401).send("You are not the owner of this type")
+                return res.status(401).message("You are not the owner of this type")
 
             req.formSchema = JSON.parse(require('fs').readFileSync("./server/forms/mediaType.json").toString());
             req.formSchema.title = "Edit " + type.name;
@@ -148,9 +148,9 @@ exports.setup = function(app, DAL)
             if (err)
                 return res.status(500).send(err)
             if (!type)
-                return res.status(401).send("unknown type")
+                return res.status(401).message("unknown type")
             if (!checkOwner(type,req.user))
-                return res.status(401).send("You are not the owner of this type")
+                return res.status(401).message("You are not the owner of this type")
 
             type.remove(function(err)
             {

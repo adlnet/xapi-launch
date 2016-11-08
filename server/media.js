@@ -118,10 +118,10 @@ exports.setup = function(app, DAL)
         DAL.getMedia(req.params.key, function(err, media)
         {
             if (!media)
-                return res.status(500).send("invalid media key");
+                return res.status(500).message("invalid media key");
             if (!checkOwner(media,req.user))
             {
-                return res.status(500).send("you are not the owner of this media");
+                return res.status(500).message("you are not the owner of this media");
             }
             media.remove(function(err)
             {
@@ -135,10 +135,10 @@ exports.setup = function(app, DAL)
         DAL.getMedia(req.params.key, function(err, media)
         {
             if (!media)
-                return res.status(500).send("invalid media key");
+                return res.status(500).message("invalid media key");
             if (!checkOwner(media,req.user))
             {
-                return res.status(500).send("you are not the owner of this media");
+                return res.status(500).message("you are not the owner of this media");
             }
             DAL.getAllMediaTypes(function(err, types)
             {
@@ -223,7 +223,7 @@ exports.setup = function(app, DAL)
                 {
                     if (!content)
                     {
-                        return res.status(500).send("bad content key");
+                        return res.status(500).message("bad content key");
                     }
                     i.contentURL = content.url;
                     i.contentTitle = content.title;

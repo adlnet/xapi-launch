@@ -139,6 +139,8 @@ async.series([
 	{
 		res.redirect("/");
 	});*/
+
+	//This looks insane, but it's here because we want to test cross domain stuff locally.
 	app.listen(3000, function() {})
 
 	var app2 = express();

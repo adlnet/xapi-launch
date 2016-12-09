@@ -118,10 +118,10 @@ exports.setup = function(app, DAL)
 
 	function resetPassword(req, res, next)
 	{
-		req._user.forgotPassword();
+		var pass = req._user.forgotPassword();
 		req._user.save(function(err)
 		{
-			res.redirect("/admin/users")
+			res.message("the new password is " + pass);
 		})
 	}
 

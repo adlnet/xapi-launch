@@ -53,6 +53,10 @@ exports.setup = function(app, DAL)
                             "name": user._id
                         }
                     }
+
+                    //allow user to override identity
+                    if(user.identity)
+                        launchData.actor = user.identity;
                     
                     var localServer = (config.host || "http://localhost:3000") +"/"; 
                     launchData.endpoint = localServer + "launch/" + launch.uuid + "/xAPI/";

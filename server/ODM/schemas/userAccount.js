@@ -24,6 +24,7 @@ var userSchema = mongoose.Schema(
     password: String,
     roles: Array,
     lrsConfig:Object,
+    identity:Object,
     verifiedEmail:Boolean,
     verifyCode:String,
     passwordResetKey:String

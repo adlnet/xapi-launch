@@ -301,7 +301,8 @@ exports.setup = function(app, DAL)
     app.get("/users/me",blockInDemoMode,  ensureLoggedIn , function(req, res, next)
     {
         res.render("editAccount",{
-            user:req.user
+            user:req.user,
+            parsedIdentity: req.user.identity ? JSON.stringify(req.user.identity, null, 1 ) : null
         })
     });
     app.post("/users/edit",blockInDemoMode,  ensureLoggedIn, validateTypeWrapper(schemas.editAccountRequest, function(req, res, next)
@@ -309,6 +310,16 @@ exports.setup = function(app, DAL)
         if(!req.user)
             return res.status(404).send("User not found");
         req.user.lrsConfig = req.body.lrsConfig;
+        
+        if(req.body.identity)
+        {
+            try{
+                req.user.identity = JSON.parse(req.body.identity)
+            }catch(e)
+            {
+              return res.status(400).send("Bad JSON in Identity")
+            }
+        }
         req.user.save(function(err)
         {
             res.status(200).send("200 - OK");

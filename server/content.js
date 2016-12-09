@@ -477,11 +477,16 @@ exports.setup = function(app, DAL)
                     {
                         return res.status(500).send(e + ' ' + body);
                     }
+                    try{
                     res.locals.pageTitle = "Results for " + (content ? content.title : launch.email);
                     res.locals.results = JSON.parse(body).statements;
                     for(var i in res.locals.results)
                         res.locals.results[i].str = JSON.stringify(res.locals.results[i],null,2);
                     res.render("statements", res.locals);
+                    }catch(e)
+                    {
+                        res.message(body);
+                    }
                 }).auth(req.lrsConfig.username, req.lrsConfig.password, true)
             })
 

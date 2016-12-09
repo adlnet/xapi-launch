@@ -36,6 +36,10 @@
                     <label>LRS Password</label>
                     <input id="lrspassword" type="password" class='form-control' placeholder="password" value="{{lrsConfig.password}}"></input>
                 </div>
+                <div class="form-group">
+                    <label>Identity</label>
+                    <textarea height=6 style="    font-family: monospace;height:8em;white-space: pre;" id="identity" class='form-control' placeholder="Optional Identity" value="{{lrsConfig.password}}">{{parsedIdentity}}</textarea>
+                </div>
             </form>
             <button type='' class="btn btn-lg btn-raised btn-primary btn-block" href="#" role="button">Edit Account</button>
             <div id="feedback" class="hidden alert alert-danger" role="alert">
@@ -72,7 +76,8 @@
                                 username: $("#lrsusername").val(),
                                 password: $("#lrspassword").val(),
                                 endpoint: $("#lrsendpoint").val()
-                            }
+                            },
+                            identity: $("#identity").val()
                         }
 
                         $.ajax("/users/edit",

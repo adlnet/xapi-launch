@@ -672,7 +672,7 @@ exports.setup = function(app, DAL)
         endpoint = require('url').format(endpoint);
 
         var search = require('url').parse(req.originalUrl).search;
-        var proxyAddress = endpoint + req.params[0] + search;
+        var proxyAddress = endpoint + (req.params[0] ? req.params[0] : "" ) + (search ? search :"");
         console.log(proxyAddress)
         
         req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username, req.lrsConfig.password, true)).on('response', function( lrsRes)
@@ -689,13 +689,13 @@ exports.setup = function(app, DAL)
     app.get("/launch/:key/xAPI/statements*", validateLaunchSession(function(req, res, next)
     {
         var search = require('url').parse(req.originalUrl).search;
-        var proxyAddress = req.lrsConfig.endpoint + "statements" + req.params[0]  + search;;
+        var proxyAddress = req.lrsConfig.endpoint + "statements" + req.params[0]  + (search? search : "");
         console.log(proxyAddress)
         req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username, req.lrsConfig.password, true).on('response', function(lrsRes)
         {
                 lrsRes.__proto__ = require('express').request;
           
-                require("body-parser").json({limit:"500kb"})(lrsRes, res, function(err) {
+                require("body-parser").json({limit:"5000kb"})(lrsRes, res, function(err) {
                     if(err)
                         console.log(err);
                     dealWithMore(lrsRes.body, res, req.params.key)

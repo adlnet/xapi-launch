@@ -1,6 +1,6 @@
 # xAPI-Launch
 
-##### The xAPI-Launch server is a demonstration of the xAPI Launch algorithm. 
+#### The xAPI-Launch server is a demonstration of the xAPI Launch algorithm. 
 xAPI-Launch allows a user to initiate an interaction with some xAPI enabled learning experience. The content, be it an online module, a static HTML file, or an immersive simulation, need not know ahead of time the identity of the learner, the LRS to which the learning data should be submitted, nor the "session" into which the events should be grouped. Content need only implement a minimal HTTP request to become "xAPI-Launch" enabled. 
 
 xAPI Launch exists primarily to enable a learner to track experiences from any learning resource without some out-of-band method to add LRS credentials to the content, and without asking the user to input these credentials into some untrused third-party system. It also ensures that statements which claim to be part of an experience really came from that experience. xAPI Launch differs from other launch algorithms in a few important ways. First, it avoids placing personally indentifying information (PII) in a query string. This helps protect the learner's identity. We also avoid initiating the launch session from an HTTP POST request. The body of a post request is not visible when using a URL to launch a native application. In order to avoid both PII in the query string and an initial POST, we generate a one time use random token that can be exchanged for the name and LRS endpoints of the learner, but can be safely transfered as part of the URL.

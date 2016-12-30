@@ -7,6 +7,7 @@ var config = require("./config.js").config;
 var blockInDemoMode = require("./utils.js").blockInDemoMode;
 var checkOwner = require("./users.js").checkOwner;
 var userHasRole = require("./users.js").userHasRole;
+var form = require("./form.js").form;
 exports.setup = function(app, DAL)
 {
     app.get("/media/browse", function(req, res, next)
@@ -26,7 +27,7 @@ exports.setup = function(app, DAL)
                 {
                     for (var i in results)
                     {
-                        results[i].virtuals.launchKey = results[i].key;
+                        results[i].virtuals.launchKey = results[i]._id;
                         results[i].virtuals.owned = !!req.user && checkOwner(results[i],req.user);
                         results[i].virtuals.resultLink = "/results/" + results[i].virtuals.launchKey;
                         results[i].virtuals.stared = req.user && results[i].stars.indexOf(req.user.email) > -1;
@@ -49,24 +50,38 @@ exports.setup = function(app, DAL)
 
    
 
-    app.get("/media/register", blockInDemoMode, userHasRole("creator"), ensureLoggedIn(function(req, res, next)
+    app.get("/media/register/", blockInDemoMode, userHasRole("creator"), ensureLoggedIn(function(req, res, next)
     {
         DAL.getAllMediaTypes(function(err, types)
         {
+           
+            req.formSchema = JSON.parse(require('fs').readFileSync("./server/forms/media.json").toString());
             
+           
+            
+            res.locals = {};    
             res.locals.pageTitle = "Register New Media";
-            res.locals.types = types;
-            //console.log(types);
-            res.render('registerMedia', res.locals);
+            //select none type by default
+            
+            
+            for(var i in types)
+            {
+                req.formSchema.fields[req.formSchema.fields.length-1].options.push({
+                    text : types[i].name,
+                    value : types[i].uuid
+                })
+            } 
+            form()(req,res,next);
+           
         })
 
     }));
-    app.post("/media/register",blockInDemoMode, userHasRole("creator"), ensureLoggedIn(validateTypeWrapper(schemas.registerMediaRequest, function(req, res, next)
+    app.post("/media/register",blockInDemoMode, userHasRole("creator"),form("./server/forms/media.json"), ensureLoggedIn(validateTypeWrapper(schemas.registerMediaRequest, function(req, res, next)
     {
         var media = req.body;
         media.owner = req.user.email;
 
-        DAL.getMedia(media.url, function(err, record)
+        DAL.getMediaByURL(media.url, function(err, record)
         {
 
             if (err)
@@ -87,9 +102,10 @@ exports.setup = function(app, DAL)
                         {
                             if (err)
                             {
+                                console.log(err);
                                 return res.status(500).send(err);
                             }
-                            else return res.status(200).send("200 OK");
+                            else return res.status(200).redirect("/media/browse");
                         });
                     })
 
@@ -102,47 +118,51 @@ exports.setup = function(app, DAL)
         DAL.getMedia(req.params.key, function(err, media)
         {
             if (!media)
-                return res.status(500).send("invalid media key");
+                return res.status(500).message("invalid media key");
             if (!checkOwner(media,req.user))
             {
-                return res.status(500).send("you are not the owner of this media");
+                return res.status(500).message("you are not the owner of this media");
             }
-            media.delete(function(err)
+            media.remove(function(err)
             {
                 res.redirect("/media/browse");
             })
         })
 
     }));
-    app.get("/media/:key/edit",blockInDemoMode, ensureLoggedIn(function(req, res, next)
+    app.get("/media/:key/edit/",blockInDemoMode, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMedia(req.params.key, function(err, media)
         {
             if (!media)
-                return res.status(500).send("invalid media key");
+                return res.status(500).message("invalid media key");
             if (!checkOwner(media,req.user))
             {
-                return res.status(500).send("you are not the owner of this media");
+                return res.status(500).message("you are not the owner of this media");
             }
             DAL.getAllMediaTypes(function(err, types)
             {
-                for (var i in types)
-                {
-                    if (media.mediaTypeKey == types[i].uuid)
-                    {
-                        types[i].virtuals.selected = true;
-                    }
-                }
+                req.formSchema = JSON.parse(require('fs').readFileSync("./server/forms/media.json").toString());
 
-              
-                res.locals.media = media;
-                res.locals.types = types;
-                res.render("editMedia", res.locals);
+                res.locals = {};    
+                req.formSchema.title = "Edit Media";
+                req.formSchema.submitText = "Edit";
+                req.defaults = media;
+                //select none type by default
+                
+                for(var i in types)
+                {
+                    req.formSchema.fields[req.formSchema.fields.length-1].options.push({
+                        text : types[i].name,
+                        value : types[i].uuid
+                    })
+                } 
+                form()(req,res,next);
             });
         })
 
     }));
-    app.post("/media/:key/edit",blockInDemoMode, validateTypeWrapper(schemas.registerMediaRequest, ensureLoggedIn(function(req, res, next)
+    app.post("/media/:key/edit/",blockInDemoMode,form("./server/forms/media.json"), validateTypeWrapper(schemas.registerMediaRequest, ensureLoggedIn(function(req, res, next)
     {
         DAL.getMedia(req.params.key, function(err, media)
         {
@@ -176,7 +196,7 @@ exports.setup = function(app, DAL)
                     if (err)
                         return res.status(500).send(err);
                     else
-                        return res.status(200).send("200 - OK");
+                        return res.status(200).redirect("/media/browse");
                 })
             });
         })
@@ -203,7 +223,7 @@ exports.setup = function(app, DAL)
                 {
                     if (!content)
                     {
-                        return res.status(500).send("bad content key");
+                        return res.status(500).message("bad content key");
                     }
                     i.contentURL = content.url;
                     i.contentTitle = content.title;

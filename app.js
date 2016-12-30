@@ -5,6 +5,9 @@ var Datastore = require('nedb');
 var DB = null;
 var hoganExpress = require('hogan-express');
 require('pretty-error').start();
+var mongoose = require('mongoose');
+var DAL = require("./server/DAL.js").DAL;
+var config;
 async.series([
 	
 	function loadConfig(cb)
@@ -51,21 +54,28 @@ async.series([
 		}
 		else return cb();
 	},
+	function loadConfig(cb)
+	{
+		//serve static files
+		config = require("./server/config.js").config;
+		cb();
+	},
 	function loadDB(cb)
 	{
-		DB = new Datastore(
-		{
-			filename: './data.db',
-			autoload: true
-		})
-		DB = require("./server/DAL.js").setup(DB);
 		
-		cb();
+		mongoose.connect(config.connectionString);
+		var db = mongoose.connection;
+		db.once('open', function(err)
+		{
+			
+			DB = new DAL();
+			cb(err);
+		});
+		
 	}
 ], function startServer()
 {
-	//serve static files
-	var config = require("./server/config.js").config;
+	
 
 	app.use('/static', express.static('public'));
 	app.use(require("body-parser").json());
@@ -92,8 +102,29 @@ async.series([
 		if(!res.locals)
 			res.locals = {};
 		res.locals.demoMode = config.demoMode;
+		res.locals.user = req.user;
 		next();
 	})
+
+	//hook up a nice function to allow a prettier string to be sent for errors and such
+	
+	app.use(function(req, res, next)
+	{
+		res.message = function(title, message)
+		{
+			if (!message)
+			{
+				message = title;
+				title = null;
+			}
+			res.render("message",
+			{
+				title: title,
+				message: message
+			});
+		}
+		next();
+	});
 	//setup various routes
 	require('./server/users.js').setup(app, DB);
 	require('./server/xapi.js').setup(app, DB);
@@ -108,6 +139,8 @@ async.series([
 	{
 		res.redirect("/");
 	});*/
+
+	//This looks insane, but it's here because we want to test cross domain stuff locally.
 	app.listen(3000, function() {})
 
 	var app2 = express();

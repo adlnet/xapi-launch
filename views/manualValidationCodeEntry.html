@@ -1,0 +1,79 @@
+{{>header}}
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="container" style="margin-top:3em">
+    <!-- Example row of columns -->
+    <div class='row' >
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <h2 class="text-center">Enter the validation code from your email</h2>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class='row' >
+        <div class="col-md-4"></div>
+        <div class="col-md-4 card">
+            
+            <form onsubmit="return false;" class="form-signin">
+                <div class="form-group">
+                    <label for="email">Validation Code</label>
+                    <input id = "code" name= 'email' type="text" class='form-control' placeholder="Code"></input>
+                </div>
+            </form>
+            <button id='submit' class="btn btn-raised btn-primary btn-lg btn-block" href="#" role="button">Submit validation code</button>
+            <div id="feedback" class="hidden alert alert-danger" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span> <span role="message">Enter a valid email address</span>
+            </div>
+           
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class='row'>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            {{>footer}}
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+</div>
+
+<!-- /container -->
+<script type="text/javaScript">
+
+
+ $("input").keypress(function(k)
+    {
+        if(k.keyCode == 13)
+        {
+           if(this == $("input").last()[0])
+           {
+                $("#submit").click();
+           }     
+        }
+    })
+$('#submit').click(function(){
+    $('#feedback').addClass('hidden');
+
+
+    window.setTimeout(function()
+    {
+
+
+        var code = $('#code').val();
+
+
+        $.ajax("/users/validateEmail/" + code,
+        {
+            type: "GET",
+            success: function(xhr)
+            {
+                window.location = "/"
+            },
+        }).fail(function(xhr)
+        {
+            $('#feedback').removeClass('hidden');
+            $('#feedback span[role=message]').html(xhr.responseText);
+        })
+    }, 100)
+})
+</script>

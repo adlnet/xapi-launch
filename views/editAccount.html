@@ -1,4 +1,5 @@
 <!-- Main jumbotron for a primary marketing message or call to action -->
+{{>header}}
 <div class="container" style="margin-top:3em">
     <!-- Example row of columns -->
      <div class='row' >
@@ -11,7 +12,7 @@
     <div class='row'>
     {{#user}}
         <div class="col-md-4"></div>
-        <div class="col-md-4" style="border:1px solid #ddd;border-radius:3px;margin:2em 0em;padding:2em 2em">
+        <div class="col-md-4 card" style="border:1px solid #ddd;border-radius:3px;margin:2em 0em;padding:2em 2em">
             <form class="form-signin">
                 
                 <div class="form-group">
@@ -35,8 +36,12 @@
                     <label>LRS Password</label>
                     <input id="lrspassword" type="password" class='form-control' placeholder="password" value="{{lrsConfig.password}}"></input>
                 </div>
+                <div class="form-group">
+                    <label>Identity</label>
+                    <textarea height=6 style="    font-family: monospace;height:8em;white-space: pre;" id="identity" class='form-control' placeholder="Optional Identity" value="{{lrsConfig.password}}">{{parsedIdentity}}</textarea>
+                </div>
             </form>
-            <button type='' class="btn btn-lg btn-primary btn-block" href="#" role="button">Edit Account</button>
+            <button type='' class="btn btn-lg btn-raised btn-primary btn-block" href="#" role="button">Edit Account</button>
             <div id="feedback" class="hidden alert alert-danger" role="alert">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 <span class="sr-only">Error:</span> <span role="message">Enter a valid email address</span>
@@ -71,7 +76,8 @@
                                 username: $("#lrsusername").val(),
                                 password: $("#lrspassword").val(),
                                 endpoint: $("#lrsendpoint").val()
-                            }
+                            },
+                            identity: $("#identity").val()
                         }
 
                         $.ajax("/users/edit",

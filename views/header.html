@@ -1,4 +1,4 @@
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-primary  navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -62,10 +62,11 @@
                     <li><a href="/users/launches">My Launch History</a></li>
                     <li><a href="/users/content">My Apps</a></li>
                     <li><a href="/users/media">My Media</a></li>
-                    <li><a href="/packages/">My Files</a></li>
+                   
                 {{#isAdmin}}
                       <hr>
                     <li ><a class="danger" href="/admin/clearDB/">Clear DB</a></li>
+                    <li ><a class="danger" href="/admin/users/">Manage Users</a></li>
                 {{/isAdmin}}
                 
 

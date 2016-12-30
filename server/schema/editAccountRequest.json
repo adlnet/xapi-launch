@@ -22,7 +22,10 @@
 			},
 			"additionalProperties": false,
 			"required": []
-		}	
+		},
+		"identity":{
+			"type":"string"
+		}
 	},
 	"additionalProperties": false,
 	"required": ["lrsConfig"]

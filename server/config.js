@@ -24,6 +24,17 @@ if(exports.config.host[exports.config.host.length -1] == '/')
 }
 
 
+if(!exports.config.connectionString)
+{
+	console.log("Using default connection string")
+	exports.config.connectionString = 'mongodb://localhost/xapi-launch';
+}
+
+if(!exports.config.email_user || !exports.config.email_server || !exports.config.email_pass)
+{
+	console.log("Email is not set up in the config file. User accounts need to be verified manually by the admin.")
+}
+
 }catch(e)
 {
 	exports.config = null;

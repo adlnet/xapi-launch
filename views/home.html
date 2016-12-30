@@ -6,7 +6,7 @@
         <p>This system allows users to record content at any URL, and track their experiences with that content. User information such as a name and an email address are provide to the content so it can log interactions. The server sets up a single use xAPI proxy, and provides this proxy location to the content. Each launch of the content is associated with a one-time-use token, which activates the proxy endpoint and establishes a session for the content. Anyone may submit data to this endpoint given that they have access to the launch token and the session key. However, once the launch token has been exchanged for the launch information, only clients with the proper session token can request the user data or post to the xAPI endpoint. The link submitter can enter an optional RSA Public Key for the content. If provided, the API data will be encrypted before being returned to the user. The user therefore may not know the API endpoints. </p>
         <p> All statements which are logged via the one-time-use proxy endpoint are automatically associated with a context activitiy to identify the content from which it came, as well as a context activity to identify the session of the content during which it was posted. In this way, a student can see the result for each launch of the content, and a content owner can see the results of each attempt on the course. </p>
         <p>The static content file located in the /public folder implements the most basic possible interaction. It uses a library to manage to token exchange round-trip, and specifies that the library should consider the attempt complete when the page unloads. Closing the attempt is the applications responsibility.</p>
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+        <p><a class="btn btn-primary btn-raised btn-lg" href="#" role="button">Learn more &raquo;</a></p>
     </div>
 </div>
 <div class="container">
@@ -15,25 +15,25 @@
         <div class="col-md-4">
             <h2>View registered courses</h2>
             <p>See all the registered courses in the database. Each course can be hosted anywhere on the net - or even a local app. So long as it can read the token from the URL query string and make an HTTP post, it can initiate the session and retreive the user info.</p>
-            <p><a class="btn btn-default" href="/content/browse" role="button">Browse &raquo;</a></p>
+            <p><a class="btn btn-primary btn-raised" href="/content/browse" role="button">Browse &raquo;</a></p>
         </div>
         <div class="col-md-4">
             <h2>See Your Launch Records</h2>
             <p>See all the launch records and the XAPI data for those launches. </p>
-            <p><a class="btn btn-default" href="/users/launches" role="button">Review &raquo;</a></p>
+            <p><a class="btn btn-primary btn-raised" href="/users/launches" role="button">Review &raquo;</a></p>
         </div>
         {{^user}}
         <div class="col-md-4">
             <h2>Create an account</h2>
             <p>You must create an account on this site to enroll content, to launch content, or to view various data base records.</p>
-            <p><a class="btn btn-default" href="/users/create" role="button">Create &raquo;</a></p>
+            <p><a class="btn btn-primary btn-raised" href="/users/create" role="button">Create &raquo;</a></p>
         </div>
         {{/user}}
         {{#user}}
         <div class="col-md-4">
-            <h2>Register New Content</h2>
+            <h2>Register A New App</h2>
             <p>Add new content to the database. This content should use the XAPI launch mechanism to initialize learner tracking.</p>
-            <p><a class="btn btn-default" href="/content/register" role="button">Register &raquo;</a></p>
+            <p><a class="btn btn-primary btn-raised" href="/content/register" role="button">Register &raquo;</a></p>
         </div>
         <script type="text/javascript">
         navigator.registerProtocolHandler("web+xapi2",
@@ -43,9 +43,7 @@
         {{/user}}
     </div>
     <hr>
-    <footer>
-        <p>&copy; 2015 Company, Inc.</p>
-    </footer>
+    {{>footer}}
 </div>
 <!-- /container -->
-{{>footer}}
+

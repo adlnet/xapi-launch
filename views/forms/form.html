@@ -57,20 +57,20 @@
         background: #E99
     }
 
-	.tree-item > .tree-item
-	{
-		padding-left: 20px;
-	}
+    .tree-item > .tree-item
+    {
+        padding-left: 20px;
+    }
 
-	details.tree-item > .tree-item
-	{
-		border-left: dotted grey 1px;
-	}
+    details.tree-item > .tree-item
+    {
+        border-left: dotted grey 1px;
+    }
 
-	.scrollbox {
-		max-height: 300px;
-		overflow: auto;
-	}
+    .scrollbox {
+        max-height: 300px;
+        overflow: auto;
+    }
 
 </style>
 <script type="text/javascript">window.define = null</script>
@@ -90,7 +90,7 @@
     </div>
     <div class='row'>
         <div class="col-md-2"></div>
-        <div class="col-md-8 formpanel" style="border:0px solid #ddd;border-radius:3px;margin:2em 0em;padding:2em 2em;background:white">
+        <div class="col-md-8 card" style="border:0px solid #ddd;border-radius:3px;margin:2em 0em;padding:2em 2em;background:white">
             <form onsubmit="return false;" class="form-signin">
 
                 {{#fields}}
@@ -263,16 +263,16 @@
                     </div>
                     </div>
                     {{/type.isRadio}}
-					{{#type.isCheckboxTree}}
-					<div class="row">
-					<div class="form-group">
-						<label class="col-md-2 control-label">{{label}}</label>
-						<div class="col-md-10" {{#inline}}style="margin-top: 5px;"{{/inline}}>
-							<div class="scrollbox">
-								{{#options}}
-									{{> forms/checkboxTree}}
-								{{/options}}
-							</div>
+                    {{#type.isCheckboxTree}}
+                    <div class="row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">{{label}}</label>
+                        <div class="col-md-10" {{#inline}}style="margin-top: 5px;"{{/inline}}>
+                            <div class="scrollbox">
+                                {{#options}}
+                                    {{> forms/checkboxTree}}
+                                {{/options}}
+                            </div>
                             <div class="checkpreview">
                                 
                             </div>
@@ -304,13 +304,13 @@
                                 })
                                 window.setTimeout(updateVal,100);
                             </script>
-							<p class="help-block">{{helptext}}</p>
-						</div>
+                            <p class="help-block">{{helptext}}</p>
+                        </div>
 
-						<script type="text/javascript" src="/static/scripts/checkboxTree.js"></script>
-					</div>
-					</div>
-					{{/type.isCheckboxTree}}
+                        <script type="text/javascript" src="/static/scripts/checkboxTree.js"></script>
+                    </div>
+                    </div>
+                    {{/type.isCheckboxTree}}
                     {{#type.isTags}}
                     <div class = "row">
                     <div class="form-group">

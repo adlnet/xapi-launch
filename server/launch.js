@@ -50,9 +50,13 @@ exports.setup = function(app, DAL)
                         account:
                         {
                             "homePage": (config.host || "http://localhost:3000") +"/",
-                            "name": user.key
+                            "name": user._id
                         }
                     }
+
+                    //allow user to override identity
+                    if(user.identity)
+                        launchData.actor = user.identity;
                     
                     var localServer = (config.host || "http://localhost:3000") +"/"; 
                     launchData.endpoint = localServer + "launch/" + launch.uuid + "/xAPI/";
@@ -155,7 +159,7 @@ exports.setup = function(app, DAL)
                     DAL.createLaunchRecord(
                     {
                         email: req.user.email,
-                        contentKey: content.key,
+                        contentKey: content._id,
                         mediaKey: req.params.key
                     }, function(err, launch)
                     {
@@ -527,8 +531,8 @@ exports.setup = function(app, DAL)
                 }
             }
         }
-        var demoPrivateKey =  config.publicSigningKey || "-----BEGIN RSA PRIVATE KEY-----\nMIICXgIBAAKBgQCq480SFNQfy/HSkox2swxsan4w6zEXQGyMmSMyvxInEj26wuOY\nxj3N7E0GzX5qjKXS12ZjSi618XNgdFuJq4b68oyf5URiR1qrTa3EAK36hPsxtXnE\nO9fse0tcMI5gh5mVk378mTTOl5Kv7MLe9gBkjMveoqg3Tmu1It3Zmh8wZwIDAQAB\nAoGBAIHKOGNmPGHV9Nl4goRYorPpAeTHjGZbgNYcLPaK1g+ktAuXn2LWFfTDZxEm\nm7/zCLKk9Feu7OE0++sjFK7v/rh2D9gU+ocGljjp+uySZkpFovtrszs9mnT7iLMR\nNytenT/sZUsLA72PUP9MDryzMdW1dJi95PdstGJxugAy943hAkEA1uy4jpl6TDai\nITc7Z4IVnH/w2X8p4pkSQJtOtFm2RQlX7MIDNlNZJx4g2G8wc2juonoAIWnWjEnO\nMsKO4szGFwJBAMuMqEORZru0NgVXB2vkVYsZ6fZdcwZlavpaj2wI0miUEIb2dPLe\niNQhuGOL6wZTTIwpphUAp0hmfDOg79TuqjECQQCXiHmrWPzIRXDUWHvSw/32xKIM\nx0LB2EjtMlMwh1wimq7aaAQZxnRCR1TDJMoVZPNzrO7woA28BcGTOmfB8rzrAkEA\ngV83GyrxNuBFbYNxDhwkWrLvx0yB7VDMe67PdYTt5tYk4wMGNc9G/D0qaurlSDHt\ndzCJhNPTfurUiiQCCz5eIQJACZgrfK3pe8YzkmCWJMzFUgcX7O/8qU2aSuP+xkMI\nCvTe0zjWjU7wB5ftdvcQb6Pf7NCKwYJyMgwQHZttHmb4WQ==\n-----END RSA PRIVATE KEY-----";
-        var demoPublicKey = config.privateSigningKey || "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCq480SFNQfy/HSkox2swxsan4w\n6zEXQGyMmSMyvxInEj26wuOYxj3N7E0GzX5qjKXS12ZjSi618XNgdFuJq4b68oyf\n5URiR1qrTa3EAK36hPsxtXnEO9fse0tcMI5gh5mVk378mTTOl5Kv7MLe9gBkjMve\noqg3Tmu1It3Zmh8wZwIDAQAB\n-----END PUBLIC KEY-----";
+        var demoPrivateKey =  config.privateSigningKey || "-----BEGIN RSA PRIVATE KEY-----\nMIICXgIBAAKBgQCq480SFNQfy/HSkox2swxsan4w6zEXQGyMmSMyvxInEj26wuOY\nxj3N7E0GzX5qjKXS12ZjSi618XNgdFuJq4b68oyf5URiR1qrTa3EAK36hPsxtXnE\nO9fse0tcMI5gh5mVk378mTTOl5Kv7MLe9gBkjMveoqg3Tmu1It3Zmh8wZwIDAQAB\nAoGBAIHKOGNmPGHV9Nl4goRYorPpAeTHjGZbgNYcLPaK1g+ktAuXn2LWFfTDZxEm\nm7/zCLKk9Feu7OE0++sjFK7v/rh2D9gU+ocGljjp+uySZkpFovtrszs9mnT7iLMR\nNytenT/sZUsLA72PUP9MDryzMdW1dJi95PdstGJxugAy943hAkEA1uy4jpl6TDai\nITc7Z4IVnH/w2X8p4pkSQJtOtFm2RQlX7MIDNlNZJx4g2G8wc2juonoAIWnWjEnO\nMsKO4szGFwJBAMuMqEORZru0NgVXB2vkVYsZ6fZdcwZlavpaj2wI0miUEIb2dPLe\niNQhuGOL6wZTTIwpphUAp0hmfDOg79TuqjECQQCXiHmrWPzIRXDUWHvSw/32xKIM\nx0LB2EjtMlMwh1wimq7aaAQZxnRCR1TDJMoVZPNzrO7woA28BcGTOmfB8rzrAkEA\ngV83GyrxNuBFbYNxDhwkWrLvx0yB7VDMe67PdYTt5tYk4wMGNc9G/D0qaurlSDHt\ndzCJhNPTfurUiiQCCz5eIQJACZgrfK3pe8YzkmCWJMzFUgcX7O/8qU2aSuP+xkMI\nCvTe0zjWjU7wB5ftdvcQb6Pf7NCKwYJyMgwQHZttHmb4WQ==\n-----END RSA PRIVATE KEY-----";
+        var demoPublicKey = config.publicSigningKey || "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCq480SFNQfy/HSkox2swxsan4w\n6zEXQGyMmSMyvxInEj26wuOYxj3N7E0GzX5qjKXS12ZjSi618XNgdFuJq4b68oyf\n5URiR1qrTa3EAK36hPsxtXnEO9fse0tcMI5gh5mVk378mTTOl5Kv7MLe9gBkjMve\noqg3Tmu1It3Zmh8wZwIDAQAB\n-----END PUBLIC KEY-----";
         var jwt = require('jsonwebtoken');
         var FormData = require('form-data');
         var form = new FormData();
@@ -668,7 +672,7 @@ exports.setup = function(app, DAL)
         endpoint = require('url').format(endpoint);
 
         var search = require('url').parse(req.originalUrl).search;
-        var proxyAddress = endpoint + req.params[0] + search;
+        var proxyAddress = endpoint + (req.params[0] ? req.params[0] : "" ) + (search ? search :"");
         console.log(proxyAddress)
         
         req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username, req.lrsConfig.password, true)).on('response', function( lrsRes)
@@ -685,13 +689,13 @@ exports.setup = function(app, DAL)
     app.get("/launch/:key/xAPI/statements*", validateLaunchSession(function(req, res, next)
     {
         var search = require('url').parse(req.originalUrl).search;
-        var proxyAddress = req.lrsConfig.endpoint + "statements" + req.params[0]  + search;;
+        var proxyAddress = req.lrsConfig.endpoint + "statements" + req.params[0]  + (search? search : "");
         console.log(proxyAddress)
         req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username, req.lrsConfig.password, true).on('response', function(lrsRes)
         {
                 lrsRes.__proto__ = require('express').request;
           
-                require("body-parser").json({limit:"500kb"})(lrsRes, res, function(err) {
+                require("body-parser").json({limit:"5000kb"})(lrsRes, res, function(err) {
                     if(err)
                         console.log(err);
                     dealWithMore(lrsRes.body, res, req.params.key)

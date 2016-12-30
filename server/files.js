@@ -34,7 +34,7 @@ exports.setup = function(app, DAL)
 			files.push(_f);
 			_f.package = package;
 			_f.owner = req.user.email;
-			if (entry.entryName && require('path').parse(entry.entryName).base == 'cmi5.xml')
+			if (entry.entryName && require('path').parse(entry.entryName).base == 'coursePackage.xml')
 			{
 				manifest = _f;
 			}
@@ -133,7 +133,7 @@ exports.setup = function(app, DAL)
 						{
 							if (content)
 							{
-								content.delete(function()
+								content.remove(function()
 								{
 									cb(null)
 								})

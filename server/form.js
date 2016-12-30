@@ -6,6 +6,7 @@ function form(schema)
 
 	function _get(req, res, next)
 	{
+		console.log('1')
 		var url = require("url").parse(req.url);
 		console.log(url);
 		if(url.pathname[url.pathname.length-1] !== "/")
@@ -109,14 +110,16 @@ function form(schema)
 			{
 				form: schemaCopy,
 				pageTitle: schemaCopy.title,
-				submitText: "Update Email"
+				submitText: "Update Email",
+				user:req.user
 			})
 		}
+		console.log("Schema is ", req.formSchema)
 		if (req.formSchema)
 		{
 			return _render(JSON.parse(JSON.stringify(req.formSchema)));
 		}
-		if (schema.constructor === String)
+		else if (schema.constructor === String)
 		{
 			require('fs').readFile(schema, function(err, data)
 			{
@@ -175,6 +178,10 @@ function form(schema)
 						return res.status(400).send("Expected file not found in post");
 					}
 				}
+				else if (schema.fields[i].type.isSlider == true)
+				{
+					form[schema.fields[i].id] = parseFloat(body[schema.fields[i].id]);
+				}
 				else
 				{
 					console.log(body[schema.fields[i].id], "test");
@@ -210,6 +217,7 @@ function form(schema)
 
 	return function(req, res, next)
 	{
+		console.log( req)
 		if (req.method == "GET")
 			_get(req, res, next);
 		if (req.method == "POST")

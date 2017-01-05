@@ -11,8 +11,21 @@ var validateTypeWrapper = require("./utils.js").validateTypeWrapper;
 var lockedKeys = {};
 var config = require("./config.js").config;
 var checkOwner = require("./users.js").checkOwner;
+var multiparty = require('multiparty');
+var CRLF = "\r\n";
 exports.setup = function(app, DAL)
 {
+
+    
+    function buildPartHeader(part)
+    {
+        var headerString = "";
+        for(var i in part.headers)
+        {
+            headerString += CRLF + i + ":" + part.headers[i]; 
+        }
+        return headerString + CRLF + CRLF;
+    }
 
     function courseGUIDToActivity(guid)
     {
@@ -392,11 +405,86 @@ exports.setup = function(app, DAL)
         }
     }
 
-    app.post("/launch/:key/xAPI/statements", validateLaunchSession(function(req, res, next)
+   
+    //this function parses incoming statements. It should handle multipart form / mixed input, as well as pass through normal single part
+    //posts. This is a good place to also support the alternate request format. IE - decode a URL query param called "content" into the post
+    //body.
+    function handlePostTypes(req,res,next)
+    {
+        var contentType = (req.get("Content-Type")) || "";
+
+        //the the bodyparser has already delt with this,  then just pass through
+        if(req.body && contentType.indexOf("multipart") !== 0)
+        {
+            req.statement = req.body;
+            req.attachments = [];
+            return next();
+        }
+        else
+        {
+            //Here' we're going to parse the incoming multipart request. We need to extract the attachments and load their data.
+            var form = new multiparty.Form();
+           
+            req.headers["content-type"] = req.headers["content-type"].replace("mixed","form-data");
+
+            req.statement = null;
+            req.attachments = [];
+            // Errors may be emitted
+            // Note that if you are listening to 'part' events, the same error may be
+            // emitted from the `form` and the `part`.
+            form.on('error', function(err) {
+              console.log('Error parsing form: ' + err.stack);
+            });
+            form.on('part', function(part)
+            {
+               
+                var partBody = '';
+                part.on('data',function(data){
+                    partBody += data;
+                })
+                part.on('end',function(data){
+
+                    //We are sort of assuming that the statement is JSON and has a name of "statement". I think this is in the spec
+                    if(part.name == "statement")
+                    {
+                        req.statement = JSON.parse(partBody);
+                    }else
+                    {
+                        //add the attachment to the request before passing along to the xAPI layer.
+                        var attachment = {};
+                        attachment.headers = part.headers;
+                        attachment.body = partBody;
+                        req.attachments.push(attachment);
+                    }
+                })
+                
+                part.on('error', function(err)
+                {
+                   return res.status(500).send(err);
+                });
+            });
+
+            // Close emitted after form parsed
+            form.on('close', function()
+            {
+                next();
+            });
+
+            // Parse req
+            form.parse(req);
+
+        }
+
+    }
+    
+    app.post("/launch/:key/xAPI/statements", handlePostTypes ,validateLaunchSession(function(req, res, next)
     {
         //here, we need to validate the activity and append the context data
         //then forward to our registered LRS
-        var postedStatement = req.body;
+        var postedStatement = req.statement;
+        var attachments = req.attachments;
+        console.log("Statement", postedStatement);
+        console.log("attachments", attachments);
         if (postedStatement.constructor !== 'Array')
         {
             postedStatement = [postedStatement];
@@ -408,7 +496,7 @@ exports.setup = function(app, DAL)
                 postedStatement[i].context = {};
             }
             var contextActivities = postedStatement[i].context.contextActivities;
-            console.log(" req.launch.courseContext",  req.launch.courseContext )
+            
             if (!contextActivities)
             {
                 contextActivities = postedStatement[i].context.contextActivities = {
@@ -536,13 +624,16 @@ exports.setup = function(app, DAL)
         var jwt = require('jsonwebtoken');
         var FormData = require('form-data');
         var form = new FormData();
-        var CRLF = "\r\n";
+       
         var options = {
             header: CRLF + '--' + form.getBoundary() + CRLF + 'Content-Type:application/json' + CRLF + "Content-Disposition: form-data; name=\"statement\"" + CRLF + CRLF
         };
         var sigs = [];
         for (var i = 0; i < postedStatement.length; i++)
         {
+            //Dont' sign the attachment info
+            var backupAttachments = postedStatement[i].attachments;
+            delete  postedStatement[i].attachments;
             var token = jwt.sign(postedStatement[i], demoPrivateKey,
             {
                 algorithm: 'RS256'
@@ -552,6 +643,8 @@ exports.setup = function(app, DAL)
     //                'x5c': [(new Buffer(demoPublicKey)).toString('base64')]
     //            }
             });
+
+            postedStatement[i].attachments = backupAttachments;
             
             var hash = require("crypto").createHash('sha256')
                 .update(token).digest();
@@ -584,8 +677,13 @@ exports.setup = function(app, DAL)
             })
         }
         form.append('statement', JSON.stringify(postedStatement), options);
+        
         for (var i in sigs)
             form.append('signature', sigs[i].val, sigs[i].options);
+        for(var i in req.attachments)
+        {
+            form.append(req.attachments[i].name, req.attachments[i].body, {header:buildPartHeader(req.attachments[i])});
+        }
 
         function combine(a, b)
         {

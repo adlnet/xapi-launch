@@ -705,9 +705,10 @@ exports.setup = function(app, DAL)
     }));
     app.all("/launch/:key/xAPI/*", validateLaunchSession(function(req, res, next)
     {
-        //passthrough all other XAPI statements
+        //passthrough all other XAPI commands
 
-            var proxyAddress = req.lrsConfig.endpoint + req.params[0];
+            var search = require('url').parse(req.originalUrl).search;
+            var proxyAddress = req.lrsConfig.endpoint + req.params[0]  + (search? search : "");
             req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username,req.lrsConfig.password,true)).pipe(res);
         
     }));

@@ -1,0 +1,140 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>Introduction - How to Make French Toast - xapi-jqm</title> 
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css" />
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
+    <script src="../js/xapiwrapper.min.js"></script>
+    <script src="../js/launchSignatureService.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/verbs.js"></script>    
+    <script src="../js/functions.js"></script>   
+    <!-- <script src="../js/quiz-functions.js"></script>    -->
+</head> 
+
+<body data-chapter="05-quiz"> 
+
+<div data-role="page" id="p1">
+
+    <div data-role="header">
+        <a href="../index.html" name="home" data-role="button" data-theme="b" data-icon="home" data-transition="slide" data-ajax="false" class="ui-btn-left" courselink="true">Home</a>
+        <h1>Take a Quiz</h1>
+    </div><!-- /header -->
+
+    <div data-role="content">    
+        <div class="infoblock">
+            <h2>1. What ingredients are required to make french toast?</h2>
+        </div>
+
+        <form id="p1_form">
+            <fieldset data-role="controlgroup">
+                <input type="checkbox" name="quiz-q1[]" id="q1-chocolate"><label for="q1-chocolate">Chocolate</label>
+                <input type="checkbox" name="quiz-q1[]" id="q1-bread"><label for="q1-bread">Bread</label>
+                <input type="checkbox" name="quiz-q1[]" id="q1-eggs"><label for="q1-eggs">Eggs</label>
+                <input type="checkbox" name="quiz-q1[]" id="q1-hose"><label for="q1-hose">Fire Hose</label>
+                <input type="checkbox" name="quiz-q1[]" id="q1-rice"><label for="q1-rice">Rice</label>
+                <input type="checkbox" name="quiz-q1[]" id="q1-butter"><label for="q1-butter">Butter / Oil or Non-stick Spray</label>
+            </fieldset>
+        </form>
+
+    </div><!-- /content -->
+    
+    <div data-role="footer" data-theme="b" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="../index.html" data-theme="b" data-rel="back" data-icon="carat-l" data-iconpos="top" data-transition="slide" data-direction="reverse" data-ajax="false" courselink="true">Previous</a></li>
+                <li><a onclick="gradeQuestion()" href="#p2" id="next" data-theme="b" data-icon="carat-r" data-iconpos="top" data-transition="slide" data-ajax="false">Next</a></li>
+            </ul>
+        </div><!-- /navbar -->
+    </div><!-- /footer -->
+
+</div><!-- /page p1 -->
+
+
+<div data-role="page" id="p2">
+
+    <div data-role="header">
+        <a href="../index.html" name="home" data-role="button" data-theme="b" data-icon="home" data-transition="slide" data-ajax="false" class="ui-btn-left" courselink="true">Home</a>
+        <h1>Take a Quiz</h1>
+    </div><!-- /header -->
+
+    <div data-role="content">    
+        <div class="infoblock">
+            <h2>2. Which cooking tool is required to make french toast?</h2>
+        </div>
+
+        <form id="p2_form">
+            <fieldset data-role="controlgroup">
+                <input type="radio" name="quiz-q2[]" id="q2-pot" value="A Pot"><label for="q2-pot">A Pot</label>
+                <input type="radio" name="quiz-q2[]" id="q2-toaster" value="A Toaster"><label for="q2-toaster">A Toaster</label>
+                <input type="radio" name="quiz-q2[]" id="q2-oven" value="An Oven"><label for="q2-oven">An Oven</label>
+                <input type="radio" name="quiz-q2[]" id="q2-pan" value="A Pan or an electric skillet"><label for="q2-pan">A Pan or an electric skillet</label>
+                <input type="radio" name="quiz-q2[]" id="q2-blender" value="A Blender"><label for="q2-blender">A Blender</label>
+            </fieldset>
+        </form>
+
+    </div><!-- /content -->
+    
+    <div data-role="footer" data-theme="b" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#p1" data-theme="b" data-rel="back" data-icon="carat-l" data-iconpos="top" data-transition="slide" data-direction="reverse" data-ajax="false">Previous</a></li>
+                <li><a onclick="gradeQuestion()" href="#p3" id="next" data-theme="b" data-icon="carat-r" data-iconpos="top" data-transition="slide" data-ajax="false">Next</a></li>
+            </ul>
+        </div><!-- /navbar -->
+    </div><!-- /footer -->
+
+</div><!-- /page results -->
+
+<div data-role="page" id="p3">
+
+    <div data-role="header">
+        <a href="../index.html" name="home" data-role="button" data-theme="b" data-icon="home" data-transition="slide" data-ajax="false" class="ui-btn-left" courselink="true">Home</a>
+        <h1>Take a Quiz</h1>
+    </div><!-- /header -->
+
+    <div data-role="content">    
+        <div class="infoblock">
+            <h2>3. What is the main ingredient of french toast?</h2>
+        </div>
+
+        <form id="p3_form">
+                <input type="text" data-clear-btn="true" name="quiz-q3[]" id="q3-text">
+        </form>
+
+    </div><!-- /content -->
+    
+    <div data-role="footer" data-theme="b" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#p2" data-theme="b" data-rel="back" data-icon="carat-l" data-iconpos="top" data-transition="slide" data-direction="reverse" data-ajax="false">Previous</a></li>
+                <li><a onclick="gradeQuestion();makeAssessment()" href="#results" id="results" data-theme="b" data-icon="carat-r" data-iconpos="top" data-transition="slide" data-ajax="false">Get Results</a></li>
+            </ul>
+        </div><!-- /navbar -->
+    </div><!-- /footer -->
+
+</div><!-- /page results -->
+
+<div data-role="page" id="results">
+
+    <div data-role="header">
+        <a href="../index.html" name="home" data-role="button" data-theme="b" data-icon="home" data-transition="slide" data-ajax="false" class="ui-btn-left" courselink="true">Home</a>
+        <h1>Quiz Results</h1>
+    </div><!-- /header -->
+
+    <div data-role="content">    
+        <div class="infoblock">
+            <h2 id="quiz_results"></h2>
+        </div>
+
+         <a href="../index.html" name="finish" data-role="button" data-theme="b" data-transition="slide" data-ajax="false" class="ui-btn-center" courselink="true">Finish</a>
+
+    </div><!-- /content -->
+    
+</div><!-- /page results -->
+</body>
+</html>

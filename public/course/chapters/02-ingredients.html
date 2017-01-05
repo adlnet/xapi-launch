@@ -1,0 +1,100 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>Introduction - How to Make French Toast - xapi-jqm</title> 
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css" />
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
+    <script src="../js/xapiwrapper.min.js"></script>
+    <script src="../js/launchSignatureService.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/verbs.js"></script>
+    <script src="../js/functions.js"></script>
+</head> 
+
+<body data-chapter="02-ingredients"> 
+
+<div data-role="page" id="p1">
+
+    <div data-role="header">
+        <a href="../index.html#list" name="home" data-role="button" data-theme="b" data-icon="home" data-transition="slide" data-ajax="false" class="ui-btn-left" courselink="true">Home</a>
+        <h1>Ingredients &amp; Things You'll Need</h1>
+    </div><!-- /header -->
+
+    <div data-role="content">    
+        <div class="infoblock">
+            <h2>Ingredients</h2>
+        </div>
+
+        <h3>About</h3>
+        <p>Before getting started, you should make sure you have the ingredients and supplies to get cooking!</p>
+
+        <h3>It's always comforting to check!</h3>
+        <form>
+            <fieldset data-role="controlgroup">
+                <input type="checkbox" name="checkbox-v-2a" id="checkbox-v-2a"><label for="checkbox-v-2a">1 egg for every 2 slices of bread</label>
+                <input type="checkbox" name="checkbox-v-2b" id="checkbox-v-2b"><label for="checkbox-v-2b">Non-stick spray, olive oil, or butter/margarine</label>
+                <input type="checkbox" name="checkbox-v-2c" id="checkbox-v-2c"><label for="checkbox-v-2c">Cinnamon (Season to taste)</label>
+                <input type="checkbox" name="checkbox-v-2d" id="checkbox-v-2d"><label for="checkbox-v-2d">1/2 teaspoon (3 ml) vanilla extract (vanilla essence, optional)</label>
+                <input type="checkbox" name="checkbox-v-2e" id="checkbox-v-2e"><label for="checkbox-v-2e">Bread (6 pieces), type of bread is up to your preference</label>
+                <input type="checkbox" name="checkbox-v-2f" id="checkbox-v-2f"><label for="checkbox-v-2f">Icing Sugar, syrup, jam, etc.</label>
+                <input type="checkbox" name="checkbox-v-2g" id="checkbox-v-2g"><label for="checkbox-v-2g">Milk (depending on number of eggs, 2 tablespoons per egg)</label>
+            </fieldset>
+        </form>
+
+    </div><!-- /content -->
+    
+    <div data-role="footer" data-theme="b" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="../index.html#list" data-theme="b" data-rel="back" data-icon="carat-l" data-iconpos="top" data-transition="slide" data-direction="reverse" data-ajax="false" courselink="true">Previous</a></li>
+                <li><a href="#p2" id="next" data-theme="b" data-icon="carat-r" data-iconpos="top" data-transition="slide" data-ajax="false" courselink="true">Next</a></li>
+            </ul>
+        </div><!-- /navbar -->
+    </div><!-- /footer -->
+
+</div><!-- /page p1 -->
+
+
+<div data-role="page" id="p2">
+    
+    <div data-role="header">
+         <a href="../index.html#list" name="home" data-role="button" data-theme="b" data-icon="home" data-transition="slide" data-ajax="false" class="ui-btn-left" courselink="true">Home</a>
+        <h1>Ingredients &amp; Things You'll Need</h1>
+    </div><!-- /header -->
+
+    <div data-role="content">    
+        <div class="infoblock">
+            <h2>Things You'll Need</h2>
+        </div>
+
+        <h3>It's always comforting to check!</h3>
+        <form>
+            <fieldset data-role="controlgroup">
+                <input type="checkbox" name="checkbox-x-2a" id="checkbox-x-2a"><label for="checkbox-x-2a">Bowl</label>
+                <input type="checkbox" name="checkbox-x-2b" id="checkbox-x-2b"><label for="checkbox-x-2b">Pan (if using stove)</label>
+                <input type="checkbox" name="checkbox-x-2c" id="checkbox-x-2c"><label for="checkbox-x-2c">Stove or electric pan (your preference)</label>
+                <input type="checkbox" name="checkbox-x-2d" id="checkbox-x-2d"><label for="checkbox-x-2d">Fork or whisk</label>
+                <input type="checkbox" name="checkbox-x-2e" id="checkbox-x-2e"><label for="checkbox-x-2e">Spatula</label>
+                <input type="checkbox" name="checkbox-x-2f" id="checkbox-x-2f"><label for="checkbox-x-2f">Serving Plate</label>
+            </fieldset>
+        </form>
+
+    </div><!-- /content -->
+    
+    <div data-role="footer" data-theme="b" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#p1" data-theme="b" data-rel="back" data-icon="carat-l" data-iconpos="top" data-transition="slide" data-direction="reverse" data-ajax="false" >Previous</a></li>
+                <li><a href="../index.html" id="next" data-theme="b" data-icon="carat-r" data-iconpos="top" data-transition="slide" data-ajax="false" onclick="setChapterComplete()" courselink="true">Next</a></li>
+            </ul>
+        </div><!-- /navbar -->
+    </div><!-- /footer -->
+
+</div><!-- /page p2 -->
+
+</body>
+</html>

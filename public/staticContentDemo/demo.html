@@ -21,8 +21,26 @@
 			    	}else
 			    	{	
 			    		$('#apiData').text(JSON.stringify(apiData,null,4))
-			    		var t = new ADL.XAPIStatement(apiData.actor,"http://adlnet.gov/expapi/verbs/launched",window.location+"/test");
-			    		xAPI.sendStatement(t);
+			    		var statement = new ADL.XAPIStatement(apiData.actor,"http://adlnet.gov/expapi/verbs/launched",window.location+"/test");
+
+			    		var attachmentMetadata = {
+			                "usageType": "http://adlnet.gov/expapi/attachments/asignature",
+			                "display":
+			                {
+			                    "en-US": "Actor Signature"
+			                },
+			                "description":
+			                {
+			                    "en-US": "A signature proving the actor of this statement was present when the statement was generated"
+			                },
+			                "contentType": "application/octet-stream"   
+			            }
+			            var attachments = [{
+			                value: "asdfasdfasdfasdfasdf",
+			                type:attachmentMetadata
+			            }]
+
+			    		xAPI.sendStatement(statement,null,attachments);
 			    		ADL.xAPIWrapper = xAPI;
 					}
 				},false)

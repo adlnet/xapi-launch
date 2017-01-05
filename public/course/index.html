@@ -1,0 +1,121 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>How to Make French Toast - xapi-jqm</title> 
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css" />
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
+    <script src="js/xapiwrapper.min.js"></script>
+    <script src="js/launchSignatureService.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/verbs.js"></script>
+    <script src="js/functions.js"></script>
+    <style type="text/css">
+        #toc-list li a {
+            padding-left:40px;
+        }
+    </style>
+<!--     <script type="text/javascript">
+        $(function(){
+            var chaptersCompleted = getChaptersCompleted()
+            $("#toc-list li").each(function() {
+                if ( $.inArray( $(this).attr("id"), chaptersCompleted ) !== -1 ) {
+                    $(this).addClass("ui-icon-check");
+                }
+            });
+        });
+    </script> -->
+</head> 
+
+<body data-chapter="toc"> 
+
+<div data-role="page" id="list">
+
+    <div data-role="header">
+        <h1>How to Make French Toast</h1>
+        <a href="chapters/00-account.html#logout" data-ajax="false" data-theme="b" data-transition="slidedown" data-icon="delete" class="ui-btn-right">Exit</a>
+    </div><!-- /header -->
+
+    <div data-role="content">
+
+        <ul data-role="listview" data-inset="true" id="toc-list">
+            <li id="01-intro" class="ui-btn-icon-left"><a href="chapters/01-intro.html" data-ajax="false" class="chapter" courselink="true">1. Introduction</a></li>
+            <li id="02-ingredients" class="ui-btn-icon-left"><a href="chapters/02-ingredients.html" data-ajax="false" class="chapter" courselink="true">2. Ingredients &amp; Things You'll Need</a></li>
+            <li id="03-steps" class="ui-btn-icon-left"><a href="chapters/03-steps.html" data-ajax="false" class="chapter" courselink="true">3. Steps Involved</a></li> 
+            <li id="04-video" class="ui-btn-icon-left"><a href="chapters/04-video.html" data-ajax="false" class="chapter" courselink="true">4. Watch a Video</a></li> 
+            <li id="05-quiz" class="ui-btn-icon-left"><a href="chapters/05-quiz.html" data-ajax="false" class="chapter" courselink="true">5. Take a Quiz</a></li> 
+        </ul>
+
+    </div><!-- /content -->
+    
+    <div data-role="footer" data-theme="b" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li id="glossary"><a href="glossary.html" data-icon="info" data-iconpos="top" data-transition="slideup" data-ajax="false" class="chapter" courselink="true">Glossary</a></li>
+                <li id="popup-resources"><a href="#resources" data-icon="star" data-iconpos="top" data-rel="dialog" data-transition="slideup" data-ajax="false" class="chapter" courselink="true">Resources</a></li>
+                <li id="popup-help"><a href="#help" data-icon="alert" data-iconpos="top" data-transition="slideup" data-ajax="false" class="chapter" courselink="true">Help</a></li>
+            </ul>
+        </div><!-- /navbar -->
+    </div><!-- /footer -->
+
+</div><!-- /page toc -->
+
+
+<!-- #resources -->
+<div data-role="page" id="resources">
+
+    <div data-role="header" data-theme="b">
+        <h1>Resources</h1>
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content">
+        <h2>Resources</h2>
+        <p>Much of this content is available thanks to <a href="http://www.wikihow.com/Main-Page" target="_blank">wikiHow</a>. The <a href="http://www.wikihow.com/Make-French-Toast" target="_blank">How to Make French Toast</a> offered a lot of content offered under the <a href="http://www.wikihow.com/wikiHow:Creative-Commons" target="_blank">Creative Commons License</a>, specifically (CC BY-NC-SA 3.0).</p>
+    </div><!-- /content -->
+
+    <div data-role="footer" data-position="fixed">
+        <div style="text-align:center;"><a href="#list" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-left" courselink="true">Go Back</a></div>
+    </div><!-- /footer -->
+
+</div><!-- /page resources -->
+
+
+<!-- #help -->
+<div data-role="page" id="help">
+
+    <div data-role="header" data-theme="b">
+        <h1>Help</h1>
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content">
+        <h2>Tips</h2>
+        <ul>
+            <li>Chunky cinnamon bread from the bakery at the grocery store makes excellent French toast.</li>
+            <li>Sprinkle sugar over the bread while it's in the pan before flipping it – this will create a crunchy layer of caramelized sugar.</li>
+            <li>An easy estimation for the amount of milk to add is to add about as much milk as there is egg in the bowl before you beat it, then beat and mix the egg and milk at the same time.</li>
+            <li>Any leftover egg mixture can be used to make scrambled eggs</a>.</li>
+            <li>For parties and special occasions, try using cookie cutters on the bread before soaking it in the mixture! The different shapes are ideal for party fun.</li>
+            <li>Add sugar bake with it if you would like it to be sweeter.</li><li>Since making French toast was originally a resourceful way to use stale bread, acquiring stale bread and using it in the recipe will yield an excellent result.</li><li>Use hard bread (a baguette or bakery bread) and soak it in the mixture to soften it before cooking it in the pan. Factory-made sliced bread may have a soggier result.</li><li>Don't fry the bread at full temperature or it will burn and still be raw from the inside. Try using medium heat.</li>
+            <li>Using stale raisin bread can eliminate the need for cinnamon and vanilla extract.</li>
+            <li style="display: list-item;">Sometimes, when making a large amount or to avoid soggy bread, it's easier to mix the egg mixture in a bowl then pour a bit in a round cake pan for easier dipping. Just set the bread in and flip.</li>
+            <li style="display: list-item;">Eggs will blend much better if allowed to sit at room temperature for 10-15 minutes prior to cracking.</li>
+        </ul>
+        <h2>Warnings</h2>
+        <ul>
+            <li>Cook thoroughly! Raw eggs can make you very sick if eaten, and underdone French toast may still have raw, runny egg inside of it.</li>
+            <li>Make sure that you are not allergic to any of the ingredients.</li>
+            <li>Be careful around the stove!</li>
+        </ul>
+    </div><!-- /content -->
+
+    <div data-role="footer" data-position="fixed">
+        <div style="text-align:center;"><a href="#list" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-left">Go Back</a></div>
+    </div><!-- /footer -->
+
+</div><!-- /page help -->
+
+</body>
+</html>

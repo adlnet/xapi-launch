@@ -709,7 +709,21 @@ exports.setup = function(app, DAL)
 
             var search = require('url').parse(req.originalUrl).search;
             var proxyAddress = req.lrsConfig.endpoint + req.params[0]  + (search? search : "");
-            req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username,req.lrsConfig.password,true)).pipe(res);
+            console.log(proxyAddress)
+            var request = require('request');
+            req.pipe( request({
+                  url: proxyAddress,
+                  method: req.method
+              }, function(error, response, body){
+               
+                  console.error(error);
+                
+              }).auth(req.lrsConfig.username,req.lrsConfig.password,true)      ).on('error',function(e){
+                console.log(e);
+            }).pipe( res );
+
+
+         //   req.pipe(require('request')(proxyAddress).auth(req.lrsConfig.username,req.lrsConfig.password,true).on("error",function(e){console.log(e); res.status(500).send(err)})).pipe(res).on("error",function(e){console.log(e); res.status(500).send(err)});
         
     }));
     app.get("/launches/:key", function(req, res, next)

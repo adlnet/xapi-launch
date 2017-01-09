@@ -75,14 +75,27 @@ async.series([
 	}
 ], function startServer()
 {
-	
+	//for the address on the xapi route that proxies to the lrs, we need to be sure that to body parser
+	//middleware is not running. Otherwise it will interfere with the proxy.
+	function disableMiddlewareForProxy(fn)
+	{
+		return function(req,res,next)
+		{
+			var test = /\/launch\/(.*)\/xAPI\/(.*)/
+			var matches = test.exec(req.path);
+			if(!matches || matches && matches[2] == "statements")
+				return fn(req,res,next);
+			else return next()
 
+		}
+	}
 	app.use('/static', express.static('public'));
-	app.use(require("body-parser").json());
-	app.use(require("body-parser").urlencoded(
+	app.use(disableMiddlewareForProxy(require("body-parser").json()));
+	app.use(disableMiddlewareForProxy
+	( require("body-parser").urlencoded(
 	{
 		extended: true
-	}));
+	})));
 	app.use(require("cookie-parser")());
 	//use mustache templating
 	app.engine('html', hoganExpress);

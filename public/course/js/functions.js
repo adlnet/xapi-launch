@@ -37,43 +37,8 @@ ADL.launch(function(err,apiData,xAPIWrapper){
             console.log(lData.actor);
 
             var stmt = new ADL.XAPIStatement(actor,"http://adlnet.gov/expapi/verbs/initialized","http://localhost:8081"+window.location.pathname);
-
-            //lets shim this in, so that the ADL.XAPIWrapper.sendStatement looks just like it always did
-            ADL.XAPIWrapper = xAPIWrapper;
-            ADL.XAPIWrapper._sendStatement = ADL.XAPIWrapper.sendStatement;
-            ADL.XAPIWrapper.sendStatement = function(statement,cb)
-            {
-                statement.actor = apiData.actor;
-                //we have to make this object dumb JSON, not the object that is returned from the wrapper
-                statement = JSON.parse(JSON.stringify(statement));
-                signStatement(statement,function(err,statement,signature)
-                {
-                    $('code').text(JSON.stringify(statement,null,1) + "\r\n\r\n" + signature);     
-
-                     var attachmentMetadata = {
-                            "usageType": "http://adlnet.gov/expapi/attachments/signature",
-                            "display":
-                            {
-                                "en-US": "Actor Signature"
-                            },
-                            "description":
-                            {
-                                "en-US": "A signature proving the actor of this statement was present when the statement was generated"
-                            },
-                            "contentType": "application/octet-stream"   
-                        }
-                        var attachment = {
-                            value: signature,
-                            type:attachmentMetadata
-                        }
-
-                 
-                    ADL.XAPIWrapper._sendStatement(statement,cb,[attachment]);
-
-                });
-            
-            }
-
+            stmt.actor = actor;
+            actor.objectType = "Agent"
             updateLRS(stmt);
 
 
@@ -168,13 +133,18 @@ function getState() {
 // Get from State API
 function getChaptersCompleted() {
     var chaptersCompleted = wrapper.getState(moduleID, actor, "chapters-completed");
+    if(!chaptersCompleted){
+        console.log("NULL");
+        chaptersCompleted = {"chapters":0};
+    }
     return chaptersCompleted.chapters;
 }
 
 // Set in State API
 function setChapterComplete() {
+   
     var chapterID = $("body").attr("data-chapter");
-    var currentCompletedChapters = getChaptersCompleted();   
+    var currentCompletedChapters = 0; //getChaptersCompleted();   
     var chapterCompleted = [ chapterID ];
 
     var hash = {}, union = [];
@@ -183,9 +153,11 @@ function setChapterComplete() {
     $.each($.merge($.merge([], currentCompletedChapters), chapterCompleted), function (index, value) { hash[value] = value; });
     $.each(hash, function (key, value) { union.push(key); } );
     
+    
+
     wrapper.sendState(moduleID, actor, "chapters-completed", null, { "chapters": union });
 
-    doConfig();
+    // doConfig();
 
     // statement for launching content
     var stmt = {
@@ -204,7 +176,8 @@ function setChapterComplete() {
     };
 
     // Send chapterComplete statement
-    // updateLRS(stmt);
+    updateLRS(stmt);
+
 
 }
 
@@ -659,15 +632,15 @@ function makeAssessment() {
     // Send a statement
     updateLRS(stmt);
 
-    // setChapterComplete();
+    setChapterComplete();
 
-    // // Mastered statement
-    // var chaptersCompleted = getChaptersCompleted();
-    // if ( percentage == 100 && chaptersCompleted.length == 5 ) {
-    //     courseMastered();
-    //     // show a badge by appending to display -- PoC
-    //     display += '<p><img src="../media/488px-badge-french-toast.jpg" alt="French Toast Badge" title="French Toast Badge" style="width:100%;max-width:488px" /></p><h4>French Toast Master</h4><p>Congratulations, you have mastered the course in How to Make French Toast</p>';
-    // }
+    // Mastered statement
+    var chaptersCompleted = getChaptersCompleted();
+    if ( percentage == 100 && chaptersCompleted.length == 5 ) {
+        courseMastered();
+        // show a badge by appending to display -- PoC
+        display += '<p><img src="../media/488px-badge-french-toast.jpg" alt="French Toast Badge" title="French Toast Badge" style="width:100%;max-width:488px" /></p><h4>French Toast Master</h4><p>Congratulations, you have mastered the course in How to Make French Toast</p>';
+    }
 
     $("#quiz_results").html(display);
 }

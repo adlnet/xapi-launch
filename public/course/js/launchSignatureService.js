@@ -1,5 +1,6 @@
 (function(){
 
+	delete window.define;
 	var script = document.createElement('script');
 	script.type = 'text/javascript';
 	script.src = 'https://cdn.jsdelivr.net/async/2.1.4/async.min.js';    
@@ -36,6 +37,9 @@
         }
     },false);
 
+	window.addEventListener('beforeunload',function(event) {
+		if(popup) popup.close();
+	});
 	window.signStatement = function(statement,signedCB)
 	{
 		async.series([

@@ -17,9 +17,9 @@ exports.setup = function(app, DAL)
 {
 
     
-    function buildPartHeader(part)
+    function buildPartHeader(form,part)
     {
-        var headerString = "";
+        var headerString = CRLF + '--' + form.getBoundary() ;
         for(var i in part.headers)
         {
             headerString += CRLF + i + ":" + part.headers[i]; 
@@ -483,8 +483,7 @@ exports.setup = function(app, DAL)
         //then forward to our registered LRS
         var postedStatement = req.statement;
         var attachments = req.attachments;
-        console.log("Statement", postedStatement);
-        console.log("attachments", attachments);
+    
         if (postedStatement.constructor !== 'Array')
         {
             postedStatement = [postedStatement];
@@ -682,7 +681,7 @@ exports.setup = function(app, DAL)
             form.append('signature', sigs[i].val, sigs[i].options);
         for(var i in req.attachments)
         {
-            form.append(req.attachments[i].name, req.attachments[i].body, {header:buildPartHeader(req.attachments[i])});
+            form.append(req.attachments[i].name +"_client", req.attachments[i].body, {header:buildPartHeader(form,req.attachments[i])});
         }
 
         function combine(a, b)
@@ -700,7 +699,7 @@ exports.setup = function(app, DAL)
                 // buf is a Node Buffer instance which contains the entire data in stream
                 // if your stream sends textual data, use buf.toString() to get entire stream as string
                 var streamContent = buf.toString();
-               
+                console.log(streamContent);
                 (function post(url)
                 {
                     //send the modified statement up to the configured LRS
@@ -730,7 +729,7 @@ exports.setup = function(app, DAL)
                         });
                         postReq.on('end', function()
                         {
-                            console.log("data from LRS: " +  data);
+                            console.log("\n\n\ndata from LRS: " +  data);
                             if (r.statusCode == 301)
                             {
                                 post(r.headers.location);

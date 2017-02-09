@@ -49,11 +49,13 @@ The learner may optionally move the Launch Token to the content manually. We ima
 
 1. Clone the repo: `git clone https://github.com/adlnet/xapi-launch.git`
 2. `npm install`
-3. `node app.js`
-4. enter LRS credentials
+3. Verify mongoDB is installed and running
+4. `node app.js`
+5. enter LRS credentials
 
 ## Running the static HTML Demo content
 1. Create a user account
+2. Copy and paste verification code from terminal to verify account
 2. Find "Register Apps"
 3. Use "http://localhost:3000/static/staticContentDemo/demo.html" as the URL
 4. Do not enter a private key.

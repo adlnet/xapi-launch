@@ -631,8 +631,8 @@ exports.setup = function(app, DAL)
         for (var i = 0; i < postedStatement.length; i++)
         {
             //Dont' sign the attachment info
-            var backupAttachments = postedStatement[i].attachments;
-            delete  postedStatement[i].attachments;
+      //      var backupAttachments = postedStatement[i].attachments;
+      //      delete  postedStatement[i].attachments;
             var token = jwt.sign(postedStatement[i], demoPrivateKey,
             {
                 algorithm: 'RS256'
@@ -642,8 +642,8 @@ exports.setup = function(app, DAL)
     //                'x5c': [(new Buffer(demoPublicKey)).toString('base64')]
     //            }
             });
-
-            postedStatement[i].attachments = backupAttachments;
+///
+  //          postedStatement[i].attachments = backupAttachments;
             
             var hash = require("crypto").createHash('sha256')
                 .update(token).digest();

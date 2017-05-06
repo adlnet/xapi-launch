@@ -6,7 +6,7 @@ var DB = null;
 var hoganExpress = require('hogan-express');
 require('pretty-error').start();
 var mongoose = require('mongoose');
-var DAL = require("./server/DAL.js").DAL;
+var DAL = null;
 async.series([
 	
 	function loadConfig(cb)
@@ -56,6 +56,7 @@ async.series([
 	function loadDB(cb)
 	{
 		
+		DAL = require("./server/DAL.js").DAL;
 		mongoose.connect('mongodb://localhost/xapi-launch');
 		var db = mongoose.connection;
 		db.once('open', function(err)
